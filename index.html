@@ -28,7 +28,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 .status-pill.connecting{color:var(--yellow);background:rgba(255,216,77,.07);border-color:rgba(255,216,77,.2);}
 .dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 1.5s ease infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-/* SETTINGS */
 .settings-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;backdrop-filter:blur(4px);}
 .settings-overlay.open{display:flex;align-items:center;justify-content:center;}
 .settings-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:440px;max-width:95vw;}
@@ -88,6 +87,16 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .wcard:hover{background:rgba(0,229,255,.025);}
 .wcard.hdr{background:var(--surface2);cursor:default;padding:9px 18px;}
 .wcard.hdr:hover{background:var(--surface2);}
+.ptag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;letter-spacing:.4px;}
+.ptag.sharp{background:rgba(0,255,140,.15);color:#00ff8c;border:1px solid rgba(0,255,140,.3);}
+.ptag.follower{background:rgba(255,216,77,.12);color:#ffd84d;border:1px solid rgba(255,216,77,.25);}
+.ptag.mixed{background:rgba(0,229,255,.12);color:var(--accent);border:1px solid rgba(0,229,255,.25);}
+.ptag.unknown{background:rgba(90,106,136,.2);color:var(--muted);border:1px solid rgba(90,106,136,.3);}
+.ep-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 14px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.1);border-radius:8px;}
+.ep-label{font-size:11px;color:var(--muted);font-weight:700;flex:1;}
+.ep-input{width:60px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;text-align:center;outline:none;}
+.ep-input:focus{border-color:var(--accent);}
+.ep-btn{font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;border:none;background:var(--accent);color:#000;cursor:pointer;}
 .chd{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
 .avatar{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .winfo{min-width:0;}
@@ -99,7 +108,6 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 @keyframes pvP{0%,100%{opacity:.25}50%{opacity:1}}
 .rm-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0;}
 .rm-btn:hover{background:rgba(255,68,102,.1);border-color:rgba(255,68,102,.3);color:var(--red);}
-/* DRAWER */
 .perf-drawer{display:none;background:rgba(13,18,32,.98);border-bottom:2px solid var(--accent);padding:22px 20px;animation:drawerIn .22s ease;}
 .perf-drawer.open{display:block;}
 @keyframes drawerIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
@@ -126,7 +134,6 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .trade-list{display:flex;flex-direction:column;max-height:220px;overflow-y:auto;}
 .trade-list::-webkit-scrollbar{width:3px;}
 .trade-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-/* TRADE ROW */
 .trow{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:all .15s;}
 .trow:hover{border-color:rgba(0,229,255,.3);}
 .trow-top{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
@@ -147,7 +154,6 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .copy-btn.copied{color:var(--green);border-color:rgba(0,255,140,.4);background:rgba(0,255,140,.1);}
 .open-link{font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;padding:2px 8px;border-radius:4px;border:1px solid rgba(0,229,255,.2);background:rgba(0,229,255,.06);transition:all .15s;}
 .open-link:hover{background:rgba(0,229,255,.14);}
-/* FEED */
 .feed{display:flex;flex-direction:column;max-height:380px;overflow-y:auto;}
 .feed::-webkit-scrollbar{width:3px;}
 .feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
@@ -194,8 +200,6 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
     <div class="status-pill connecting" id="statusPill"><div class="dot"></div><span id="statusTxt">CONNECTING</span></div>
   </div>
 </header>
-
-<!-- SETTINGS PANEL -->
 <div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
   <div class="settings-panel">
     <div class="sp-title">⚙️ Customise Dashboard</div>
@@ -232,7 +236,6 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
     <button class="sp-close" onclick="closeSettings()">✓ Done</button>
   </div>
 </div>
-
 <main>
   <div>
     <div class="add-bar">
@@ -289,36 +292,30 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
     <div style="flex:1">
       <div style="font-size:14px;font-weight:800;margin-bottom:3px">Telegram Alerts Active</div>
       <div style="font-size:12px;color:var(--muted)">Every trade above your threshold fires an instant Telegram alert.</div>
-      <div class="tgcmds"><span class="tgcmd">/list</span><span class="tgcmd">/pnl 0x...</span><span class="tgcmd">/positions 0x...</span><span class="tgcmd">/alerts off</span><span class="tgcmd">/threshold 200</span></div>
+      <div class="tgcmds"><span class="tgcmd">/list</span><span class="tgcmd">/pnl 0x...</span><span class="tgcmd">/positions 0x...</span><span class="tgcmd">/entryprice 0x... 30</span><span class="tgcmd">/pattern 0x...</span></div>
     </div>
   </div>
 </main>
 </div>
 <div class="toasts" id="toasts"></div>
 <script>
-// ---- CONFIG ----
 var API = 'https://polywatch-backend.onrender.com';
 var wallets = [], feedItems = [], evCount = 0, connected = false;
 var COLORS = ['#00e5ff','#7b4fff','#00ff8c','#ffd84d','#ff4466','#ff8c00'];
 var BGTINTS = ['rgba(0,229,255,.13)','rgba(123,79,255,.13)','rgba(0,255,140,.13)','rgba(255,216,77,.13)','rgba(255,68,102,.13)'];
 var EMOJIS = ['🐳','🦈','🧠','🔥','💎','👤','⚡','🌊','🎯','🔭','🦁','🦊'];
 var PB = 'https://polymarket.com';
-
-// load saved settings
 (function(){
   var s = JSON.parse(localStorage.getItem('pw_settings')||'{}');
   if(s.accent) applyAccent(s.accent, s.accent2||'#7b4fff');
   if(s.fontSize) applyFontSize(s.fontSize);
   if(s.theme) applyTheme(s.theme);
 })();
-
 document.getElementById('apiUrl').value = API;
 document.getElementById('apiUrl').addEventListener('change', function(e){
   API = e.target.value.trim().replace(/\/$/,'');
   checkHealth();
 });
-
-// ---- SETTINGS ----
 function openSettings(){ document.getElementById('settingsOverlay').classList.add('open'); }
 function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('open'); }
 function applyAccent(a,a2){ document.documentElement.style.setProperty('--accent',a); document.documentElement.style.setProperty('--accent2',a2); }
@@ -329,12 +326,9 @@ var THEMES = {dark:{bg:'#050810',surface:'#0d1220',surface2:'#131929',border:'#1
 function applyTheme(t){ var th=THEMES[t]||THEMES.dark; Object.keys(th).forEach(function(k){ document.documentElement.style.setProperty('--'+k,th[k]); }); }
 function setTheme(t){ applyTheme(t); saveSettings({theme:t}); }
 function saveSettings(obj){ var s=JSON.parse(localStorage.getItem('pw_settings')||'{}'); Object.assign(s,obj); localStorage.setItem('pw_settings',JSON.stringify(s)); }
-
-// ---- API ----
 async function get(p){ var r=await fetch(API+p); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
 async function post(p,body){ var r=await fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var d=await r.json(); if(!r.ok) throw new Error(d.error||'HTTP '+r.status); return d; }
 async function del(p){ var r=await fetch(API+p,{method:'DELETE'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
-
 async function checkHealth(){
   setStatus('connecting','CONNECTING');
   try{
@@ -351,16 +345,14 @@ async function checkHealth(){
 function setStatus(c,t){ document.getElementById('statusPill').className='status-pill '+c; document.getElementById('statusTxt').textContent=t; }
 function fmtUp(s){ if(s<60) return s+'s'; if(s<3600) return Math.floor(s/60)+'m '+(s%60)+'s'; return Math.floor(s/3600)+'h '+Math.floor((s%3600)/60)+'m'; }
 function timeAgo(ts){ if(!ts) return '—'; var d=Math.floor(Date.now()/1000-ts); if(d<60) return d+'s ago'; if(d<3600) return Math.floor(d/60)+'m ago'; if(d<86400) return Math.floor(d/3600)+'h ago'; return Math.floor(d/86400)+'d ago'; }
-
 function validateAddr(inp){
   var v=inp.value.trim(), msg=document.getElementById('vmsg');
   if(!v){inp.className='';msg.textContent='';msg.className='vmsg';return;}
   if(!v.startsWith('0x')||v.length<42){inp.className='err';msg.textContent='⚠ Must be a valid Polygon address (0x... 42 chars)';msg.className='vmsg err';}
   else{inp.className='valid';msg.textContent='✓ Valid address';msg.className='vmsg ok';}
 }
-
 async function addWallet(){
-  if(!connected) return toast('Backend offline — run tracker.js first','w');
+  if(!connected) return toast('Backend offline','w');
   var addr=document.getElementById('addrIn').value.trim();
   var label=document.getElementById('labelIn').value.trim()||('Wallet '+(wallets.length+1));
   var threshold=document.getElementById('threshIn').value||50;
@@ -375,14 +367,12 @@ async function addWallet(){
   } catch(e){ toast('❌ '+e.message,'e'); }
   finally{ btn.classList.remove('loading'); btn.disabled=false; }
 }
-
 async function removeWallet(addr,label,e){
   e.stopPropagation();
   if(!confirm('Stop tracking "'+label+'"?')) return;
   try{ await del('/wallets?address='+addr); toast('🔕 Stopped: '+label,'i'); await loadWallets(); }
   catch(e){ toast('❌ '+e.message,'e'); }
 }
-
 async function loadWallets(){
   try{
     wallets=await get('/wallets'); renderWallets(); updateSelects();
@@ -392,7 +382,20 @@ async function loadWallets(){
     document.getElementById('lastSync').textContent='Synced '+new Date().toLocaleTimeString();
   } catch(e){}
 }
-
+function getPatternTag(w){
+  var p=w.pattern||{}; var tag=p.tag||'unknown';
+  var labels={sharp:'🧠 Sharp',follower:'📈 Follower',mixed:'🔀 Mixed',unknown:'❓ New'};
+  return '<span class="ptag '+tag+'">'+labels[tag]+'</span>';
+}
+async function setEntryAlert(addr,centsVal){
+  var cents=parseInt(centsVal);
+  if(!cents||cents<1||cents>99){alert('Enter a value between 1 and 99');return;}
+  try{
+    await fetch(API+'/wallets/entryprice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:addr,cents:cents})});
+    toast('🎯 Alert set! Will notify when buy below '+cents+'¢','s');
+    wallets=await get('/wallets'); renderWallets();
+  }catch(e){toast('Failed to set alert','e');}
+}
 function renderWallets(){
   var el=document.getElementById('wRows');
   if(!wallets.length){el.innerHTML='<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';return;}
@@ -400,7 +403,7 @@ function renderWallets(){
     return '<div id="wblock_'+w.address+'">'+
       '<div class="wcard" style="animation-delay:'+(i*.04)+'s" onclick="toggleDrawer(\''+w.address+'\')">'+
         '<div class="avatar" style="background:'+BGTINTS[i%BGTINTS.length]+';color:'+COLORS[i%COLORS.length]+'">'+EMOJIS[i%EMOJIS.length]+'</div>'+
-        '<div class="winfo"><div class="wname">'+(w.label||'Wallet')+'</div><div class="waddr">'+w.address.slice(0,8)+'...'+w.address.slice(-5)+' <span style="color:var(--accent);font-size:9px">▼ stats</span></div></div>'+
+        '<div class="winfo"><div class="wname">'+(w.label||'Wallet')+getPatternTag(w)+'</div><div class="waddr">'+w.address.slice(0,8)+'...'+w.address.slice(-5)+' <span style="color:var(--accent);font-size:9px">▼ stats</span></div></div>'+
         '<div class="mono m pv" id="pc'+i+'">—</div>'+
         '<div class="mono m pv" id="pnl'+i+'">—</div>'+
         '<div class="mono m pv" id="vol'+i+'">—</div>'+
@@ -420,6 +423,7 @@ function renderWallets(){
         '</div>'+
         '<div class="winbar-row"><span>Win Rate</span><span id="dk_wrpct_'+w.address+'">—</span></div>'+
         '<div class="winbar-track"><div class="winbar-fill" id="dk_wrbar_'+w.address+'" style="width:0%"></div></div>'+
+        '<div class="ep-row"><span class="ep-label">🎯 Entry Price Alert — notify when buys below:</span><input class="ep-input" id="ep_'+w.address+'" type="number" min="1" max="99" placeholder="¢" value="'+(w.entryPriceAlert?Math.round(w.entryPriceAlert*100):'')+'"><button class="ep-btn" onclick="setEntryAlert(\''+w.address+'\',document.getElementById(\'ep_'+w.address+'\').value)">Set</button></div>'+
         '<div class="perf-cols">'+
           '<div><div class="perf-col-title">📋 Open Positions</div><div class="pos-list" id="dk_poslist_'+w.address+'"><div style="font-size:12px;color:var(--muted)">Loading...</div></div></div>'+
           '<div><div class="perf-col-title">🕐 Recent Trades</div><div class="trade-list" id="dk_tradelist_'+w.address+'"><div style="font-size:12px;color:var(--muted);padding:8px">Loading...</div></div></div>'+
@@ -429,7 +433,6 @@ function renderWallets(){
   }).join('');
   wallets.forEach(function(w,i){ loadStats(w,i); });
 }
-
 async function toggleDrawer(address){
   var drawer=document.getElementById('drawer_'+address);
   if(!drawer) return;
@@ -437,20 +440,17 @@ async function toggleDrawer(address){
   document.querySelectorAll('.perf-drawer.open').forEach(function(d){d.classList.remove('open');});
   if(!isOpen){ drawer.classList.add('open'); await loadDrawerData(address); }
 }
-
 function polyUrl(t){
   if(t&&t.slug) return PB+'/event/'+t.slug;
   if(t&&t.conditionId) return PB+'/markets?conditions='+t.conditionId;
   return PB+'/leaderboard';
 }
-
 function isOpen(trade, positions){
   if(!positions||!positions.length) return null;
   var cid=trade.conditionId||trade.market_id;
   if(!cid) return null;
   return positions.some(function(p){return (p.conditionId||p.market_id)===cid;});
 }
-
 function calcPnL(trade, positions){
   if(trade.profit!==undefined) return parseFloat(trade.profit);
   if(trade.realizedPnl!==undefined) return parseFloat(trade.realizedPnl);
@@ -458,15 +458,10 @@ function calcPnL(trade, positions){
   if(positions&&positions.length){
     var cid=trade.conditionId||trade.market_id;
     var pos=positions.find(function(p){return (p.conditionId||p.market_id)===cid;});
-    if(pos){
-      var currentVal=parseFloat(pos.currentValue||pos.value||0);
-      var paid=parseFloat(trade.size||trade.usdcSize||0);
-      return currentVal-paid;
-    }
+    if(pos){ var currentVal=parseFloat(pos.currentValue||pos.value||0); var paid=parseFloat(trade.size||trade.usdcSize||0); return currentVal-paid; }
   }
   return null;
 }
-
 function copyTrade(url, market, btn){
   var text = market ? market+'\n'+url : url;
   navigator.clipboard.writeText(text).then(function(){
@@ -477,10 +472,8 @@ function copyTrade(url, market, btn){
     var ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
     btn.textContent='✓ Copied!'; btn.classList.add('copied');
     setTimeout(function(){btn.textContent='📋 Copy';btn.classList.remove('copied');},1800);
-    toast('📋 Copied!','s');
   });
 }
-
 function buildTradeRow(t, positions){
   var buy=t.side==='BUY';
   var out=t.outcomeIndex===0?'YES':'NO';
@@ -492,22 +485,12 @@ function buildTradeRow(t, positions){
   var market=t.title||t.market||'Market';
   var openStatus=isOpen(t,positions);
   var pnl=calcPnL(t,positions);
-  // entry vs current price
   var currentPrice=null;
-  if(openStatus&&positions){
-    var cid=t.conditionId||t.market_id;
-    var pos=positions.find(function(p){return (p.conditionId||p.market_id)===cid;});
-    if(pos) currentPrice=parseFloat(pos.currentOdds||pos.price||0);
-  }
+  if(openStatus&&positions){ var cid=t.conditionId||t.market_id; var pos=positions.find(function(p){return (p.conditionId||p.market_id)===cid;}); if(pos) currentPrice=parseFloat(pos.currentOdds||pos.price||0); }
   var statusHtml=openStatus===null?'':openStatus?'<span class="trow-status open">🟢 OPEN</span>':'<span class="trow-status closed">⚫ CLOSED</span>';
   var pnlHtml=pnl!==null?'<div class="tkv"><div class="tkey">P&L</div><div class="tval '+(pnl>=0?'g':'r')+'">'+(pnl>=0?'+':'')+'$'+Math.abs(pnl).toFixed(2)+'</div></div>':'';
   var priceHtml='';
-  if(currentPrice&&currentPrice>0){
-    var entry=price;
-    var curr=Math.round(currentPrice*100);
-    var diff=curr-entry;
-    priceHtml='<div class="tkv"><div class="tkey">Entry→Now</div><div class="tval"><span style="color:var(--yellow)">'+entry+'¢</span> <span style="color:'+(diff>=0?'var(--green)':'var(--red)')+'">→'+curr+'¢</span></div></div>';
-  }
+  if(currentPrice&&currentPrice>0){ var entry=price; var curr=Math.round(currentPrice*100); var diff=curr-entry; priceHtml='<div class="tkv"><div class="tkey">Entry→Now</div><div class="tval"><span style="color:var(--yellow)">'+entry+'¢</span> <span style="color:'+(diff>=0?'var(--green)':'var(--red)')+'">→'+curr+'¢</span></div></div>'; }
   return '<div class="trow" onclick="window.open(\''+url+'\',\'_blank\')">'+
     '<div class="trow-top">'+
       '<span class="trow-side '+(buy?'buy':'sell')+'">'+(buy?'BUY':'SELL')+'</span>'+
@@ -520,8 +503,7 @@ function buildTradeRow(t, positions){
       '<div class="tkv"><div class="tkey">Size</div><div class="tval a">$'+size+'</div></div>'+
       '<div class="tkv"><div class="tkey">When</div><div class="tval" style="color:var(--muted)">'+ago+'</div></div>'+
       '<div class="tkv"><div class="tkey">Date</div><div class="tval" style="color:var(--muted)">'+date+'</div></div>'+
-      pnlHtml+
-      priceHtml+
+      pnlHtml+priceHtml+
     '</div>'+
     '<div class="trow-foot">'+
       '<a class="open-link" href="'+url+'" target="_blank" onclick="event.stopPropagation()">↗ Polymarket</a>'+
@@ -529,7 +511,6 @@ function buildTradeRow(t, positions){
     '</div>'+
   '</div>';
 }
-
 async function loadDrawerData(address){
   var openPositions=[];
   try{
@@ -558,7 +539,7 @@ async function loadDrawerData(address){
     if(pe2){pe2.textContent=pos.length||'0';pe2.className='pkpi-val a';pe2.classList.remove('pv');}
     var listEl=document.getElementById('dk_poslist_'+address);
     if(listEl){
-      if(!pos.length){listEl.innerHTML='<div style="font-size:12px;color:var(--muted)">No open positions</div>';} 
+      if(!pos.length){listEl.innerHTML='<div style="font-size:12px;color:var(--muted)">No open positions</div>';}
       else{
         listEl.innerHTML=pos.slice(0,6).map(function(p){
           var out=p.outcome||(p.outcomeIndex===0?'YES':'NO');
@@ -591,17 +572,14 @@ async function loadDrawerData(address){
     }
   }catch(e){}
 }
-
 async function loadStats(w,i){
   try{var p=await get('/positions?address='+w.address);var el=document.getElementById('pc'+i);if(el){el.textContent=p.length||'0';el.classList.remove('pv');}}catch(e){}
   try{var pnl=await get('/pnl?address='+w.address);var profit=parseFloat(pnl.profit||pnl.totalProfit||0),vol=parseFloat(pnl.volume||pnl.totalVolume||0);var pe=document.getElementById('pnl'+i),ve=document.getElementById('vol'+i);if(pe){pe.textContent=(profit>=0?'+':'')+'$'+Math.abs(profit).toFixed(0);pe.className='mono '+(profit>=0?'g':'r');}if(ve){ve.textContent=vol>999?'$'+(vol/1000).toFixed(1)+'K':'$'+vol.toFixed(0);ve.classList.remove('pv');}}catch(e){}
 }
-
 function updateSelects(){
   var opts=wallets.map(function(w){return '<option value="'+w.address+'">'+(w.label||w.address.slice(0,10)+'...')+'</option>';}).join('');
   ['posSelect','tradeSelect'].forEach(function(id){var el=document.getElementById(id);var v=el.value;el.innerHTML='<option value="">Select wallet...</option>'+opts;if(v)el.value=v;});
 }
-
 async function loadFeed(){
   if(!wallets.length) return;
   for(var i=0;i<Math.min(wallets.length,6);i++){
@@ -642,7 +620,6 @@ async function loadFeed(){
     '</div>';
   }).join('');
 }
-
 async function loadPositions(){
   var addr=document.getElementById('posSelect').value,panel=document.getElementById('posPanel');
   if(!addr) return;
@@ -673,7 +650,6 @@ async function loadPositions(){
     }).join('');
   }catch(e){panel.innerHTML='<div class="empty"><div class="ei">❌</div><div class="et">'+e.message+'</div></div>';}
 }
-
 async function loadTrades(){
   var addr=document.getElementById('tradeSelect').value,panel=document.getElementById('tradePanel');
   if(!addr) return;
@@ -686,9 +662,7 @@ async function loadTrades(){
     panel.innerHTML=trades.slice(0,15).map(function(t){return buildTradeRow(t,openPositions);}).join('');
   }catch(e){panel.innerHTML='<div class="empty"><div class="ei">❌</div><div class="et">'+e.message+'</div></div>';}
 }
-
 function toast(msg,type){if(!type)type='i';var c=document.getElementById('toasts'),el=document.createElement('div');el.className='toast '+type;el.textContent=msg;c.appendChild(el);setTimeout(function(){el.remove();},3700);}
-
 document.getElementById('addrIn').addEventListener('keydown',function(e){if(e.key==='Enter')addWallet();});
 setInterval(function(){var el=document.getElementById('clock');if(el)el.textContent=new Date().toTimeString().split(' ')[0];},1000);
 setInterval(async function(){if(connected){await loadWallets();await loadFeed();}else checkHealth();},15000);
