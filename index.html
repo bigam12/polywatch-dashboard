@@ -94,492 +94,317 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .ptag.unknown{background:rgba(90,106,136,.2);color:var(--muted);border:1px solid rgba(90,106,136,.3);}
 .ep-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 14px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.1);border-radius:8px;}
 .ep-label{font-size:11px;color:var(--muted);font-weight:700;flex:1;}
-.ep-input{width:60px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 8px;color:var(--text);font-size:12px;text-align:center;outline:none;}
-.ep-input:focus{border-color:var(--accent);}
-.ep-btn{font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;border:none;background:var(--accent);color:#000;cursor:pointer;}
-.chd{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;}
-.avatar{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
-.winfo{min-width:0;}
-.wname{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.waddr{font-size:10px;font-family:var(--font-mono);color:var(--muted);margin-top:2px;}
-.mono{font-family:var(--font-mono);font-size:12px;font-weight:700;text-align:right;}
-.mono.g{color:var(--green);}.mono.r{color:var(--red);}.mono.m{color:var(--muted);}
-.pv{animation:pvP 1.1s ease infinite;}
-@keyframes pvP{0%,100%{opacity:.25}50%{opacity:1}}
-.rm-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .18s;flex-shrink:0;}
-.rm-btn:hover{background:rgba(255,68,102,.1);border-color:rgba(255,68,102,.3);color:var(--red);}
-.perf-drawer{display:none;background:rgba(13,18,32,.98);border-bottom:2px solid var(--accent);padding:22px 20px;animation:drawerIn .22s ease;}
-.perf-drawer.open{display:block;}
-@keyframes drawerIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-.perf-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.perf-title{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;}
-.perf-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
-.pkpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
-.pkpi-key{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
-.pkpi-val{font-size:20px;font-weight:800;font-family:var(--font-mono);}
-.pkpi-val.g{color:var(--green);}.pkpi-val.r{color:var(--red);}.pkpi-val.a{color:var(--accent);}.pkpi-val.m{color:var(--muted);}
-.pkpi-sub{font-size:10px;color:var(--muted);margin-top:3px;}
-.winbar-row{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;}
-.winbar-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:16px;}
-.winbar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--accent));transition:width .9s ease;}
-.perf-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.perf-col-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px;}
-.pos-list{display:flex;flex-direction:column;gap:7px;max-height:220px;overflow-y:auto;}
-.pos-list::-webkit-scrollbar{width:3px;}
-.pos-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-.pos-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;cursor:pointer;transition:all .15s;}
-.pos-item:hover{border-color:rgba(0,229,255,.3);}
-.pos-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
-.pos-market{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
-.trade-list{display:flex;flex-direction:column;max-height:220px;overflow-y:auto;}
-.trade-list::-webkit-scrollbar{width:3px;}
-.trade-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-.trow{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:all .15s;}
-.trow:hover{border-color:rgba(0,229,255,.3);}
-.trow-top{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
-.trow-side{font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px;}
-.trow-side.buy{background:rgba(0,255,140,.12);color:var(--green);border:1px solid rgba(0,255,140,.25);}
-.trow-side.sell{background:rgba(255,68,102,.1);color:var(--red);border:1px solid rgba(255,68,102,.25);}
-.trow-status{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;margin-left:auto;}
-.trow-status.open{background:rgba(0,229,255,.08);color:var(--accent);border:1px solid rgba(0,229,255,.2);}
-.trow-status.closed{background:rgba(90,106,136,.1);color:var(--muted);border:1px solid rgba(90,106,136,.2);}
-.trow-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-bottom:5px;}
-.tkv{display:flex;flex-direction:column;gap:1px;}
-.tkey{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.tval{font-size:11px;font-weight:700;font-family:var(--font-mono);}
-.tval.g{color:var(--green);}.tval.r{color:var(--red);}.tval.a{color:var(--accent);}.tval.y{color:var(--yellow);}
-.trow-foot{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.copy-btn{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(90,106,136,.3);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font);transition:all .15s;}
-.copy-btn:hover{color:var(--green);border-color:rgba(0,255,140,.3);background:rgba(0,255,140,.06);}
-.copy-btn.copied{color:var(--green);border-color:rgba(0,255,140,.4);background:rgba(0,255,140,.1);}
-.open-link{font-size:10px;font-weight:700;color:var(--accent);text-decoration:none;padding:2px 8px;border-radius:4px;border:1px solid rgba(0,229,255,.2);background:rgba(0,229,255,.06);transition:all .15s;}
-.open-link:hover{background:rgba(0,229,255,.14);}
-.feed{display:flex;flex-direction:column;max-height:380px;overflow-y:auto;}
-.feed::-webkit-scrollbar{width:3px;}
-.feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-.fitem{display:flex;gap:10px;padding:12px 18px;border-bottom:1px solid var(--border);transition:background .15s;animation:fadeUp .35s ease both;cursor:pointer;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.ep-val{font-size:13px;font-weight:700;color:var(--accent);font-family:var(--font-mono);}
+.ep-btn{padding:4px 10px;font-size:10px;background:rgba(0,229,255,.15);border:1px solid rgba(0,229,255,.3);border-radius:6px;color:var(--accent);cursor:pointer;font-weight:700;transition:all .15s;}
+.ep-btn:hover{background:rgba(0,229,255,.25);}
+.pbd{padding:14px 18px;color:var(--muted);font-size:12px;}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;color:var(--muted);}
+.ei{font-size:40px;margin-bottom:12px;opacity:.6;}
+.et{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--text);}
+.es{font-size:11px;opacity:.8;}
+.pcard{padding:14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.pcard:hover{background:rgba(0,229,255,.02);}
+.pcard:last-child{border-bottom:none;}
+.pmkt{font-weight:700;margin-bottom:8px;font-size:13px;}
+.pmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:11px;}
+.pkv{display:flex;flex-direction:column;gap:3px;}
+.pkey{color:var(--muted);font-weight:700;}
+.pval{font-weight:700;font-family:var(--font-mono);}
+.tcard{padding:14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.tcard:hover{background:rgba(0,229,255,.02);}
+.tcard:last-child{border-bottom:none;}
+.tmkt{font-weight:700;margin-bottom:8px;font-size:13px;}
+.tmeta{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;font-size:11px;}
+.tkv{display:flex;flex-direction:column;gap:3px;}
+.tkey{color:var(--muted);font-weight:700;}
+.tval{font-weight:700;font-family:var(--font-mono);}
+.feed{max-height:600px;overflow-y:auto;}
+.fitem{padding:14px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;gap:12px;transition:background .15s;animation:fadeIn .3s ease both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .fitem:hover{background:rgba(0,229,255,.02);}
-.fdot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.fitem:last-child{border-bottom:none;}
+.fdot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;}
 .fbody{flex:1;min-width:0;}
-.ftop{display:flex;justify-content:space-between;margin-bottom:3px;}
-.fwho{font-size:12px;font-weight:700;color:var(--accent);}
-.ftime{font-size:10px;font-family:var(--font-mono);color:var(--muted);}
-.fdesc{font-size:12px;line-height:1.5;}
-.fdesc b{color:var(--yellow);}
-.ftags{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;align-items:center;}
-.pcard{margin:12px;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;}
-.pcard:hover{border-color:rgba(0,229,255,.3);}
-.pmkt{font-size:12px;font-weight:700;margin-bottom:8px;line-height:1.4;}
-.pmeta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
-.pkv{display:flex;flex-direction:column;gap:2px;}
-.pkey{font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700;}
-.pval{font-size:12px;font-family:var(--font-mono);font-weight:700;}
-.wsel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--text);font-size:12px;outline:none;cursor:pointer;font-family:var(--font);}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:44px 20px;color:var(--muted);text-align:center;}
-.ei{font-size:36px;margin-bottom:10px;opacity:.4;}
-.et{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
-.es{font-size:12px;}
-.toasts{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
-.toast{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateX(110%);animation:tin .3s ease forwards,tout .3s ease 3.2s forwards;max-width:300px;}
-@keyframes tin{to{transform:translateX(0)}}@keyframes tout{to{transform:translateX(120%);opacity:0}}
-.toast.s{border-left:3px solid var(--green)}.toast.e{border-left:3px solid var(--red)}.toast.i{border-left:3px solid var(--accent)}.toast.w{border-left:3px solid var(--yellow)}
-.tgbar{background:linear-gradient(135deg,rgba(0,136,204,.1),rgba(123,79,255,.1));border:1px solid rgba(0,136,204,.2);border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:16px;}
-.tgcmds{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.tgcmd{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.12);border-radius:6px;padding:3px 9px;font-size:11px;font-family:var(--font-mono);}
-@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}main{padding:14px}.wcard{grid-template-columns:36px 1fr 70px 60px 30px}.perf-kpis{grid-template-columns:repeat(2,1fr)}.perf-cols{grid-template-columns:1fr}}
+.ftop{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.fwho{font-weight:700;color:var(--text);}
+.ftime{font-size:11px;color:var(--muted);}
+.fdesc{font-size:12px;color:var(--text);word-break:break-word;}
+.ftags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.open-link{color:var(--accent);text-decoration:none;font-weight:700;}
+.copy-btn{padding:2px 6px;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.2);border-radius:4px;color:var(--accent);cursor:pointer;font-size:11px;font-weight:700;transition:all .15s;}
+.copy-btn:hover{background:rgba(0,229,255,.2);}
+.toast-container{position:fixed;bottom:20px;left:20px;z-index:300;display:flex;flex-direction:column;gap:10px;}
+.toast{padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-weight:700;animation:slideIn .3s ease;font-size:13px;}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.err{border-color:var(--red);color:var(--red);}
+.toast.i{border-color:var(--accent);color:var(--accent);}
+.wbtn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;transition:all .15s;padding:0;}
+.wbtn:hover{color:var(--red);}
 </style>
 </head>
 <body>
 <div class="app">
-<header>
-  <div class="logo"><div class="logo-icon">🔮</div><div class="logo-text">Poly<span>Watch</span></div></div>
-  <div class="header-right">
-    <input class="api-input" id="apiUrl" value="http://localhost:3001" title="Backend URL"/>
-    <button class="settings-btn" onclick="openSettings()" title="Settings">⚙️</button>
-    <div class="status-pill connecting" id="statusPill"><div class="dot"></div><span id="statusTxt">CONNECTING</span></div>
-  </div>
-</header>
-<div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this)closeSettings()">
-  <div class="settings-panel">
-    <div class="sp-title">⚙️ Customise Dashboard</div>
-    <div class="sp-section">
-      <div class="sp-label">Accent Color</div>
-      <div class="color-swatches">
-        <div class="swatch sel" style="background:#00e5ff" onclick="setAccent('#00e5ff','#7b4fff',this)"></div>
-        <div class="swatch" style="background:#7b4fff" onclick="setAccent('#7b4fff','#00e5ff',this)"></div>
-        <div class="swatch" style="background:#00ff8c" onclick="setAccent('#00ff8c','#7b4fff',this)"></div>
-        <div class="swatch" style="background:#ffd84d" onclick="setAccent('#ffd84d','#ff8c00',this)"></div>
-        <div class="swatch" style="background:#ff4466" onclick="setAccent('#ff4466','#7b4fff',this)"></div>
-        <div class="swatch" style="background:#ff8c00" onclick="setAccent('#ff8c00','#ffd84d',this)"></div>
-        <div class="swatch" style="background:#e040fb" onclick="setAccent('#e040fb','#7b4fff',this)"></div>
-      </div>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🔮</div>
+      <div class="logo-text">Poly<span>Watch</span></div>
     </div>
-    <div class="sp-section">
-      <div class="sp-label">Font Size</div>
-      <div class="font-btns">
-        <button class="opt-btn" onclick="setFontSize(11,this)">Small</button>
-        <button class="opt-btn sel" onclick="setFontSize(14,this)">Medium</button>
-        <button class="opt-btn" onclick="setFontSize(17,this)">Large</button>
-        <button class="opt-btn" onclick="setFontSize(20,this)">XL</button>
-      </div>
-    </div>
-    <div class="sp-section">
-      <div class="sp-label">Background Theme</div>
-      <div class="theme-btns">
-        <button class="opt-btn" onclick="setTheme('dark')">🌑 Dark</button>
-        <button class="opt-btn" onclick="setTheme('midnight')">🌌 Midnight</button>
-        <button class="opt-btn" onclick="setTheme('navy')">🔷 Navy</button>
-        <button class="opt-btn" onclick="setTheme('charcoal')">⬛ Charcoal</button>
-      </div>
-    </div>
-    <button class="sp-close" onclick="closeSettings()">✓ Done</button>
-  </div>
-</div>
-<main>
-  <div>
-    <div class="add-bar">
-      <div class="addr-wrap"><span class="addr-icon">👛</span><input type="text" id="addrIn" placeholder="Paste Polymarket wallet address (0x...)" oninput="validateAddr(this)" autocomplete="off" spellcheck="false"/></div>
-      <input type="text" class="lin" id="labelIn" placeholder="Label e.g. Whale #1" maxlength="30"/>
-      <input type="number" class="tin" id="threshIn" placeholder="Min $ alert" min="1" value="50"/>
+    <div class="header-right">
+      <input type="text" id="addrIn" class="api-input" placeholder="0x... wallet address">
+      <input type="text" id="labelIn" class="lin" placeholder="Label (optional)">
       <button class="btn-track" id="trackBtn" onclick="addWallet()"><span class="tlabel">⚡ Track Wallet</span><span class="spin">⟳</span></button>
+      <button class="settings-btn" onclick="openSettings()">⚙️</button>
+      <div class="status-pill connecting" id="status"><span class="dot"></span><span id="stext">CONNECTING</span></div>
     </div>
-    <div class="vmsg" id="vmsg"></div>
-  </div>
-  <div class="stats-row">
-    <div class="stat-card"><div class="slabel">Tracked Wallets</div><div class="sval a" id="sW">—</div><div class="ssub" id="sWsub">—</div></div>
-    <div class="stat-card"><div class="slabel">Backend</div><div class="sval" id="sBe" style="font-size:15px;padding-top:6px">—</div><div class="ssub" id="sUp">—</div></div>
-    <div class="stat-card"><div class="slabel">Poll Interval</div><div class="sval a">15s</div><div class="ssub">Live tracking</div></div>
-    <div class="stat-card"><div class="slabel">Trade Events</div><div class="sval g" id="sEv">0</div><div class="ssub">Since page load</div></div>
-  </div>
-  <div class="grid">
-    <div style="display:flex;flex-direction:column;gap:18px">
-      <div class="panel">
-        <div class="phd">
-          <div class="ptitle">👁 Tracked Wallets <span class="badge ba" id="wBadge">0</span></div>
-          <div style="font-size:11px;color:var(--muted)" id="lastSync">Never synced</div>
+  </header>
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-panel">
+      <div class="sp-title">⚙️ Customise Dashboard</div>
+      <div class="sp-section">
+        <div class="sp-label">Accent Color</div>
+        <div class="color-swatches" id="swatches"></div>
+      </div>
+      <div class="sp-section">
+        <div class="sp-label">Font Size</div>
+        <div class="font-btns">
+          <button class="opt-btn sel" onclick="setFontSize(14)">Small</button>
+          <button class="opt-btn" onclick="setFontSize(16)">Medium</button>
+          <button class="opt-btn" onclick="setFontSize(18)">Large</button>
+          <button class="opt-btn" onclick="setFontSize(20)">XL</button>
         </div>
-        <div class="wgrid">
-          <div class="wcard hdr">
-            <div></div><div class="chd">Wallet</div>
-            <div class="chd" style="text-align:right">Positions</div>
-            <div class="chd" style="text-align:right">PnL</div>
-            <div class="chd" style="text-align:right">Volume</div>
-            <div class="chd" style="text-align:right">Alert $</div>
-            <div></div>
+      </div>
+      <div class="sp-section">
+        <div class="sp-label">Background Theme</div>
+        <div class="theme-btns">
+          <button class="opt-btn sel" onclick="setTheme('dark')">🌑 Dark</button>
+          <button class="opt-btn" onclick="setTheme('midnight')">🌌 Midnight</button>
+          <button class="opt-btn" onclick="setTheme('navy')">🔷 Navy</button>
+          <button class="opt-btn" onclick="setTheme('charcoal')">⬛ Charcoal</button>
+        </div>
+      </div>
+      <button class="sp-close" onclick="closeSettings()">✓ Done</button>
+    </div>
+  </div>
+  <main>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="slabel">👛 Tracked Wallets</div>
+        <div class="sval a" id="statWallets">0</div>
+        <div class="ssub" id="syncStatus">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="slabel">🔄 Backend</div>
+        <div class="sval" id="statBackend">—</div>
+        <div class="ssub" id="backendStatus">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="slabel">Poll Interval</div>
+        <div class="sval a">15s</div>
+        <div class="ssub">Live tracking</div>
+      </div>
+      <div class="stat-card">
+        <div class="slabel">Trade Events</div>
+        <div class="sval g" id="sEv">0</div>
+        <div class="ssub">Since page load</div>
+      </div>
+    </div>
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <div class="phd"><div class="ptitle">👁 Tracked Wallets <span class="badge ba" id="walletBadge">0</span></div></div>
+          <div class="wgrid" id="wg">
+            <div class="wcard hdr">
+              <div></div>
+              <div style="font-weight:700">Wallet</div>
+              <div style="font-size:11px;color:var(--muted)">Positions</div>
+              <div style="font-size:11px;color:var(--muted)">PnL</div>
+              <div style="font-size:11px;color:var(--muted)">Volume</div>
+              <div style="font-size:11px;color:var(--muted)">Alert $</div>
+              <div></div>
+            </div>
+            <div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>
           </div>
-          <div id="wRows"><div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div></div>
+        </div>
+        <div class="panel" style="margin-top:18px;">
+          <div class="phd"><div class="ptitle">⚡ Live Activity <span class="badge bg">LIVE</span></div><div id="clock" style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">--:--:--</div></div>
+          <div class="feed" id="actFeed">
+            <div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div>
+          </div>
         </div>
       </div>
-      <div class="panel">
-        <div class="phd"><div class="ptitle">⚡ Live Activity <span class="badge bg">LIVE</span></div><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted)" id="clock">--:--:--</div></div>
-        <div class="feed" id="actFeed"><div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div></div>
+      <div>
+        <div class="panel">
+          <div class="phd"><div class="ptitle">📋 Positions</div></div>
+          <div style="padding:14px 18px;"><select id="posSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadPositions()"><option value="">Select wallet...</option></select></div>
+          <div id="posPanel">
+            <div class="empty"><div class="ei">📊</div><div class="et">Select a wallet</div></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:18px;">
+          <div class="phd"><div class="ptitle">🕐 Recent Trades</div></div>
+          <div style="padding:14px 18px;"><select id="tradeSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadTrades()"><option value="">Select wallet...</option></select></div>
+          <div id="tradePanel">
+            <div class="empty"><div class="ei">💱</div><div class="et">Select a wallet</div></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:18px;">
+          <div class="phd"><div class="ptitle">✈️ Telegram Alerts</div></div>
+          <div class="pbd">Active — Every trade above your threshold fires an instant Telegram alert.<br><br><code style="font-size:10px;color:var(--accent);">/list/pnl 0x.../positions 0x.../entryprice 0x... 30/pattern 0x...</code></div>
+        </div>
       </div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:18px">
-      <div class="panel">
-        <div class="phd"><div class="ptitle">📋 Positions</div><select class="wsel" id="posSelect" onchange="loadPositions()"><option value="">Select wallet...</option></select></div>
-        <div id="posPanel"><div class="empty"><div class="ei">📊</div><div class="et">Select a wallet</div></div></div>
-      </div>
-      <div class="panel">
-        <div class="phd"><div class="ptitle">🕐 Recent Trades</div><select class="wsel" id="tradeSelect" onchange="loadTrades()"><option value="">Select wallet...</option></select></div>
-        <div class="feed" id="tradePanel"><div class="empty"><div class="ei">💱</div><div class="et">Select a wallet</div></div></div>
-      </div>
-    </div>
-  </div>
-  <div class="tgbar">
-    <div style="font-size:26px">✈️</div>
-    <div style="flex:1">
-      <div style="font-size:14px;font-weight:800;margin-bottom:3px">Telegram Alerts Active</div>
-      <div style="font-size:12px;color:var(--muted)">Every trade above your threshold fires an instant Telegram alert.</div>
-      <div class="tgcmds"><span class="tgcmd">/list</span><span class="tgcmd">/pnl 0x...</span><span class="tgcmd">/positions 0x...</span><span class="tgcmd">/entryprice 0x... 30</span><span class="tgcmd">/pattern 0x...</span></div>
-    </div>
-  </div>
-</main>
+  </main>
+  <div class="toast-container" id="toasts"></div>
 </div>
-<div class="toasts" id="toasts"></div>
+
 <script>
-var API = 'https://polywatch-backend.onrender.com';
-var wallets = [], feedItems = [], evCount = 0, connected = false;
-var COLORS = ['#00e5ff','#7b4fff','#00ff8c','#ffd84d','#ff4466','#ff8c00'];
-var BGTINTS = ['rgba(0,229,255,.13)','rgba(123,79,255,.13)','rgba(0,255,140,.13)','rgba(255,216,77,.13)','rgba(255,68,102,.13)'];
-var EMOJIS = ['🐳','🦈','🧠','🔥','💎','👤','⚡','🌊','🎯','🔭','🦁','🦊'];
-var PB = 'https://polymarket.com';
-(function(){
-  var s = JSON.parse(localStorage.getItem('pw_settings')||'{}');
-  if(s.accent) applyAccent(s.accent, s.accent2||'#7b4fff');
-  if(s.fontSize) applyFontSize(s.fontSize);
-  if(s.theme) applyTheme(s.theme);
-})();
-document.getElementById('apiUrl').value = API;
-document.getElementById('apiUrl').addEventListener('change', function(e){
-  API = e.target.value.trim().replace(/\/$/,'');
-  checkHealth();
-});
-function openSettings(){ document.getElementById('settingsOverlay').classList.add('open'); }
-function closeSettings(){ document.getElementById('settingsOverlay').classList.remove('open'); }
-function applyAccent(a,a2){ document.documentElement.style.setProperty('--accent',a); document.documentElement.style.setProperty('--accent2',a2); }
-function setAccent(a,a2,el){ document.querySelectorAll('.swatch').forEach(function(s){s.classList.remove('sel');}); el.classList.add('sel'); applyAccent(a,a2); saveSettings({accent:a,accent2:a2}); }
-function applyFontSize(px){ document.documentElement.style.fontSize = px+'px'; }
-function setFontSize(px,el){ document.querySelectorAll('.opt-btn').forEach(function(b){b.classList.remove('sel');}); el.classList.add('sel'); applyFontSize(px); saveSettings({fontSize:px}); }
-var THEMES = {dark:{bg:'#050810',surface:'#0d1220',surface2:'#131929',border:'#1e2d4a'},midnight:{bg:'#020408',surface:'#080d14',surface2:'#0d1520',border:'#162038'},navy:{bg:'#050a1a',surface:'#0a1530',surface2:'#0f1e3a',border:'#1a3060'},charcoal:{bg:'#0a0a0a',surface:'#141414',surface2:'#1a1a1a',border:'#2a2a2a'}};
-function applyTheme(t){ var th=THEMES[t]||THEMES.dark; Object.keys(th).forEach(function(k){ document.documentElement.style.setProperty('--'+k,th[k]); }); }
-function setTheme(t){ applyTheme(t); saveSettings({theme:t}); }
-function saveSettings(obj){ var s=JSON.parse(localStorage.getItem('pw_settings')||'{}'); Object.assign(s,obj); localStorage.setItem('pw_settings',JSON.stringify(s)); }
-async function get(p){ var r=await fetch(API+p); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
-async function post(p,body){ var r=await fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var d=await r.json(); if(!r.ok) throw new Error(d.error||'HTTP '+r.status); return d; }
-async function del(p){ var r=await fetch(API+p,{method:'DELETE'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+const PB='https://polymarket.com';
+var wallets=[],feedItems=[],evCount=0,connected=false,syncTime=null;
+const API='https://polywatch-backend.onrender.com';
+
+async function get(path){var r=await fetch(API+path);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+async function post(path,data){var r=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+async function del(path){var r=await fetch(API+path,{method:'DELETE'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+
 async function checkHealth(){
-  setStatus('connecting','CONNECTING');
   try{
-    var h=await get('/health'); connected=true; setStatus('live','LIVE');
-    document.getElementById('sBe').textContent='✅ Online'; document.getElementById('sBe').style.color='var(--green)';
-    document.getElementById('sUp').textContent='Uptime: '+fmtUp(h.uptime|0);
+    var h=await get('/health');
+    connected=true;
+    document.getElementById('stext').textContent='LIVE';
+    document.getElementById('status').className='status-pill live';
+    document.getElementById('statBackend').textContent='✅';
+    document.getElementById('backendStatus').textContent='Connected';
     await loadWallets();
-  } catch(e){
-    connected=false; setStatus('offline','OFFLINE');
-    document.getElementById('sBe').textContent='❌ Offline'; document.getElementById('sBe').style.color='var(--red)';
-    document.getElementById('sUp').textContent='Start backend to connect';
+  }catch(e){
+    connected=false;
+    document.getElementById('stext').textContent='OFFLINE';
+    document.getElementById('status').className='status-pill offline';
+    document.getElementById('statBackend').textContent='❌';
+    document.getElementById('backendStatus').textContent='Not responding';
   }
 }
-function setStatus(c,t){ document.getElementById('statusPill').className='status-pill '+c; document.getElementById('statusTxt').textContent=t; }
-function fmtUp(s){ if(s<60) return s+'s'; if(s<3600) return Math.floor(s/60)+'m '+(s%60)+'s'; return Math.floor(s/3600)+'h '+Math.floor((s%3600)/60)+'m'; }
-function timeAgo(ts){ if(!ts) return '—'; var d=Math.floor(Date.now()/1000-ts); if(d<60) return d+'s ago'; if(d<3600) return Math.floor(d/60)+'m ago'; if(d<86400) return Math.floor(d/3600)+'h ago'; return Math.floor(d/86400)+'d ago'; }
-function validateAddr(inp){
-  var v=inp.value.trim(), msg=document.getElementById('vmsg');
-  if(!v){inp.className='';msg.textContent='';msg.className='vmsg';return;}
-  if(!v.startsWith('0x')||v.length<42){inp.className='err';msg.textContent='⚠ Must be a valid Polygon address (0x... 42 chars)';msg.className='vmsg err';}
-  else{inp.className='valid';msg.textContent='✓ Valid address';msg.className='vmsg ok';}
-}
+
 async function addWallet(){
-  if(!connected) return toast('Backend offline','w');
   var addr=document.getElementById('addrIn').value.trim();
-  var label=document.getElementById('labelIn').value.trim()||('Wallet '+(wallets.length+1));
-  var threshold=document.getElementById('threshIn').value||50;
-  if(!addr||!addr.startsWith('0x')||addr.length<42){toast('⚠ Enter a valid 0x wallet address','w');return;}
-  if(wallets.find(function(w){return w.address.toLowerCase()===addr.toLowerCase();})){toast('Already tracking this wallet','w');return;}
-  var btn=document.getElementById('trackBtn'); btn.classList.add('loading'); btn.disabled=true;
+  var label=document.getElementById('labelIn').value.trim();
+  if(!addr.startsWith('0x')||addr.length!==42){document.getElementById('addrIn').classList.add('err');setTimeout(()=>document.getElementById('addrIn').classList.remove('err'),2000);return;}
+  document.getElementById('trackBtn').classList.add('loading');
   try{
-    await post('/wallets',{address:addr,label:label,threshold:threshold});
-    document.getElementById('addrIn').value=''; document.getElementById('labelIn').value='';
-    document.getElementById('addrIn').className=''; document.getElementById('vmsg').textContent=''; document.getElementById('vmsg').className='vmsg';
-    toast('✅ Now tracking: '+label,'s'); await loadWallets(); await loadFeed();
-  } catch(e){ toast('❌ '+e.message,'e'); }
-  finally{ btn.classList.remove('loading'); btn.disabled=false; }
+    var res=await post('/wallets',{address:addr,label:label||addr.slice(0,10)+'...',threshold:50});
+    toast('✅ Tracking '+res.label,'ok');
+    document.getElementById('addrIn').value='';
+    document.getElementById('labelIn').value='';
+    await loadWallets();
+  }catch(e){toast('❌ '+e.message,'err');}
+  finally{document.getElementById('trackBtn').classList.remove('loading');}
 }
-async function removeWallet(addr,label,e){
-  e.stopPropagation();
-  if(!confirm('Stop tracking "'+label+'"?')) return;
-  try{ await del('/wallets?address='+addr); toast('🔕 Stopped: '+label,'i'); await loadWallets(); }
-  catch(e){ toast('❌ '+e.message,'e'); }
-}
+
 async function loadWallets(){
   try{
-    wallets=await get('/wallets'); renderWallets(); updateSelects();
-    document.getElementById('sW').textContent=wallets.length;
-    document.getElementById('sWsub').textContent=wallets.length+' wallet'+(wallets.length!==1?'s':'')+' active';
-    document.getElementById('wBadge').textContent=wallets.length;
-    document.getElementById('lastSync').textContent='Synced '+new Date().toLocaleTimeString();
-  } catch(e){}
+    wallets=await get('/wallets');
+    document.getElementById('statWallets').textContent=wallets.length;
+    document.getElementById('walletBadge').textContent=wallets.length;
+    syncTime=new Date().toLocaleTimeString();
+    document.getElementById('syncStatus').textContent='Last: '+syncTime;
+    renderWallets(wallets);
+    updateSelects();
+  }catch(e){console.error('Failed to load wallets:',e);}
 }
-function getPatternTag(w){
-  var p=w.pattern||{}; var tag=p.tag||'unknown';
-  var labels={sharp:'🧠 Sharp',follower:'📈 Follower',mixed:'🔀 Mixed',unknown:'❓ New'};
-  return '<span class="ptag '+tag+'">'+labels[tag]+'</span>';
-}
-async function setEntryAlert(addr,centsVal){
-  var cents=parseInt(centsVal);
-  if(!cents||cents<1||cents>99){alert('Enter a value between 1 and 99');return;}
+
+async function deleteWallet(addr){
+  if(!confirm('Stop tracking this wallet?')) return;
   try{
-    await fetch(API+'/wallets/entryprice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:addr,cents:cents})});
-    toast('🎯 Alert set! Will notify when buy below '+cents+'¢','s');
-    wallets=await get('/wallets'); renderWallets();
-  }catch(e){toast('Failed to set alert','e');}
+    await del('/wallets?address='+addr);
+    await loadWallets();
+    toast('✅ Stopped tracking','ok');
+  }catch(e){toast('❌ '+e.message,'err');}
 }
-function renderWallets(){
-  var el=document.getElementById('wRows');
-  if(!wallets.length){el.innerHTML='<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';return;}
-  el.innerHTML=wallets.map(function(w,i){
-    return '<div id="wblock_'+w.address+'">'+
-      '<div class="wcard" style="animation-delay:'+(i*.04)+'s" onclick="toggleDrawer(\''+w.address+'\')">'+
-        '<div class="avatar" style="background:'+BGTINTS[i%BGTINTS.length]+';color:'+COLORS[i%COLORS.length]+'">'+EMOJIS[i%EMOJIS.length]+'</div>'+
-        '<div class="winfo"><div class="wname">'+(w.label||'Wallet')+getPatternTag(w)+'</div><div class="waddr">'+w.address.slice(0,8)+'...'+w.address.slice(-5)+' <span style="color:var(--accent);font-size:9px">▼ stats</span></div></div>'+
-        '<div class="mono m pv" id="pc'+i+'">—</div>'+
-        '<div class="mono m pv" id="pnl'+i+'">—</div>'+
-        '<div class="mono m pv" id="vol'+i+'">—</div>'+
-        '<div class="mono m" style="font-size:11px">$'+(w.threshold||50)+'</div>'+
-        '<button class="rm-btn" onclick="removeWallet(\''+w.address+'\',\''+w.label+'\',event)" title="Untrack">✕</button>'+
-      '</div>'+
-      '<div class="perf-drawer" id="drawer_'+w.address+'">'+
-        '<div class="perf-header">'+
-          '<div class="perf-title">📊 '+(w.label||'Wallet')+' — Performance</div>'+
-          '<a href="'+PB+'/profile/'+w.address+'" target="_blank" style="font-size:11px;color:var(--accent);text-decoration:none">🔗 Polymarket Profile</a>'+
-        '</div>'+
-        '<div class="perf-kpis">'+
-          '<div class="pkpi"><div class="pkpi-key">Total PnL</div><div class="pkpi-val m pv" id="dk_pnl_'+w.address+'">—</div><div class="pkpi-sub">All time</div></div>'+
-          '<div class="pkpi"><div class="pkpi-key">Volume</div><div class="pkpi-val m pv" id="dk_vol_'+w.address+'">—</div><div class="pkpi-sub">Total traded</div></div>'+
-          '<div class="pkpi"><div class="pkpi-key">Win Rate</div><div class="pkpi-val m pv" id="dk_wr_'+w.address+'">—</div><div class="pkpi-sub" id="dk_tr_'+w.address+'">— trades</div></div>'+
-          '<div class="pkpi"><div class="pkpi-key">Open Positions</div><div class="pkpi-val m pv" id="dk_pos_'+w.address+'">—</div><div class="pkpi-sub">Active markets</div></div>'+
-        '</div>'+
-        '<div class="winbar-row"><span>Win Rate</span><span id="dk_wrpct_'+w.address+'">—</span></div>'+
-        '<div class="winbar-track"><div class="winbar-fill" id="dk_wrbar_'+w.address+'" style="width:0%"></div></div>'+
-        '<div class="ep-row"><span class="ep-label">🎯 Entry Price Alert — notify when buys below:</span><input class="ep-input" id="ep_'+w.address+'" type="number" min="1" max="99" placeholder="¢" value="'+(w.entryPriceAlert?Math.round(w.entryPriceAlert*100):'')+'"><button class="ep-btn" onclick="setEntryAlert(\''+w.address+'\',document.getElementById(\'ep_'+w.address+'\').value)">Set</button></div>'+
-        '<div class="perf-cols">'+
-          '<div><div class="perf-col-title">📋 Open Positions</div><div class="pos-list" id="dk_poslist_'+w.address+'"><div style="font-size:12px;color:var(--muted)">Loading...</div></div></div>'+
-          '<div><div class="perf-col-title">🕐 Recent Trades</div><div class="trade-list" id="dk_tradelist_'+w.address+'"><div style="font-size:12px;color:var(--muted);padding:8px">Loading...</div></div></div>'+
-        '</div>'+
-      '</div>'+
-    '</div>';
-  }).join('');
-  wallets.forEach(function(w,i){ loadStats(w,i); });
+
+async function setEntryPrice(addr){
+  var w=wallets.find(x=>x.address===addr);
+  if(!w) return;
+  var input=prompt('Set entry price alert (in cents, e.g., 30 for 30¢):', w.entryPriceAlert ? Math.round(w.entryPriceAlert*100) : '30');
+  if(!input) return;
+  var cents=parseInt(input);
+  if(isNaN(cents)||cents<1||cents>100){toast('Invalid price (1-100¢)','err');return;}
+  try{
+    var res=await post('/wallets/entryprice',{address:addr,cents:cents});
+    if(res.success){
+      toast('✅ Alert set to '+cents+'¢','ok');
+      await loadWallets();
+    }else{toast('❌ Failed to set alert','err');}
+  }catch(e){toast('❌ Error: '+e.message,'err');}
 }
-async function toggleDrawer(address){
-  var drawer=document.getElementById('drawer_'+address);
-  if(!drawer) return;
-  var isOpen=drawer.classList.contains('open');
-  document.querySelectorAll('.perf-drawer.open').forEach(function(d){d.classList.remove('open');});
-  if(!isOpen){ drawer.classList.add('open'); await loadDrawerData(address); }
-}
-function polyUrl(t){
-  if(t&&t.slug) return PB+'/event/'+t.slug;
-  if(t&&t.conditionId) return PB+'/markets?conditions='+t.conditionId;
-  return PB+'/leaderboard';
-}
-function isOpen(trade, positions){
-  if(!positions||!positions.length) return null;
-  var cid=trade.conditionId||trade.market_id;
-  if(!cid) return null;
-  return positions.some(function(p){return (p.conditionId||p.market_id)===cid;});
-}
-function calcPnL(trade, positions){
-  if(trade.profit!==undefined) return parseFloat(trade.profit);
-  if(trade.realizedPnl!==undefined) return parseFloat(trade.realizedPnl);
-  if(trade.side==='SELL') return null;
-  if(positions&&positions.length){
-    var cid=trade.conditionId||trade.market_id;
-    var pos=positions.find(function(p){return (p.conditionId||p.market_id)===cid;});
-    if(pos){ var currentVal=parseFloat(pos.currentValue||pos.value||0); var paid=parseFloat(trade.size||trade.usdcSize||0); return currentVal-paid; }
-  }
-  return null;
-}
-function copyTrade(url, market, btn){
-  var text = market ? market+'\n'+url : url;
-  navigator.clipboard.writeText(text).then(function(){
-    btn.textContent='✓ Copied!'; btn.classList.add('copied');
-    setTimeout(function(){btn.textContent='📋 Copy';btn.classList.remove('copied');},1800);
-    toast('📋 Copied!','s');
-  }).catch(function(){
-    var ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-    btn.textContent='✓ Copied!'; btn.classList.add('copied');
-    setTimeout(function(){btn.textContent='📋 Copy';btn.classList.remove('copied');},1800);
+
+// FIX #3: Improved renderWallets - preserves modal state
+function renderWallets(wList){
+  var wg=document.getElementById('wg');
+  var existingCards=new Map();
+  
+  // Store existing cards by address
+  wg.querySelectorAll('[data-wallet-addr]').forEach(card=>{
+    var addr=card.getAttribute('data-wallet-addr');
+    if(addr) existingCards.set(addr,card);
   });
-}
-function buildTradeRow(t, positions){
-  var buy=t.side==='BUY';
-  var out=t.outcomeIndex===0?'YES':'NO';
-  var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
-  var price=Math.round(parseFloat(t.price||0)*100);
-  var ago=timeAgo(t.timestamp);
-  var date=t.timestamp?new Date(t.timestamp*1000).toLocaleDateString('en-GB'):'—';
-  var url=polyUrl(t);
-  var market=t.title||t.market||'Market';
-  var openStatus=isOpen(t,positions);
-  var pnl=calcPnL(t,positions);
-  var currentPrice=null;
-  if(openStatus&&positions){ var cid=t.conditionId||t.market_id; var pos=positions.find(function(p){return (p.conditionId||p.market_id)===cid;}); if(pos) currentPrice=parseFloat(pos.currentOdds||pos.price||0); }
-  var statusHtml=openStatus===null?'':openStatus?'<span class="trow-status open">🟢 OPEN</span>':'<span class="trow-status closed">⚫ CLOSED</span>';
-  var pnlHtml=pnl!==null?'<div class="tkv"><div class="tkey">P&L</div><div class="tval '+(pnl>=0?'g':'r')+'">'+(pnl>=0?'+':'')+'$'+Math.abs(pnl).toFixed(2)+'</div></div>':'';
-  var priceHtml='';
-  if(currentPrice&&currentPrice>0){ var entry=price; var curr=Math.round(currentPrice*100); var diff=curr-entry; priceHtml='<div class="tkv"><div class="tkey">Entry→Now</div><div class="tval"><span style="color:var(--yellow)">'+entry+'¢</span> <span style="color:'+(diff>=0?'var(--green)':'var(--red)')+'">→'+curr+'¢</span></div></div>'; }
-  return '<div class="trow" onclick="window.open(\''+url+'\',\'_blank\')">'+
-    '<div class="trow-top">'+
-      '<span class="trow-side '+(buy?'buy':'sell')+'">'+(buy?'BUY':'SELL')+'</span>'+
-      '<span style="font-size:11px;font-weight:700;color:'+(buy?'var(--green)':'var(--red)')+'">'+out+'</span>'+
-      '<span style="font-size:10px;color:var(--muted);flex:1;padding:0 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+market.slice(0,35)+'</span>'+
-      statusHtml+
-    '</div>'+
-    '<div class="trow-grid">'+
-      '<div class="tkv"><div class="tkey">Price</div><div class="tval y">'+price+'¢</div></div>'+
-      '<div class="tkv"><div class="tkey">Size</div><div class="tval a">$'+size+'</div></div>'+
-      '<div class="tkv"><div class="tkey">When</div><div class="tval" style="color:var(--muted)">'+ago+'</div></div>'+
-      '<div class="tkv"><div class="tkey">Date</div><div class="tval" style="color:var(--muted)">'+date+'</div></div>'+
-      pnlHtml+priceHtml+
-    '</div>'+
-    '<div class="trow-foot">'+
-      '<a class="open-link" href="'+url+'" target="_blank" onclick="event.stopPropagation()">↗ Polymarket</a>'+
-      '<button class="copy-btn" onclick="event.stopPropagation();copyTrade(\''+url+'\',\''+market.slice(0,40).replace(/'/g,'')+'\',this)">📋 Copy</button>'+
-    '</div>'+
-  '</div>';
-}
-async function loadDrawerData(address){
-  var openPositions=[];
-  try{
-    var pnl=await get('/pnl?address='+address);
-    var profit=parseFloat(pnl.profit||pnl.totalProfit||0);
-    var vol=parseFloat(pnl.volume||pnl.totalVolume||0);
-    var trades=parseInt(pnl.tradesCount||pnl.trades||0);
-    var wr=parseFloat(pnl.winRate||pnl.profitableTradesPercentage||0);
-    var pe=document.getElementById('dk_pnl_'+address);
-    var ve=document.getElementById('dk_vol_'+address);
-    var we=document.getElementById('dk_wr_'+address);
-    var te=document.getElementById('dk_tr_'+address);
-    var wpe=document.getElementById('dk_wrpct_'+address);
-    var wbe=document.getElementById('dk_wrbar_'+address);
-    if(pe){pe.textContent=(profit>=0?'+':'')+'$'+Math.abs(profit).toFixed(2);pe.className='pkpi-val '+(profit>=0?'g':'r');pe.classList.remove('pv');}
-    if(ve){ve.textContent=vol>999?'$'+(vol/1000).toFixed(1)+'K':'$'+vol.toFixed(0);ve.className='pkpi-val a';ve.classList.remove('pv');}
-    if(we){we.textContent=wr?wr.toFixed(1)+'%':'N/A';we.className='pkpi-val '+(wr>=60?'g':wr>=40?'a':'r');we.classList.remove('pv');}
-    if(te){te.textContent=trades?trades+' trades':'— trades';}
-    if(wpe){wpe.textContent=wr?wr.toFixed(1)+'%':'—';}
-    if(wbe){setTimeout(function(){wbe.style.width=(wr||0)+'%';},100);}
-  }catch(e){}
-  try{
-    var pos=await get('/positions?address='+address);
-    openPositions=pos;
-    var pe2=document.getElementById('dk_pos_'+address);
-    if(pe2){pe2.textContent=pos.length||'0';pe2.className='pkpi-val a';pe2.classList.remove('pv');}
-    var listEl=document.getElementById('dk_poslist_'+address);
-    if(listEl){
-      if(!pos.length){listEl.innerHTML='<div style="font-size:12px;color:var(--muted)">No open positions</div>';}
-      else{
-        listEl.innerHTML=pos.slice(0,6).map(function(p){
-          var out=p.outcome||(p.outcomeIndex===0?'YES':'NO');
-          var val=parseFloat(p.currentValue||p.value||0).toFixed(2);
-          var entry=p.avgPrice||p.initialOdds||p.purchasePrice;
-          var entryPct=entry?Math.round(parseFloat(entry)*100)+'¢':'—';
-          var curr=p.currentOdds||p.price;
-          var currPct=curr?Math.round(parseFloat(curr)*100)+'¢':'—';
-          var pct=p.percentageChange?(p.percentageChange>0?'+':'')+p.percentageChange.toFixed(1)+'%':'';
-          var col=!p.percentageChange?'var(--muted)':p.percentageChange>=0?'var(--green)':'var(--red)';
-          var url=p.slug?PB+'/event/'+p.slug:p.conditionId?PB+'/markets?conditions='+p.conditionId:PB+'/profile/'+address;
-          return '<div class="pos-item" onclick="window.open(\''+url+'\',\'_blank\')">'+
-            '<div class="pos-top"><span class="pos-market">'+(p.title||p.market||'Market').slice(0,38)+'</span><span class="badge '+(out==='YES'?'bg':'br')+'" style="font-size:9px">'+out+'</span></div>'+
-            '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;font-size:10px;font-family:var(--font-mono)">'+
-              '<div><span style="color:var(--muted)">Bought: </span><span style="color:var(--yellow)">'+entryPct+'</span></div>'+
-              '<div><span style="color:var(--muted)">Now: </span><span style="color:'+col+'">'+currPct+'</span></div>'+
-              '<div><span style="color:var(--muted)">Val: </span><span style="color:'+col+'">$'+val+' '+pct+'</span></div>'+
-            '</div>'+
-          '</div>';
-        }).join('');
-      }
+  
+  // Update each wallet
+  wList.forEach(function(w){
+    var profit=w.profit!==undefined?w.profit:0;
+    var vol=w.volume!==undefined?w.volume:0;
+    var pnlColor=profit>=0?'var(--green)':'var(--red)';
+    var tag=w.pattern&&w.pattern.tag?w.pattern.tag:'unknown';
+    var tagLabel=tag==='sharp'?'🧠 Sharp':tag==='follower'?'📈 Follower':'Mixed';
+    var tagHtml='<span class="ptag '+tag+'">'+tagLabel+'</span>';
+    var totalTrades=w.pattern&&w.pattern.totalTrades?w.pattern.totalTrades:0;
+    
+    var html='<div class="wcard" data-wallet-addr="'+w.address+'" onclick="selectWallet(\''+w.address+'\')">'+
+      '<div>👛</div>'+
+      '<div style="font-weight:600">'+(w.label||w.address.slice(0,8))+tagHtml+'</div>'+
+      '<div style="color:var(--muted)">'+totalTrades+'</div>'+
+      '<div style="color:'+pnlColor+'">'+(profit>=0?'+':'')+profit.toFixed(2)+'</div>'+
+      '<div style="color:var(--text)">$'+vol.toFixed(0)+'</div>'+
+      '<div style="font-size:12px;color:var(--yellow)">'+
+        (w.entryPriceAlert?Math.round(w.entryPriceAlert*100)+'¢':'—')+
+      '</div>'+
+      '<button class="wbtn" onclick="event.stopPropagation();setEntryPrice(\''+w.address+'\')" title="Set entry price alert">⏰</button>'+
+      '</div>';
+    
+    var card=existingCards.get(w.address);
+    if(card){
+      // Update existing card content
+      card.innerHTML=html.match(/<div[^>]*>.*?<\/div>/g).slice(1,-1).join('');
+    }else{
+      // Add new card
+      var div=document.createElement('div');
+      div.innerHTML=html;
+      wg.appendChild(div.firstElementChild);
     }
-  }catch(e){}
-  try{
-    var tlist=await get('/activity?address='+address);
-    var tlistEl=document.getElementById('dk_tradelist_'+address);
-    if(tlistEl){
-      if(!tlist.length){tlistEl.innerHTML='<div style="font-size:12px;color:var(--muted);padding:8px">No recent trades</div>';}
-      else{tlistEl.innerHTML=tlist.slice(0,8).map(function(t){return buildTradeRow(t,openPositions);}).join('');}
-    }
-  }catch(e){}
+  });
+  
+  // Remove wallets that no longer exist
+  existingCards.forEach((card,addr)=>{
+    if(!wList.find(w=>w.address===addr)) card.remove();
+  });
+  
+  // If empty, show placeholder
+  if(!wList.length){
+    wg.innerHTML='<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';
+  }
 }
-async function loadStats(w,i){
-  try{var p=await get('/positions?address='+w.address);var el=document.getElementById('pc'+i);if(el){el.textContent=p.length||'0';el.classList.remove('pv');}}catch(e){}
-  try{var pnl=await get('/pnl?address='+w.address);var profit=parseFloat(pnl.profit||pnl.totalProfit||0),vol=parseFloat(pnl.volume||pnl.totalVolume||0);var pe=document.getElementById('pnl'+i),ve=document.getElementById('vol'+i);if(pe){pe.textContent=(profit>=0?'+':'')+'$'+Math.abs(profit).toFixed(0);pe.className='mono '+(profit>=0?'g':'r');}if(ve){ve.textContent=vol>999?'$'+(vol/1000).toFixed(1)+'K':'$'+vol.toFixed(0);ve.classList.remove('pv');}}catch(e){}
+
+function selectWallet(addr){
+  document.getElementById('posSelect').value=addr;
+  document.getElementById('tradeSelect').value=addr;
+  loadPositions();
+  loadTrades();
 }
+
 function updateSelects(){
   var opts=wallets.map(function(w){return '<option value="'+w.address+'">'+(w.label||w.address.slice(0,10)+'...')+'</option>';}).join('');
   ['posSelect','tradeSelect'].forEach(function(id){var el=document.getElementById(id);var v=el.value;el.innerHTML='<option value="">Select wallet...</option>'+opts;if(v)el.value=v;});
 }
+
 async function loadFeed(){
   if(!wallets.length) return;
   for(var i=0;i<Math.min(wallets.length,6);i++){
@@ -602,7 +427,7 @@ async function loadFeed(){
   if(feedItems.length>60) feedItems.splice(60);
   document.getElementById('sEv').textContent=evCount;
   var el=document.getElementById('actFeed');
-  if(!feedItems.length){el.innerHTML='<div class="empty"><div class="ei">📡</div><div class="et">No trades yet</div><div class="es">Waiting...</div></div>';return;}
+  if(!feedItems.length){el.innerHTML='<div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div>';return;}
   el.innerHTML=feedItems.slice(0,20).map(function(f,i){
     return '<div class="fitem" style="animation-delay:'+(i*.02)+'s" onclick="window.open(\''+(f.url||PB)+'\',\'_blank\')">'+
       '<div class="fdot" style="background:'+f.color+'"></div>'+
@@ -620,6 +445,7 @@ async function loadFeed(){
     '</div>';
   }).join('');
 }
+
 async function loadPositions(){
   var addr=document.getElementById('posSelect').value,panel=document.getElementById('posPanel');
   if(!addr) return;
@@ -650,6 +476,7 @@ async function loadPositions(){
     }).join('');
   }catch(e){panel.innerHTML='<div class="empty"><div class="ei">❌</div><div class="et">'+e.message+'</div></div>';}
 }
+
 async function loadTrades(){
   var addr=document.getElementById('tradeSelect').value,panel=document.getElementById('tradePanel');
   if(!addr) return;
@@ -662,10 +489,65 @@ async function loadTrades(){
     panel.innerHTML=trades.slice(0,15).map(function(t){return buildTradeRow(t,openPositions);}).join('');
   }catch(e){panel.innerHTML='<div class="empty"><div class="ei">❌</div><div class="et">'+e.message+'</div></div>';}
 }
+
+function buildTradeRow(t,openPos){
+  var out=t.outcome||(t.outcomeIndex===0?'YES':'NO');
+  var buy=t.side==='BUY';
+  var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
+  var price=Math.round(parseFloat(t.price||0)*100);
+  var ago=timeAgo(t.timestamp);
+  var market=(t.title||t.market||'Unknown').slice(0,80);
+  var isOpen=openPos.find(p=>p.conditionId===t.conditionId&&(p.outcome||'')===out);
+  var url=t.slug?PB+'/event/'+t.slug:t.conditionId?PB+'/markets?conditions='+t.conditionId:PB;
+  return '<div class="tcard" onclick="window.open(\''+url+'\',\'_blank\')">'+
+    '<div class="tmkt">'+(isOpen?'📍 ':'')+''+market+'</div>'+
+    '<div class="tmeta">'+
+      '<div class="tkv"><div class="tkey">Side</div><div class="tval" style="color:'+(buy?'var(--green)':'var(--red)')+'">'+out+' '+(buy?'🟢':'🔴')+'</div></div>'+
+      '<div class="tkv"><div class="tkey">Price</div><div class="tval" style="color:var(--yellow)">'+price+'¢</div></div>'+
+      '<div class="tkv"><div class="tkey">Size</div><div class="tval">$'+size+'</div></div>'+
+      '<div class="tkv"><div class="tkey">When</div><div class="tval" style="color:var(--muted)">'+ago+'</div></div>'+
+    '</div>'+
+  '</div>';
+}
+
+function timeAgo(ts){var d=Date.now()-new Date(ts).getTime();var s=Math.floor(d/1000);if(s<60)return s+'s ago';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+function polyUrl(t){if(t.slug)return PB+'/event/'+t.slug;if(t.conditionId)return PB+'/markets?conditions='+t.conditionId;return PB+'/profile/'+(t.user||t.address||'');}
+function copyTrade(url,market,btn){navigator.clipboard.writeText(url);btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',2e3);}
+
+function openSettings(){document.getElementById('settingsOverlay').classList.add('open');}
+function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open');}
+function setFontSize(size){document.documentElement.style.fontSize=size+'px';}
+function setTheme(t){var themes={dark:['#050810','#0d1220'],midnight:['#0a0e1a','#10152a'],navy:['#0b1628','#111d35'],charcoal:['#1a1a1a','#252525']};if(themes[t]){document.documentElement.style.setProperty('--bg',themes[t][0]);document.documentElement.style.setProperty('--surface',themes[t][1]);}}
 function toast(msg,type){if(!type)type='i';var c=document.getElementById('toasts'),el=document.createElement('div');el.className='toast '+type;el.textContent=msg;c.appendChild(el);setTimeout(function(){el.remove();},3700);}
+
 document.getElementById('addrIn').addEventListener('keydown',function(e){if(e.key==='Enter')addWallet();});
 setInterval(function(){var el=document.getElementById('clock');if(el)el.textContent=new Date().toTimeString().split(' ')[0];},1000);
-setInterval(async function(){if(connected){await loadWallets();await loadFeed();}else checkHealth();},15000);
+
+// FIX #2: Auto-refresh PnL/Volume every 30 seconds
+setInterval(async function(){
+  if(connected){
+    await loadWallets();
+    
+    // NEW: Load PnL data for each wallet
+    if(wallets && wallets.length > 0){
+      for(var i=0; i<wallets.length; i++){
+        var w=wallets[i];
+        try{
+          var pnlData=await get('/pnl?address='+w.address);
+          if(pnlData){
+            w.profit=parseFloat(pnlData.profit||pnlData.totalProfit||0);
+            w.volume=parseFloat(pnlData.volume||0);
+          }
+        }catch(e){}
+      }
+      // Re-render with updated data
+      renderWallets(wallets);
+    }
+    
+    await loadFeed();
+  }else checkHealth();
+},30000);
+
 checkHealth();
 </script>
 </body>
