@@ -346,8 +346,8 @@ function openMarketOnPolymarket(marketName){
     return;
   }
   var url=PB+'/search?q='+encodeURIComponent(marketName.slice(0,80));
-  window.open(url,'_blank');
-  toast('🔍 Searching Polymarket...','ok');
+  window.location.href=url;
+  toast('🔍 Opening Polymarket...','ok');
 }
 
 // Toggle wallet detail view
@@ -609,25 +609,30 @@ function buildTradeRow(t,openPos){
 }
 
 function timeAgo(ts){
-  // Handle both timestamp formats
-  var timestamp=ts;
+  if(!ts) return 'N/A';
+  var timestamp;
+
   if(typeof ts==='string'){
     timestamp=new Date(ts).getTime();
   }else if(typeof ts==='number'){
-    // If it's a small number, it might be in seconds, convert to ms
-    if(ts<10000000000) timestamp=ts*1000;
+    // Timestamps < 100 billion are likely in seconds, > 100 billion in milliseconds
+    if(ts<100000000000) timestamp=ts*1000;
     else timestamp=ts;
+  }else{
+    return 'N/A';
   }
-  
+
   var now=Date.now();
   var diff=now-timestamp;
-  
-  // If diff is negative or very large, return the actual timestamp
-  if(diff<0||diff>315360000000){
+
+  // If diff is negative, invalid
+  if(diff<0) diff=0;
+  // If diff is unreasonably large (> 50 years), show full time
+  if(diff>1576800000000){
     var date=new Date(timestamp);
     return date.toLocaleTimeString();
   }
-  
+
   var s=Math.floor(diff/1000);
   if(s<60)return s+'s ago';
   var m=Math.floor(s/60);
