@@ -608,7 +608,34 @@ function buildTradeRow(t,openPos){
   '</div>';
 }
 
-function timeAgo(ts){var d=Date.now()-new Date(ts).getTime();var s=Math.floor(d/1000);if(s<60)return s+'s ago';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+function timeAgo(ts){
+  // Handle both timestamp formats
+  var timestamp=ts;
+  if(typeof ts==='string'){
+    timestamp=new Date(ts).getTime();
+  }else if(typeof ts==='number'){
+    // If it's a small number, it might be in seconds, convert to ms
+    if(ts<10000000000) timestamp=ts*1000;
+    else timestamp=ts;
+  }
+  
+  var now=Date.now();
+  var diff=now-timestamp;
+  
+  // If diff is negative or very large, return the actual timestamp
+  if(diff<0||diff>315360000000){
+    var date=new Date(timestamp);
+    return date.toLocaleTimeString();
+  }
+  
+  var s=Math.floor(diff/1000);
+  if(s<60)return s+'s ago';
+  var m=Math.floor(s/60);
+  if(m<60)return m+'m ago';
+  var h=Math.floor(m/60);
+  if(h<24)return h+'h ago';
+  return Math.floor(h/24)+'d ago';
+}
 
 function copyText(text){
   navigator.clipboard.writeText(text);
