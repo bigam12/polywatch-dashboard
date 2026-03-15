@@ -81,17 +81,27 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .bg{background:rgba(0,255,140,.08);color:var(--green);border:1px solid rgba(0,255,140,.18);}
 .by{background:rgba(255,216,77,.08);color:var(--yellow);border:1px solid rgba(255,216,77,.18);}
 .br{background:rgba(255,68,102,.08);color:var(--red);border:1px solid rgba(255,68,102,.18);}
-.wgrid{display:flex;flex-direction:column;}
+.wgrid{display:flex;flex-direction:column;max-height:400px;overflow-y:auto;}
 .wcard{display:grid;grid-template-columns:40px 1fr 60px 70px 70px 65px 34px;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;animation:rowIn .3s ease both;}
 @keyframes rowIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
 .wcard:hover{background:rgba(0,229,255,.025);}
-.wcard.hdr{background:var(--surface2);cursor:default;padding:9px 18px;}
+.wcard.hdr{background:var(--surface2);cursor:default;padding:9px 18px;position:sticky;top:0;}
 .wcard.hdr:hover{background:var(--surface2);}
+.wcard.expanded{background:rgba(0,229,255,.08);border-left:3px solid var(--accent);}
 .ptag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;letter-spacing:.4px;}
 .ptag.sharp{background:rgba(0,255,140,.15);color:#00ff8c;border:1px solid rgba(0,255,140,.3);}
 .ptag.follower{background:rgba(255,216,77,.12);color:#ffd84d;border:1px solid rgba(255,216,77,.25);}
 .ptag.mixed{background:rgba(0,229,255,.12);color:var(--accent);border:1px solid rgba(0,229,255,.25);}
 .ptag.unknown{background:rgba(90,106,136,.2);color:var(--muted);border:1px solid rgba(90,106,136,.3);}
+.wdetail{display:none;padding:12px 18px;background:rgba(0,229,255,.04);border-bottom:1px solid var(--border);border-top:1px solid var(--border);}
+.wdetail.show{display:block;}
+.wdetail-item{display:flex;justify-content:space-between;padding:8px 0;font-size:12px;border-bottom:1px dashed var(--border);}
+.wdetail-item:last-child{border-bottom:none;}
+.wdetail-label{color:var(--muted);font-weight:700;}
+.wdetail-value{color:var(--accent);font-family:var(--font-mono);font-weight:700;}
+.wdetail-close{padding:10px 0;text-align:center;}
+.wdetail-close button{padding:6px 14px;background:rgba(255,68,102,.15);border:1px solid rgba(255,68,102,.3);border-radius:6px;color:var(--red);cursor:pointer;font-weight:700;transition:all .15s;}
+.wdetail-close button:hover{background:rgba(255,68,102,.25);}
 .ep-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 14px;background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.1);border-radius:8px;}
 .ep-label{font-size:11px;color:var(--muted);font-weight:700;flex:1;}
 .ep-val{font-size:13px;font-weight:700;color:var(--accent);font-family:var(--font-mono);}
@@ -145,9 +155,6 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .toast.i{border-color:var(--accent);color:var(--accent);}
 .wbtn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;transition:all .15s;padding:0;}
 .wbtn:hover{color:var(--red);}
-.stat-mini{display:flex;gap:6px;margin-top:6px;font-size:10px;}
-.stat-mini-item{flex:1;padding:4px 6px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.15);border-radius:4px;text-align:center;}
-.stat-mini-item strong{color:var(--accent);display:block;font-size:11px;}
 </style>
 </head>
 <body>
@@ -268,6 +275,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 <script>
 const PB='https://polymarket.com';
 var wallets=[],feedItems=[],evCount=0,connected=false,syncTime=null;
+var expandedWalletAddr=null; // Track which wallet detail is open
 const API='https://polywatch-backend.onrender.com';
 
 async function get(path){var r=await fetch(API+path);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
@@ -332,7 +340,6 @@ function calculateRiskReward(profit,volume){
   return ratio+'%';
 }
 
-// SMART FIX: Search Polymarket by market name
 function openMarketOnPolymarket(marketName){
   if(!marketName||!marketName.trim()){
     toast('❌ No market name','err');
@@ -340,7 +347,40 @@ function openMarketOnPolymarket(marketName){
   }
   var url=PB+'/search?q='+encodeURIComponent(marketName.slice(0,80));
   window.open(url,'_blank');
-  toast('🔍 Searching Polymarket for: '+marketName.slice(0,40),'ok');
+  toast('🔍 Searching Polymarket...','ok');
+}
+
+// Toggle wallet detail view
+function toggleWalletDetail(addr){
+  if(expandedWalletAddr===addr){
+    // Close if clicking same wallet
+    expandedWalletAddr=null;
+  }else{
+    // Open new wallet
+    expandedWalletAddr=addr;
+  }
+  // Update UI to show expanded state
+  document.querySelectorAll('[data-wallet-addr]').forEach(card=>{
+    if(card.getAttribute('data-wallet-addr')===expandedWalletAddr){
+      card.classList.add('expanded');
+      var detailDiv=card.nextElementSibling;
+      if(detailDiv&&detailDiv.classList.contains('wdetail')){
+        detailDiv.classList.add('show');
+      }
+    }else{
+      card.classList.remove('expanded');
+      var detailDiv=card.nextElementSibling;
+      if(detailDiv&&detailDiv.classList.contains('wdetail')){
+        detailDiv.classList.remove('show');
+      }
+    }
+  });
+}
+
+function closeWalletDetail(){
+  expandedWalletAddr=null;
+  document.querySelectorAll('.wdetail').forEach(d=>d.classList.remove('show'));
+  document.querySelectorAll('.wcard').forEach(c=>c.classList.remove('expanded'));
 }
 
 async function loadWallets(){
@@ -389,12 +429,26 @@ async function setEntryPrice(addr){
 
 function renderWallets(wList){
   var wg=document.getElementById('wg');
-  var existingCards=new Map();
   
-  wg.querySelectorAll('[data-wallet-addr]').forEach(card=>{
-    var addr=card.getAttribute('data-wallet-addr');
-    if(addr) existingCards.set(addr,card);
-  });
+  // Only update if expanded wallet is no longer in list
+  if(expandedWalletAddr && !wList.find(w=>w.address===expandedWalletAddr)){
+    expandedWalletAddr=null;
+  }
+  
+  // Rebuild wallet grid
+  var html='<div class="wcard hdr">';
+  html+='<div></div><div style="font-weight:700">Wallet</div>';
+  html+='<div style="font-size:11px;color:var(--muted)">Win Rate</div>';
+  html+='<div style="font-size:11px;color:var(--muted)">PnL</div>';
+  html+='<div style="font-size:11px;color:var(--muted)">Volume</div>';
+  html+='<div style="font-size:11px;color:var(--muted)">Alert $</div>';
+  html+='<div></div></div>';
+  
+  if(!wList.length){
+    html='<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';
+    wg.innerHTML=html;
+    return;
+  }
   
   wList.forEach(function(w){
     var profit=w.profit!==undefined?w.profit:0;
@@ -406,44 +460,30 @@ function renderWallets(wList){
     
     var winRate=calculateWinRate(w.pattern);
     var entryTiming=calculateEntryTiming(w.pattern);
+    var isExpanded=expandedWalletAddr===w.address;
     
-    var html='<div class="wcard" data-wallet-addr="'+w.address+'" onclick="selectWallet(\''+w.address+'\')">'+
-      '<div>👛</div>'+
-      '<div style="font-weight:600">'+(w.label||w.address.slice(0,8))+tagHtml+'</div>'+
-      '<div style="color:var(--yellow);font-size:12px;font-weight:700">'+winRate+'%</div>'+
-      '<div style="color:'+pnlColor+'">'+(profit>=0?'+':'')+profit.toFixed(2)+'</div>'+
-      '<div style="color:var(--text)">$'+vol.toFixed(0)+'</div>'+
-      '<div style="font-size:12px;color:var(--accent)">'+
-        (w.entryPriceAlert?Math.round(w.entryPriceAlert*100)+'¢':'—')+
-      '</div>'+
-      '<button class="wbtn" onclick="event.stopPropagation();setEntryPrice(\''+w.address+'\')" title="Set entry price alert">⏰</button>'+
-      '</div>'+
-      '<div style="display:none;padding:8px 18px;background:rgba(0,229,255,.04);border-top:1px solid var(--border);font-size:11px;">'+
-        '<div class="stat-mini">'+
-          '<div class="stat-mini-item"><strong>Entry Timing</strong>'+entryTiming+'</div>'+
-          '<div class="stat-mini-item"><strong>Risk/Reward</strong>'+calculateRiskReward(profit,vol)+'</div>'+
-          '<div class="stat-mini-item"><strong>Trades</strong>'+(w.pattern&&w.pattern.totalTrades?w.pattern.totalTrades:0)+'</div>'+
-        '</div>'+
-      '</div>';
+    html+='<div class="wcard '+(isExpanded?'expanded':'')+'" data-wallet-addr="'+w.address+'" onclick="toggleWalletDetail(\''+w.address+'\')">';
+    html+='<div>👛</div>';
+    html+='<div style="font-weight:600">'+(w.label||w.address.slice(0,8))+tagHtml+'</div>';
+    html+='<div style="color:var(--yellow);font-size:12px;font-weight:700">'+winRate+'%</div>';
+    html+='<div style="color:'+pnlColor+'">'+(profit>=0?'+':'')+profit.toFixed(2)+'</div>';
+    html+='<div style="color:var(--text)">$'+vol.toFixed(0)+'</div>';
+    html+='<div style="font-size:12px;color:var(--accent)">'+(w.entryPriceAlert?Math.round(w.entryPriceAlert*100)+'¢':'—')+'</div>';
+    html+='<button class="wbtn" onclick="event.stopPropagation();setEntryPrice(\''+w.address+'\')" title="Set entry price alert">⏰</button>';
+    html+='</div>';
     
-    var card=existingCards.get(w.address);
-    if(card){
-      var inner=html.match(/<div[^>]*>.*?<\/div>/g);
-      card.innerHTML=inner.slice(1,-2).join('');
-    }else{
-      var div=document.createElement('div');
-      div.innerHTML=html;
-      wg.appendChild(div.firstElementChild);
-    }
+    // Detail panel (stays open until closed)
+    html+='<div class="wdetail '+(isExpanded?'show':'')+'">';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Entry Timing</div><div class="wdetail-value">'+entryTiming+'</div></div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Risk/Reward</div><div class="wdetail-value">'+calculateRiskReward(profit,vol)+'</div></div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Total Trades</div><div class="wdetail-value">'+(w.pattern&&w.pattern.totalTrades?w.pattern.totalTrades:0)+'</div></div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Avg Entry Price</div><div class="wdetail-value">'+(w.pattern&&w.pattern.avgEntryPrice?Math.round(w.pattern.avgEntryPrice*100)+'¢':'—')+'</div></div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Pattern</div><div class="wdetail-value">'+tag+'</div></div>';
+    html+='<div class="wdetail-close"><button onclick="event.stopPropagation();closeWalletDetail()">✕ Close</button></div>';
+    html+='</div>';
   });
   
-  existingCards.forEach((card,addr)=>{
-    if(!wList.find(w=>w.address===addr)) card.remove();
-  });
-  
-  if(!wList.length){
-    wg.innerHTML='<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';
-  }
+  wg.innerHTML=html;
 }
 
 function selectWallet(addr){
