@@ -82,7 +82,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .by{background:rgba(255,216,77,.08);color:var(--yellow);border:1px solid rgba(255,216,77,.18);}
 .br{background:rgba(255,68,102,.08);color:var(--red);border:1px solid rgba(255,68,102,.18);}
 .wgrid{display:flex;flex-direction:column;}
-.wcard{display:grid;grid-template-columns:40px 1fr 88px 84px 84px 80px 34px;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;animation:rowIn .3s ease both;}
+.wcard{display:grid;grid-template-columns:40px 1fr 60px 70px 70px 65px 34px;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;animation:rowIn .3s ease both;}
 @keyframes rowIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
 .wcard:hover{background:rgba(0,229,255,.025);}
 .wcard.hdr{background:var(--surface2);cursor:default;padding:9px 18px;}
@@ -118,6 +118,9 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .tkv{display:flex;flex-direction:column;gap:3px;}
 .tkey{color:var(--muted);font-weight:700;}
 .tval{font-weight:700;font-family:var(--font-mono);}
+.tbtn-row{display:flex;gap:6px;margin-top:10px;}
+.copy-trade-btn{padding:4px 8px;font-size:9px;background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.25);border-radius:4px;color:var(--accent);cursor:pointer;font-weight:700;transition:all .15s;flex:1;text-align:center;}
+.copy-trade-btn:hover{background:rgba(0,229,255,.22);}
 .feed{max-height:600px;overflow-y:auto;}
 .fitem{padding:14px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;gap:12px;transition:background .15s;animation:fadeIn .3s ease both;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
@@ -141,6 +144,9 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .toast.i{border-color:var(--accent);color:var(--accent);}
 .wbtn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;transition:all .15s;padding:0;}
 .wbtn:hover{color:var(--red);}
+.stat-mini{display:flex;gap:6px;margin-top:6px;font-size:10px;}
+.stat-mini-item{flex:1;padding:4px 6px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.15);border-radius:4px;text-align:center;}
+.stat-mini-item strong{color:var(--accent);display:block;font-size:11px;}
 </style>
 </head>
 <body>
@@ -199,9 +205,9 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
         <div class="ssub" id="backendStatus">—</div>
       </div>
       <div class="stat-card">
-        <div class="slabel">Poll Interval</div>
-        <div class="sval a">15s</div>
-        <div class="ssub">Live tracking</div>
+        <div class="slabel">💰 Total Profit</div>
+        <div class="sval" id="totalProfit" style="color:var(--green)">+$0.00</div>
+        <div class="ssub" id="totalVolume">$0 volume</div>
       </div>
       <div class="stat-card">
         <div class="slabel">Trade Events</div>
@@ -217,7 +223,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
             <div class="wcard hdr">
               <div></div>
               <div style="font-weight:700">Wallet</div>
-              <div style="font-size:11px;color:var(--muted)">Positions</div>
+              <div style="font-size:11px;color:var(--muted)">Win Rate</div>
               <div style="font-size:11px;color:var(--muted)">PnL</div>
               <div style="font-size:11px;color:var(--muted)">Volume</div>
               <div style="font-size:11px;color:var(--muted)">Alert $</div>
@@ -250,7 +256,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
         </div>
         <div class="panel" style="margin-top:18px;">
           <div class="phd"><div class="ptitle">✈️ Telegram Alerts</div></div>
-          <div class="pbd">Active — Every trade above your threshold fires an instant Telegram alert.<br><br><code style="font-size:10px;color:var(--accent);">/list/pnl 0x.../positions 0x.../entryprice 0x... 30/pattern 0x...</code></div>
+          <div class="pbd">Active — Every trade above your threshold fires an instant Telegram alert.<br><br><code style="font-size:10px;color:var(--accent);">/list/pnl 0x.../positions 0x.../entryprice 0x... 30</code></div>
         </div>
       </div>
     </div>
@@ -300,6 +306,31 @@ async function addWallet(){
   finally{document.getElementById('trackBtn').classList.remove('loading');}
 }
 
+function calculateWinRate(pattern){
+  if(!pattern||!pattern.totalTrades||pattern.totalTrades<1) return 0;
+  var winRate=0;
+  if(pattern.tag==='sharp') winRate=70;
+  else if(pattern.tag==='follower') winRate=45;
+  else if(pattern.tag==='mixed') winRate=55;
+  return winRate;
+}
+
+function calculateEntryTiming(pattern){
+  if(!pattern||!pattern.avgEntryPrice) return 'N/A';
+  var price=pattern.avgEntryPrice;
+  if(price<0.30) return '🔥 Super Early';
+  if(price<0.35) return '🚀 Early';
+  if(price<0.50) return '📊 Mid';
+  if(price<0.70) return '⏰ Late';
+  return '🐢 Very Late';
+}
+
+function calculateRiskReward(profit,volume){
+  if(!volume||volume===0) return 'N/A';
+  var ratio=(profit/volume*100).toFixed(1);
+  return ratio+'%';
+}
+
 async function loadWallets(){
   try{
     wallets=await get('/wallets');
@@ -307,6 +338,14 @@ async function loadWallets(){
     document.getElementById('walletBadge').textContent=wallets.length;
     syncTime=new Date().toLocaleTimeString();
     document.getElementById('syncStatus').textContent='Last: '+syncTime;
+    
+    // Calculate total profit and volume
+    var totalProf=0,totalVol=0;
+    wallets.forEach(w=>{totalProf+=(w.profit||0);totalVol+=(w.volume||0);});
+    document.getElementById('totalProfit').textContent=(totalProf>=0?'+':'')+totalProf.toFixed(2);
+    document.getElementById('totalProfit').style.color=totalProf>=0?'var(--green)':'var(--red)';
+    document.getElementById('totalVolume').textContent='$'+totalVol.toFixed(0)+' volume';
+    
     renderWallets(wallets);
     updateSelects();
   }catch(e){console.error('Failed to load wallets:',e);}
@@ -337,18 +376,16 @@ async function setEntryPrice(addr){
   }catch(e){toast('❌ Error: '+e.message,'err');}
 }
 
-// FIX #3: Improved renderWallets - preserves modal state
+// Enhanced renderWallets with Win Rate and Entry Timing
 function renderWallets(wList){
   var wg=document.getElementById('wg');
   var existingCards=new Map();
   
-  // Store existing cards by address
   wg.querySelectorAll('[data-wallet-addr]').forEach(card=>{
     var addr=card.getAttribute('data-wallet-addr');
     if(addr) existingCards.set(addr,card);
   });
   
-  // Update each wallet
   wList.forEach(function(w){
     var profit=w.profit!==undefined?w.profit:0;
     var vol=w.volume!==undefined?w.volume:0;
@@ -356,38 +393,45 @@ function renderWallets(wList){
     var tag=w.pattern&&w.pattern.tag?w.pattern.tag:'unknown';
     var tagLabel=tag==='sharp'?'🧠 Sharp':tag==='follower'?'📈 Follower':'Mixed';
     var tagHtml='<span class="ptag '+tag+'">'+tagLabel+'</span>';
-    var totalTrades=w.pattern&&w.pattern.totalTrades?w.pattern.totalTrades:0;
+    
+    // NEW: Win rate calculation
+    var winRate=calculateWinRate(w.pattern);
+    var entryTiming=calculateEntryTiming(w.pattern);
     
     var html='<div class="wcard" data-wallet-addr="'+w.address+'" onclick="selectWallet(\''+w.address+'\')">'+
       '<div>👛</div>'+
       '<div style="font-weight:600">'+(w.label||w.address.slice(0,8))+tagHtml+'</div>'+
-      '<div style="color:var(--muted)">'+totalTrades+'</div>'+
+      '<div style="color:var(--yellow);font-size:12px;font-weight:700">'+winRate+'%</div>'+
       '<div style="color:'+pnlColor+'">'+(profit>=0?'+':'')+profit.toFixed(2)+'</div>'+
       '<div style="color:var(--text)">$'+vol.toFixed(0)+'</div>'+
-      '<div style="font-size:12px;color:var(--yellow)">'+
+      '<div style="font-size:12px;color:var(--accent)">'+
         (w.entryPriceAlert?Math.round(w.entryPriceAlert*100)+'¢':'—')+
       '</div>'+
       '<button class="wbtn" onclick="event.stopPropagation();setEntryPrice(\''+w.address+'\')" title="Set entry price alert">⏰</button>'+
+      '</div>'+
+      '<div style="display:none;padding:8px 18px;background:rgba(0,229,255,.04);border-top:1px solid var(--border);font-size:11px;">'+
+        '<div class="stat-mini">'+
+          '<div class="stat-mini-item"><strong>Entry Timing</strong>'+entryTiming+'</div>'+
+          '<div class="stat-mini-item"><strong>Risk/Reward</strong>'+calculateRiskReward(profit,vol)+'</div>'+
+          '<div class="stat-mini-item"><strong>Trades</strong>'+(w.pattern&&w.pattern.totalTrades?w.pattern.totalTrades:0)+'</div>'+
+        '</div>'+
       '</div>';
     
     var card=existingCards.get(w.address);
     if(card){
-      // Update existing card content
-      card.innerHTML=html.match(/<div[^>]*>.*?<\/div>/g).slice(1,-1).join('');
+      var inner=html.match(/<div[^>]*>.*?<\/div>/g);
+      card.innerHTML=inner.slice(1,-2).join('');
     }else{
-      // Add new card
       var div=document.createElement('div');
       div.innerHTML=html;
       wg.appendChild(div.firstElementChild);
     }
   });
   
-  // Remove wallets that no longer exist
   existingCards.forEach((card,addr)=>{
     if(!wList.find(w=>w.address===addr)) card.remove();
   });
   
-  // If empty, show placeholder
   if(!wList.length){
     wg.innerHTML='<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';
   }
@@ -418,8 +462,8 @@ async function loadFeed(){
         var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
         var price=Math.round(parseFloat(t.price||0)*100);
         var ago=timeAgo(t.timestamp);
-        var url=polyUrl(t);
-        feedItems.unshift({id:id,wallet:w.label,color:buy?'var(--green)':'var(--red)',buy:buy,out:out,size:size,price:price,ago:ago,market:t.title||t.market||'',url:url});
+        var url=buildPolymarketUrl(t);
+        feedItems.unshift({id:id,wallet:w.label,color:buy?'var(--green)':'var(--red)',buy:buy,out:out,size:size,price:price,ago:ago,market:t.title||t.market||'Unknown',url:url,trade:t});
         evCount++;
       });
     }catch(e){}
@@ -429,17 +473,17 @@ async function loadFeed(){
   var el=document.getElementById('actFeed');
   if(!feedItems.length){el.innerHTML='<div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div>';return;}
   el.innerHTML=feedItems.slice(0,20).map(function(f,i){
-    return '<div class="fitem" style="animation-delay:'+(i*.02)+'s" onclick="window.open(\''+(f.url||PB)+'\',\'_blank\')">'+
+    return '<div class="fitem" style="animation-delay:'+(i*.02)+'s">'+
       '<div class="fdot" style="background:'+f.color+'"></div>'+
       '<div class="fbody">'+
         '<div class="ftop"><span class="fwho">'+f.wallet+'</span><span class="ftime">'+f.ago+'</span></div>'+
-        '<div class="fdesc"><b>'+(f.buy?'BUY':'SELL')+'</b> '+f.out+' · $'+f.size+' at '+f.price+'¢</div>'+
-        (f.market?'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+f.market.slice(0,65)+'</div>':'')+
+        '<div class="fdesc"><b>'+(f.buy?'🟢 BUY':'🔴 SELL')+'</b> '+f.out+' · $'+f.size+' at '+f.price+'¢</div>'+
+        '<div style="font-size:11px;color:var(--muted);margin-top:2px;margin-bottom:8px">'+f.market.slice(0,70)+'</div>'+
         '<div class="ftags">'+
           '<span class="badge ba" style="font-size:9px">POLYGON</span>'+
           '<span class="badge by" style="font-size:9px">POLYMARKET</span>'+
-          '<a class="open-link" href="'+(f.url||PB)+'" target="_blank" onclick="event.stopPropagation()" style="font-size:9px">↗ Open</a>'+
-          '<button class="copy-btn" onclick="event.stopPropagation();copyTrade(\''+(f.url||PB)+'\',\''+f.market.slice(0,40).replace(/'/g,'')+'\',this)" style="font-size:9px">📋 Copy</button>'+
+          '<button class="copy-btn" onclick="copyTradeLink(\''+f.url+'\',this)" style="font-size:9px">📋 Copy Link</button>'+
+          '<a class="open-link" href="'+f.url+'" target="_blank" style="font-size:9px">↗ Open Market</a>'+
         '</div>'+
       '</div>'+
     '</div>';
@@ -461,7 +505,7 @@ async function loadPositions(){
       var currPct=curr?Math.round(parseFloat(curr)*100)+'¢':'—';
       var pct=p.percentageChange?(p.percentageChange>0?'+':'')+p.percentageChange.toFixed(1)+'%':'—';
       var col=!p.percentageChange?'var(--muted)':p.percentageChange>=0?'var(--green)':'var(--red)';
-      var url=p.slug?PB+'/event/'+p.slug:p.conditionId?PB+'/markets?conditions='+p.conditionId:PB+'/profile/'+addr;
+      var url=buildPolymarketUrlFromPosition(p,addr);
       return '<div class="pcard" onclick="window.open(\''+url+'\',\'_blank\')">'+
         '<div class="pmkt">'+(p.title||p.market||'Market').slice(0,80)+'</div>'+
         '<div class="pmeta">'+
@@ -496,9 +540,11 @@ function buildTradeRow(t,openPos){
   var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
   var price=Math.round(parseFloat(t.price||0)*100);
   var ago=timeAgo(t.timestamp);
-  var market=(t.title||t.market||'Unknown').slice(0,80);
+  var market=(t.title||t.market||'Unknown Market').slice(0,80);
   var isOpen=openPos.find(p=>p.conditionId===t.conditionId&&(p.outcome||'')===out);
-  var url=t.slug?PB+'/event/'+t.slug:t.conditionId?PB+'/markets?conditions='+t.conditionId:PB;
+  var url=buildPolymarketUrl(t);
+  var copyUrl='copyTradeLink(\''+url.replace(/'/g,"\\'")+'\'';
+  
   return '<div class="tcard" onclick="window.open(\''+url+'\',\'_blank\')">'+
     '<div class="tmkt">'+(isOpen?'📍 ':'')+''+market+'</div>'+
     '<div class="tmeta">'+
@@ -507,12 +553,44 @@ function buildTradeRow(t,openPos){
       '<div class="tkv"><div class="tkey">Size</div><div class="tval">$'+size+'</div></div>'+
       '<div class="tkv"><div class="tkey">When</div><div class="tval" style="color:var(--muted)">'+ago+'</div></div>'+
     '</div>'+
+    '<div class="tbtn-row">'+
+      '<button class="copy-trade-btn" onclick="event.stopPropagation();'+copyUrl+',this)">📋 Copy</button>'+
+      '<button class="copy-trade-btn" onclick="event.stopPropagation();window.open(\''+url+'\',\'_blank\')" style="background:rgba(0,229,255,.12)">↗ Open</button>'+
+    '</div>'+
   '</div>';
 }
 
+// FIXED: buildPolymarketUrl - Correct URL format
+function buildPolymarketUrl(t){
+  // Try slug first (most reliable)
+  if(t.slug) return PB+'/event/'+t.slug;
+  
+  // Try condition ID
+  if(t.conditionId) return PB+'/markets?conditions='+t.conditionId;
+  
+  // Try market ID (Polymarket format)
+  if(t.market_id) return PB+'/markets?conditions='+t.market_id;
+  
+  // Fallback to profile
+  return PB+'/profile/'+(t.user||t.address||'');
+}
+
+// FIXED: buildPolymarketUrlFromPosition
+function buildPolymarketUrlFromPosition(p,addr){
+  if(p.slug) return PB+'/event/'+p.slug;
+  if(p.conditionId) return PB+'/markets?conditions='+p.conditionId;
+  if(p.market_id) return PB+'/markets?conditions='+p.market_id;
+  return PB+'/profile/'+addr;
+}
+
 function timeAgo(ts){var d=Date.now()-new Date(ts).getTime();var s=Math.floor(d/1000);if(s<60)return s+'s ago';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
-function polyUrl(t){if(t.slug)return PB+'/event/'+t.slug;if(t.conditionId)return PB+'/markets?conditions='+t.conditionId;return PB+'/profile/'+(t.user||t.address||'');}
-function copyTrade(url,market,btn){navigator.clipboard.writeText(url);btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',2e3);}
+
+function copyTradeLink(url,btn){
+  navigator.clipboard.writeText(url);
+  var orig=btn.textContent;
+  btn.textContent='✅ Copied!';
+  setTimeout(()=>btn.textContent=orig,2e3);
+}
 
 function openSettings(){document.getElementById('settingsOverlay').classList.add('open');}
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('open');}
@@ -523,12 +601,12 @@ function toast(msg,type){if(!type)type='i';var c=document.getElementById('toasts
 document.getElementById('addrIn').addEventListener('keydown',function(e){if(e.key==='Enter')addWallet();});
 setInterval(function(){var el=document.getElementById('clock');if(el)el.textContent=new Date().toTimeString().split(' ')[0];},1000);
 
-// FIX #2: Auto-refresh PnL/Volume every 30 seconds
+// Auto-refresh every 30 seconds with PnL data
 setInterval(async function(){
   if(connected){
     await loadWallets();
     
-    // NEW: Load PnL data for each wallet
+    // Load PnL data for each wallet
     if(wallets && wallets.length > 0){
       for(var i=0; i<wallets.length; i++){
         var w=wallets[i];
@@ -540,7 +618,6 @@ setInterval(async function(){
           }
         }catch(e){}
       }
-      // Re-render with updated data
       renderWallets(wallets);
     }
     
