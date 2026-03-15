@@ -278,9 +278,28 @@ var wallets=[],feedItems=[],evCount=0,connected=false,syncTime=null;
 var expandedWalletAddr=null; // Track which wallet detail is open
 const API='https://polywatch-backend.onrender.com';
 
-async function get(path){var r=await fetch(API+path);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
-async function post(path,data){var r=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
-async function del(path){var r=await fetch(API+path,{method:'DELETE'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+async function get(path){
+  console.log('🔗 GET:', API+path);
+  var r=await fetch(API+path);
+  if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);}
+  var data=await r.json();
+  console.log('✅ Response:', data);
+  return data;
+}
+async function post(path,data){
+  console.log('🔗 POST:', API+path, 'Data:', data);
+  var r=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);}
+  var respData=await r.json();
+  console.log('✅ Response:', respData);
+  return respData;
+}
+async function del(path){
+  console.log('🔗 DELETE:', API+path);
+  var r=await fetch(API+path,{method:'DELETE'});
+  if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);}
+  return r.json();
+}
 
 async function checkHealth(){
   try{
@@ -301,17 +320,31 @@ async function checkHealth(){
 }
 
 async function addWallet(){
+  console.log('🔍 addWallet called');
   var addr=document.getElementById('addrIn').value.trim();
   var label=document.getElementById('labelIn').value.trim();
-  if(!addr.startsWith('0x')||addr.length!==42){document.getElementById('addrIn').classList.add('err');setTimeout(()=>document.getElementById('addrIn').classList.remove('err'),2000);return;}
+  console.log('📝 Input - Address:', addr, 'Label:', label);
+
+  if(!addr.startsWith('0x')||addr.length!==42){
+    console.log('❌ Invalid address format');
+    document.getElementById('addrIn').classList.add('err');
+    setTimeout(()=>document.getElementById('addrIn').classList.remove('err'),2000);
+    return;
+  }
+
   document.getElementById('trackBtn').classList.add('loading');
   try{
+    console.log('📤 Sending POST to /wallets');
     var res=await post('/wallets',{address:addr,label:label||addr.slice(0,10)+'...',threshold:50});
+    console.log('✅ API Response:', res);
     toast('✅ Tracking '+res.label,'ok');
     document.getElementById('addrIn').value='';
     document.getElementById('labelIn').value='';
     await loadWallets();
-  }catch(e){toast('❌ '+e.message,'err');}
+  }catch(e){
+    console.error('❌ Error adding wallet:', e);
+    toast('❌ '+e.message,'err');
+  }
   finally{document.getElementById('trackBtn').classList.remove('loading');}
 }
 
