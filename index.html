@@ -133,7 +133,8 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .ftime{font-size:11px;color:var(--muted);}
 .fdesc{font-size:12px;color:var(--text);word-break:break-word;}
 .ftags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.open-link{color:var(--accent);text-decoration:none;font-weight:700;cursor:pointer;}
+.open-link{color:var(--accent);text-decoration:none;font-weight:700;cursor:pointer;padding:2px 6px;border:1px solid rgba(0,229,255,.2);border-radius:4px;}
+.open-link:hover{background:rgba(0,229,255,.1);}
 .copy-btn{padding:2px 6px;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.2);border-radius:4px;color:var(--accent);cursor:pointer;font-size:11px;font-weight:700;transition:all .15s;}
 .copy-btn:hover{background:rgba(0,229,255,.2);}
 .toast-container{position:fixed;bottom:20px;left:20px;z-index:300;display:flex;flex-direction:column;gap:10px;}
@@ -267,7 +268,6 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 <script>
 const PB='https://polymarket.com';
 var wallets=[],feedItems=[],evCount=0,connected=false,syncTime=null;
-var tradeDataCache={}; // Cache full trade data
 const API='https://polywatch-backend.onrender.com';
 
 async function get(path){var r=await fetch(API+path);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
@@ -332,37 +332,15 @@ function calculateRiskReward(profit,volume){
   return ratio+'%';
 }
 
-// IMPROVED: Build Polymarket URL with better fallbacks
-function buildPolymarketUrl(t){
-  // Try slug first
-  if(t.slug && t.slug.trim()) return PB+'/event/'+encodeURIComponent(t.slug);
-  
-  // Try various condition ID fields
-  var condId=t.conditionId||t.condition_id||t.market_id||t.marketId||null;
-  if(condId && condId.trim()) return PB+'/markets?conditions='+encodeURIComponent(condId);
-  
-  // Try market field (might be an ID)
-  if(t.market && t.market.match(/^0x[a-fA-F0-9]+$|^\d+$/)) return PB+'/markets?conditions='+encodeURIComponent(t.market);
-  
-  // Last resort: search by title if available
-  if(t.title && t.title.trim()) return PB+'/search?q='+encodeURIComponent(t.title.slice(0,50));
-  
-  // Fallback: go to Polymarket home
-  return PB;
-}
-
-// Safe URL opener with error handling
-function openMarketLink(url){
-  if(!url||url===PB){
-    toast('❌ Unable to determine market URL. Check browser console.','err');
+// SMART FIX: Search Polymarket by market name
+function openMarketOnPolymarket(marketName){
+  if(!marketName||!marketName.trim()){
+    toast('❌ No market name','err');
     return;
   }
-  try{
-    window.open(url,'_blank');
-    toast('✅ Opening Polymarket...','ok');
-  }catch(e){
-    toast('❌ Failed to open link','err');
-  }
+  var url=PB+'/search?q='+encodeURIComponent(marketName.slice(0,80));
+  window.open(url,'_blank');
+  toast('🔍 Searching Polymarket for: '+marketName.slice(0,40),'ok');
 }
 
 async function loadWallets(){
@@ -493,12 +471,9 @@ async function loadFeed(){
         var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
         var price=Math.round(parseFloat(t.price||0)*100);
         var ago=timeAgo(t.timestamp);
-        var url=buildPolymarketUrl(t);
+        var marketName=t.title||t.market||'Unknown Market';
         
-        // Cache the full trade data
-        tradeDataCache[id]=t;
-        
-        feedItems.unshift({id:id,wallet:w.label,color:buy?'var(--green)':'var(--red)',buy:buy,out:out,size:size,price:price,ago:ago,market:t.title||t.market||'Unknown',url:url,tradeId:id});
+        feedItems.unshift({id:id,wallet:w.label,color:buy?'var(--green)':'var(--red)',buy:buy,out:out,size:size,price:price,ago:ago,market:marketName});
         evCount++;
       });
     }catch(e){}
@@ -517,8 +492,8 @@ async function loadFeed(){
         '<div class="ftags">'+
           '<span class="badge ba" style="font-size:9px">POLYGON</span>'+
           '<span class="badge by" style="font-size:9px">POLYMARKET</span>'+
-          '<button class="copy-btn" onclick="copyTradeLink(\''+f.url.replace(/'/g,"\\'")+'\')" style="font-size:9px">📋 Copy Link</button>'+
-          '<button class="open-link" onclick="openMarketLink(\''+f.url.replace(/'/g,"\\'")+'\')" style="font-size:9px">↗ Open Market</button>'+
+          '<button class="copy-btn" onclick="copyText(\''+f.market.replace(/'/g,"\\'")+'\')" style="font-size:9px">📋 Copy</button>'+
+          '<button class="open-link" onclick="openMarketOnPolymarket(\''+f.market.replace(/'/g,"\\'")+'\')" style="font-size:9px">🔍 Search</button>'+
         '</div>'+
       '</div>'+
     '</div>';
@@ -540,9 +515,9 @@ async function loadPositions(){
       var currPct=curr?Math.round(parseFloat(curr)*100)+'¢':'—';
       var pct=p.percentageChange?(p.percentageChange>0?'+':'')+p.percentageChange.toFixed(1)+'%':'—';
       var col=!p.percentageChange?'var(--muted)':p.percentageChange>=0?'var(--green)':'var(--red)';
-      var url=buildPolymarketUrl(p);
-      return '<div class="pcard" onclick="openMarketLink(\''+url.replace(/'/g,"\\'")+'\')">'+
-        '<div class="pmkt">'+(p.title||p.market||'Market').slice(0,80)+'</div>'+
+      var marketName=p.title||p.market||'Unknown Market';
+      return '<div class="pcard" onclick="openMarketOnPolymarket(\''+marketName.replace(/'/g,"\\'")+'\')" style="cursor:pointer;">'+
+        '<div class="pmkt">'+(marketName).slice(0,80)+'</div>'+
         '<div class="pmeta">'+
           '<div class="pkv"><div class="pkey">Side</div><div class="pval" style="color:'+(out==='YES'?'var(--green)':'var(--red)')+'">'+out+'</div></div>'+
           '<div class="pkv"><div class="pkey">Bought at</div><div class="pval" style="color:var(--yellow)">'+entryPct+'</div></div>'+
@@ -575,12 +550,11 @@ function buildTradeRow(t,openPos){
   var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
   var price=Math.round(parseFloat(t.price||0)*100);
   var ago=timeAgo(t.timestamp);
-  var market=(t.title||t.market||'Unknown Market').slice(0,80);
+  var marketName=(t.title||t.market||'Unknown Market').slice(0,80);
   var isOpen=openPos.find(p=>p.conditionId===t.conditionId&&(p.outcome||'')===out);
-  var url=buildPolymarketUrl(t);
   
-  return '<div class="tcard" onclick="openMarketLink(\''+url.replace(/'/g,"\\'")+'\')">'+
-    '<div class="tmkt">'+(isOpen?'📍 ':'')+''+market+'</div>'+
+  return '<div class="tcard" onclick="openMarketOnPolymarket(\''+marketName.replace(/'/g,"\\'")+'\')" style="cursor:pointer;">'+
+    '<div class="tmkt">'+(isOpen?'📍 ':'')+''+marketName+'</div>'+
     '<div class="tmeta">'+
       '<div class="tkv"><div class="tkey">Side</div><div class="tval" style="color:'+(buy?'var(--green)':'var(--red)')+'">'+out+' '+(buy?'🟢':'🔴')+'</div></div>'+
       '<div class="tkv"><div class="tkey">Price</div><div class="tval" style="color:var(--yellow)">'+price+'¢</div></div>'+
@@ -588,21 +562,17 @@ function buildTradeRow(t,openPos){
       '<div class="tkv"><div class="tkey">When</div><div class="tval" style="color:var(--muted)">'+ago+'</div></div>'+
     '</div>'+
     '<div class="tbtn-row">'+
-      '<button class="copy-trade-btn" onclick="event.stopPropagation();copyTradeLink(\''+url.replace(/'/g,"\\'")+'\')" >📋 Copy</button>'+
-      '<button class="copy-trade-btn" onclick="event.stopPropagation();openMarketLink(\''+url.replace(/'/g,"\\'")+'\')" style="background:rgba(0,229,255,.12)">↗ Open</button>'+
+      '<button class="copy-trade-btn" onclick="event.stopPropagation();copyText(\''+marketName.replace(/'/g,"\\'")+'\')" >📋 Copy</button>'+
+      '<button class="copy-trade-btn" onclick="event.stopPropagation();openMarketOnPolymarket(\''+marketName.replace(/'/g,"\\'")+'\')" style="background:rgba(0,229,255,.12)">🔍 Search</button>'+
     '</div>'+
   '</div>';
 }
 
 function timeAgo(ts){var d=Date.now()-new Date(ts).getTime();var s=Math.floor(d/1000);if(s<60)return s+'s ago';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
 
-function copyTradeLink(url){
-  if(!url||url===PB){
-    toast('❌ No valid link to copy','err');
-    return;
-  }
-  navigator.clipboard.writeText(url);
-  toast('✅ Link copied to clipboard!','ok');
+function copyText(text){
+  navigator.clipboard.writeText(text);
+  toast('✅ Copied: '+text.slice(0,30),'ok');
 }
 
 function openSettings(){document.getElementById('settingsOverlay').classList.add('open');}
