@@ -122,7 +122,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .copy-trade-btn{padding:4px 8px;font-size:9px;background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.25);border-radius:4px;color:var(--accent);cursor:pointer;font-weight:700;transition:all .15s;flex:1;text-align:center;}
 .copy-trade-btn:hover{background:rgba(0,229,255,.22);}
 .feed{max-height:600px;overflow-y:auto;}
-.fitem{padding:14px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;gap:12px;transition:background .15s;animation:fadeIn .3s ease both;}
+.fitem{padding:14px;border-bottom:1px solid var(--border);display:flex;gap:12px;transition:background .15s;animation:fadeIn .3s ease both;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .fitem:hover{background:rgba(0,229,255,.02);}
 .fitem:last-child{border-bottom:none;}
@@ -133,7 +133,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .ftime{font-size:11px;color:var(--muted);}
 .fdesc{font-size:12px;color:var(--text);word-break:break-word;}
 .ftags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.open-link{color:var(--accent);text-decoration:none;font-weight:700;}
+.open-link{color:var(--accent);text-decoration:none;font-weight:700;cursor:pointer;}
 .copy-btn{padding:2px 6px;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.2);border-radius:4px;color:var(--accent);cursor:pointer;font-size:11px;font-weight:700;transition:all .15s;}
 .copy-btn:hover{background:rgba(0,229,255,.2);}
 .toast-container{position:fixed;bottom:20px;left:20px;z-index:300;display:flex;flex-direction:column;gap:10px;}
@@ -267,6 +267,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 <script>
 const PB='https://polymarket.com';
 var wallets=[],feedItems=[],evCount=0,connected=false,syncTime=null;
+var tradeDataCache={}; // Cache full trade data
 const API='https://polywatch-backend.onrender.com';
 
 async function get(path){var r=await fetch(API+path);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
@@ -331,6 +332,39 @@ function calculateRiskReward(profit,volume){
   return ratio+'%';
 }
 
+// IMPROVED: Build Polymarket URL with better fallbacks
+function buildPolymarketUrl(t){
+  // Try slug first
+  if(t.slug && t.slug.trim()) return PB+'/event/'+encodeURIComponent(t.slug);
+  
+  // Try various condition ID fields
+  var condId=t.conditionId||t.condition_id||t.market_id||t.marketId||null;
+  if(condId && condId.trim()) return PB+'/markets?conditions='+encodeURIComponent(condId);
+  
+  // Try market field (might be an ID)
+  if(t.market && t.market.match(/^0x[a-fA-F0-9]+$|^\d+$/)) return PB+'/markets?conditions='+encodeURIComponent(t.market);
+  
+  // Last resort: search by title if available
+  if(t.title && t.title.trim()) return PB+'/search?q='+encodeURIComponent(t.title.slice(0,50));
+  
+  // Fallback: go to Polymarket home
+  return PB;
+}
+
+// Safe URL opener with error handling
+function openMarketLink(url){
+  if(!url||url===PB){
+    toast('❌ Unable to determine market URL. Check browser console.','err');
+    return;
+  }
+  try{
+    window.open(url,'_blank');
+    toast('✅ Opening Polymarket...','ok');
+  }catch(e){
+    toast('❌ Failed to open link','err');
+  }
+}
+
 async function loadWallets(){
   try{
     wallets=await get('/wallets');
@@ -339,7 +373,6 @@ async function loadWallets(){
     syncTime=new Date().toLocaleTimeString();
     document.getElementById('syncStatus').textContent='Last: '+syncTime;
     
-    // Calculate total profit and volume
     var totalProf=0,totalVol=0;
     wallets.forEach(w=>{totalProf+=(w.profit||0);totalVol+=(w.volume||0);});
     document.getElementById('totalProfit').textContent=(totalProf>=0?'+':'')+totalProf.toFixed(2);
@@ -376,7 +409,6 @@ async function setEntryPrice(addr){
   }catch(e){toast('❌ Error: '+e.message,'err');}
 }
 
-// Enhanced renderWallets with Win Rate and Entry Timing
 function renderWallets(wList){
   var wg=document.getElementById('wg');
   var existingCards=new Map();
@@ -394,7 +426,6 @@ function renderWallets(wList){
     var tagLabel=tag==='sharp'?'🧠 Sharp':tag==='follower'?'📈 Follower':'Mixed';
     var tagHtml='<span class="ptag '+tag+'">'+tagLabel+'</span>';
     
-    // NEW: Win rate calculation
     var winRate=calculateWinRate(w.pattern);
     var entryTiming=calculateEntryTiming(w.pattern);
     
@@ -463,7 +494,11 @@ async function loadFeed(){
         var price=Math.round(parseFloat(t.price||0)*100);
         var ago=timeAgo(t.timestamp);
         var url=buildPolymarketUrl(t);
-        feedItems.unshift({id:id,wallet:w.label,color:buy?'var(--green)':'var(--red)',buy:buy,out:out,size:size,price:price,ago:ago,market:t.title||t.market||'Unknown',url:url,trade:t});
+        
+        // Cache the full trade data
+        tradeDataCache[id]=t;
+        
+        feedItems.unshift({id:id,wallet:w.label,color:buy?'var(--green)':'var(--red)',buy:buy,out:out,size:size,price:price,ago:ago,market:t.title||t.market||'Unknown',url:url,tradeId:id});
         evCount++;
       });
     }catch(e){}
@@ -482,8 +517,8 @@ async function loadFeed(){
         '<div class="ftags">'+
           '<span class="badge ba" style="font-size:9px">POLYGON</span>'+
           '<span class="badge by" style="font-size:9px">POLYMARKET</span>'+
-          '<button class="copy-btn" onclick="copyTradeLink(\''+f.url+'\',this)" style="font-size:9px">📋 Copy Link</button>'+
-          '<a class="open-link" href="'+f.url+'" target="_blank" style="font-size:9px">↗ Open Market</a>'+
+          '<button class="copy-btn" onclick="copyTradeLink(\''+f.url.replace(/'/g,"\\'")+'\')" style="font-size:9px">📋 Copy Link</button>'+
+          '<button class="open-link" onclick="openMarketLink(\''+f.url.replace(/'/g,"\\'")+'\')" style="font-size:9px">↗ Open Market</button>'+
         '</div>'+
       '</div>'+
     '</div>';
@@ -505,8 +540,8 @@ async function loadPositions(){
       var currPct=curr?Math.round(parseFloat(curr)*100)+'¢':'—';
       var pct=p.percentageChange?(p.percentageChange>0?'+':'')+p.percentageChange.toFixed(1)+'%':'—';
       var col=!p.percentageChange?'var(--muted)':p.percentageChange>=0?'var(--green)':'var(--red)';
-      var url=buildPolymarketUrlFromPosition(p,addr);
-      return '<div class="pcard" onclick="window.open(\''+url+'\',\'_blank\')">'+
+      var url=buildPolymarketUrl(p);
+      return '<div class="pcard" onclick="openMarketLink(\''+url.replace(/'/g,"\\'")+'\')">'+
         '<div class="pmkt">'+(p.title||p.market||'Market').slice(0,80)+'</div>'+
         '<div class="pmeta">'+
           '<div class="pkv"><div class="pkey">Side</div><div class="pval" style="color:'+(out==='YES'?'var(--green)':'var(--red)')+'">'+out+'</div></div>'+
@@ -543,9 +578,8 @@ function buildTradeRow(t,openPos){
   var market=(t.title||t.market||'Unknown Market').slice(0,80);
   var isOpen=openPos.find(p=>p.conditionId===t.conditionId&&(p.outcome||'')===out);
   var url=buildPolymarketUrl(t);
-  var copyUrl='copyTradeLink(\''+url.replace(/'/g,"\\'")+'\'';
   
-  return '<div class="tcard" onclick="window.open(\''+url+'\',\'_blank\')">'+
+  return '<div class="tcard" onclick="openMarketLink(\''+url.replace(/'/g,"\\'")+'\')">'+
     '<div class="tmkt">'+(isOpen?'📍 ':'')+''+market+'</div>'+
     '<div class="tmeta">'+
       '<div class="tkv"><div class="tkey">Side</div><div class="tval" style="color:'+(buy?'var(--green)':'var(--red)')+'">'+out+' '+(buy?'🟢':'🔴')+'</div></div>'+
@@ -554,42 +588,21 @@ function buildTradeRow(t,openPos){
       '<div class="tkv"><div class="tkey">When</div><div class="tval" style="color:var(--muted)">'+ago+'</div></div>'+
     '</div>'+
     '<div class="tbtn-row">'+
-      '<button class="copy-trade-btn" onclick="event.stopPropagation();'+copyUrl+',this)">📋 Copy</button>'+
-      '<button class="copy-trade-btn" onclick="event.stopPropagation();window.open(\''+url+'\',\'_blank\')" style="background:rgba(0,229,255,.12)">↗ Open</button>'+
+      '<button class="copy-trade-btn" onclick="event.stopPropagation();copyTradeLink(\''+url.replace(/'/g,"\\'")+'\')" >📋 Copy</button>'+
+      '<button class="copy-trade-btn" onclick="event.stopPropagation();openMarketLink(\''+url.replace(/'/g,"\\'")+'\')" style="background:rgba(0,229,255,.12)">↗ Open</button>'+
     '</div>'+
   '</div>';
 }
 
-// FIXED: buildPolymarketUrl - Correct URL format
-function buildPolymarketUrl(t){
-  // Try slug first (most reliable)
-  if(t.slug) return PB+'/event/'+t.slug;
-  
-  // Try condition ID
-  if(t.conditionId) return PB+'/markets?conditions='+t.conditionId;
-  
-  // Try market ID (Polymarket format)
-  if(t.market_id) return PB+'/markets?conditions='+t.market_id;
-  
-  // Fallback to profile
-  return PB+'/profile/'+(t.user||t.address||'');
-}
-
-// FIXED: buildPolymarketUrlFromPosition
-function buildPolymarketUrlFromPosition(p,addr){
-  if(p.slug) return PB+'/event/'+p.slug;
-  if(p.conditionId) return PB+'/markets?conditions='+p.conditionId;
-  if(p.market_id) return PB+'/markets?conditions='+p.market_id;
-  return PB+'/profile/'+addr;
-}
-
 function timeAgo(ts){var d=Date.now()-new Date(ts).getTime();var s=Math.floor(d/1000);if(s<60)return s+'s ago';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
 
-function copyTradeLink(url,btn){
+function copyTradeLink(url){
+  if(!url||url===PB){
+    toast('❌ No valid link to copy','err');
+    return;
+  }
   navigator.clipboard.writeText(url);
-  var orig=btn.textContent;
-  btn.textContent='✅ Copied!';
-  setTimeout(()=>btn.textContent=orig,2e3);
+  toast('✅ Link copied to clipboard!','ok');
 }
 
 function openSettings(){document.getElementById('settingsOverlay').classList.add('open');}
@@ -601,12 +614,10 @@ function toast(msg,type){if(!type)type='i';var c=document.getElementById('toasts
 document.getElementById('addrIn').addEventListener('keydown',function(e){if(e.key==='Enter')addWallet();});
 setInterval(function(){var el=document.getElementById('clock');if(el)el.textContent=new Date().toTimeString().split(' ')[0];},1000);
 
-// Auto-refresh every 30 seconds with PnL data
 setInterval(async function(){
   if(connected){
     await loadWallets();
     
-    // Load PnL data for each wallet
     if(wallets && wallets.length > 0){
       for(var i=0; i<wallets.length; i++){
         var w=wallets[i];
