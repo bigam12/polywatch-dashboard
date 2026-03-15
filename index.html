@@ -386,17 +386,20 @@ function closeWalletDetail(){
 async function loadWallets(){
   try{
     wallets=await get('/wallets');
+    console.log('📊 API Response - Wallets:', wallets);
+    if(wallets.length>0) console.log('📊 First wallet structure:', wallets[0]);
+
     document.getElementById('statWallets').textContent=wallets.length;
     document.getElementById('walletBadge').textContent=wallets.length;
     syncTime=new Date().toLocaleTimeString();
     document.getElementById('syncStatus').textContent='Last: '+syncTime;
-    
+
     var totalProf=0,totalVol=0;
     wallets.forEach(w=>{totalProf+=(w.profit||0);totalVol+=(w.volume||0);});
     document.getElementById('totalProfit').textContent=(totalProf>=0?'+':'')+totalProf.toFixed(2);
     document.getElementById('totalProfit').style.color=totalProf>=0?'var(--green)':'var(--red)';
     document.getElementById('totalVolume').textContent='$'+totalVol.toFixed(0)+' volume';
-    
+
     renderWallets(wallets);
     updateSelects();
   }catch(e){console.error('Failed to load wallets:',e);}
@@ -451,13 +454,15 @@ function renderWallets(wList){
   }
   
   wList.forEach(function(w){
+    console.log('💰 Processing wallet:', w.address, {profit: w.profit, volume: w.volume, pattern: w.pattern, entryPriceAlert: w.entryPriceAlert});
+
     var profit=w.profit!==undefined?w.profit:0;
     var vol=w.volume!==undefined?w.volume:0;
     var pnlColor=profit>=0?'var(--green)':'var(--red)';
     var tag=w.pattern&&w.pattern.tag?w.pattern.tag:'unknown';
     var tagLabel=tag==='sharp'?'🧠 Sharp':tag==='follower'?'📈 Follower':'Mixed';
     var tagHtml='<span class="ptag '+tag+'">'+tagLabel+'</span>';
-    
+
     var winRate=calculateWinRate(w.pattern);
     var entryTiming=calculateEntryTiming(w.pattern);
     var isExpanded=expandedWalletAddr===w.address;
