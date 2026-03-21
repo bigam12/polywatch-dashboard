@@ -374,6 +374,7 @@ async function addWallet(){
 
 function calculateGrade(w){
   if(!w) return '?';
+  if(w.winRate===undefined) return '?';
   var wr=w.winRate||0;
   var roi=w.roi||0;
   if(wr>65&&roi>20) return 'S';
@@ -859,21 +860,6 @@ setInterval(function(){var el=document.getElementById('clock');if(el)el.textCont
 setInterval(async function(){
   if(connected){
     await loadWallets();
-    
-    if(wallets && wallets.length > 0){
-      for(var i=0; i<wallets.length; i++){
-        var w=wallets[i];
-        try{
-          var pnlData=await get('/pnl?address='+w.address);
-          if(pnlData){
-            w.profit=parseFloat(pnlData.profit||pnlData.totalProfit||0);
-            w.volume=parseFloat(pnlData.volume||0);
-          }
-        }catch(e){}
-      }
-      renderWallets(wallets);
-    }
-    
     await loadFeed();
     await loadConsensus();
   }else checkHealth();
