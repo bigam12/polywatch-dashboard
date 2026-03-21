@@ -280,25 +280,18 @@ const API='https://polywatch-backend.onrender.com';
 
 async function get(path){
   console.log('🔗 GET:', API+path);
-  var r=await fetch(API+path);
-  if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);}
-  var data=await r.json();
-  console.log('✅ Response:', data);
-  return data;
+  var c=new AbortController(); var tid=setTimeout(()=>{console.log('[TIMEOUT]',API+path); c.abort();},10000);
+  try{ var r=await fetch(API+path,{signal:c.signal}); if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);} var data=await r.json(); console.log('✅ Response:', data); return data; } finally{ clearTimeout(tid); }
 }
 async function post(path,data){
   console.log('🔗 POST:', API+path, 'Data:', data);
-  var r=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-  if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);}
-  var respData=await r.json();
-  console.log('✅ Response:', respData);
-  return respData;
+  var c=new AbortController(); var tid=setTimeout(()=>{console.log('[TIMEOUT]',API+path); c.abort();},10000);
+  try{ var r=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data),signal:c.signal}); if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);} var respData=await r.json(); console.log('✅ Response:', respData); return respData; } finally{ clearTimeout(tid); }
 }
 async function del(path){
   console.log('🔗 DELETE:', API+path);
-  var r=await fetch(API+path,{method:'DELETE'});
-  if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);}
-  return r.json();
+  var c=new AbortController(); var tid=setTimeout(()=>{console.log('[TIMEOUT]',API+path); c.abort();},10000);
+  try{ var r=await fetch(API+path,{method:'DELETE',signal:c.signal}); if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);} return await r.json(); } finally{ clearTimeout(tid); }
 }
 
 async function checkHealth(){
