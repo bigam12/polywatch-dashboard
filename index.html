@@ -309,6 +309,10 @@ var wallets=[],feedItems=[],evCount=0,connected=false,syncTime=null;
 var expandedWalletAddr=null; // Track which wallet detail is open
 const API='https://polywatch-backend.onrender.com';
 
+function getSavedWallets(){try{return JSON.parse(localStorage.getItem('polywatchWallets')||'[]');}catch{return[];}}
+function saveWalletLocal(address,label){var s=getSavedWallets();if(!s.find(function(w){return w.address===address;})){s.push({address:address,label:label});localStorage.setItem('polywatchWallets',JSON.stringify(s));}}
+function removeWalletLocal(address){localStorage.setItem('polywatchWallets',JSON.stringify(getSavedWallets().filter(function(w){return w.address!==address;})));}
+
 async function get(path){
   console.log('🔗 GET:', API+path);
   var c=new AbortController(); var tid=setTimeout(()=>{console.log('[TIMEOUT]',API+path); c.abort();},10000);
@@ -361,6 +365,7 @@ async function addWallet(){
     console.log('📤 Sending POST to /wallets');
     var res=await post('/wallets',{address:addr,label:label||addr.slice(0,10)+'...',threshold:50});
     console.log('✅ API Response:', res);
+    saveWalletLocal(addr,res.label);
     toast('✅ Tracking '+res.label,'ok');
     document.getElementById('addrIn').value='';
     document.getElementById('labelIn').value='';
@@ -489,6 +494,20 @@ async function loadWallets(){
   try{
     wallets=await get('/wallets');
     console.log('📊 API Response - Wallets:', wallets);
+
+    // If backend has no wallets, restore from localStorage (survives backend redeploys)
+    if(wallets.length===0){
+      var saved=getSavedWallets();
+      if(saved.length>0){
+        console.log('🔄 Restoring '+saved.length+' wallet(s) from local storage...');
+        for(var i=0;i<saved.length;i++){
+          try{await post('/wallets',{address:saved[i].address,label:saved[i].label,threshold:50});}catch(e){}
+        }
+        wallets=await get('/wallets');
+        toast('🔄 Restored '+wallets.length+' wallet(s)','i');
+      }
+    }
+
     if(wallets.length>0) console.log('📊 First wallet structure:', wallets[0]);
 
     document.getElementById('statWallets').textContent=wallets.length;
@@ -522,6 +541,7 @@ async function deleteWallet(addr){
   if(!confirm('Stop tracking this wallet?')) return;
   try{
     await del('/wallets?address='+addr);
+    removeWalletLocal(addr);
     await loadWallets();
     toast('✅ Stopped tracking','ok');
   }catch(e){toast('❌ '+e.message,'err');}
