@@ -659,7 +659,7 @@ async function loadFeed(){
         var id=t.id||(t.transactionHash+t.timestamp);
         if(feedItems.find(function(f){return f.id===id;})) return;
         var buy=t.side==='BUY',out=t.outcomeIndex===0?'YES':'NO';
-        var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
+        var size=formatNum(parseFloat(t.size||t.usdcSize||0));
         var price=Math.round(parseFloat(t.price||0)*100);
         var ago=timeAgo(t.timestamp);
         var marketName=t.title||t.market||'Unknown Market';
@@ -776,7 +776,7 @@ async function loadPositions(){
     var pos=await get('/positions?address='+addr);
     if(!pos.length){panel.innerHTML='<div class="empty"><div class="ei">📊</div><div class="et">No open positions</div></div>';return;}
     panel.innerHTML=pos.slice(0,8).map(function(p){
-      var out=p.outcome||(p.outcomeIndex===0?'YES':'NO'),val=parseFloat(p.currentValue||p.value||0).toFixed(2);
+      var out=p.outcome||(p.outcomeIndex===0?'YES':'NO'),val=formatNum(parseFloat(p.currentValue||p.value||0));
       var entry=p.avgPrice||p.initialOdds||p.purchasePrice;
       var entryPct=entry?Math.round(parseFloat(entry)*100)+'¢':'—';
       var curr=p.currentOdds||p.price;
@@ -815,7 +815,7 @@ async function loadTrades(){
 function buildTradeRow(t,openPos){
   var out=t.outcome||(t.outcomeIndex===0?'YES':'NO');
   var buy=t.side==='BUY';
-  var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
+  var size=formatNum(parseFloat(t.size||t.usdcSize||0));
   var price=Math.round(parseFloat(t.price||0)*100);
   var ago=timeAgo(t.timestamp);
   var marketName=(t.title||t.market||'Unknown Market').slice(0,80);
