@@ -187,7 +187,23 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .tgbar{background:linear-gradient(135deg,rgba(0,136,204,.1),rgba(123,79,255,.1));border:1px solid rgba(0,136,204,.2);border-radius:12px;padding:18px 22px;display:flex;align-items:center;gap:16px;}
 .tgcmds{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
 .tgcmd{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.12);border-radius:6px;padding:3px 9px;font-size:11px;font-family:var(--font-mono);}
-@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}main{padding:14px}.wcard{grid-template-columns:36px 1fr 70px 60px 30px}.perf-kpis{grid-template-columns:repeat(2,1fr)}.perf-cols{grid-template-columns:1fr}}
+.heatmap-grid{display:flex;flex-direction:column;max-height:340px;overflow-y:auto;}
+.heatmap-grid::-webkit-scrollbar{width:3px;}
+.heatmap-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+.hrow{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;}
+.hrow:hover{background:rgba(0,229,255,.025);}
+.hrow-heat{display:flex;gap:4px;flex-wrap:wrap;flex:1;}
+.hchip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;font-family:var(--font-mono);}
+.hchip.buy{background:rgba(0,255,140,.12);color:var(--green);border:1px solid rgba(0,255,140,.25);}
+.hchip.sell{background:rgba(255,68,102,.1);color:var(--red);border:1px solid rgba(255,68,102,.2);}
+.hmkt{font-size:11px;font-weight:700;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
+.hcount{font-size:10px;font-family:var(--font-mono);font-weight:700;color:var(--accent);background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.2);border-radius:100px;padding:1px 8px;white-space:nowrap;}
+.hbar-wrap{height:4px;border-radius:2px;background:var(--border);margin-top:4px;overflow:hidden;}
+.hbar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s ease;}
+.stats-row-5{grid-template-columns:repeat(5,1fr);}
+.pkpi-val.y{color:var(--yellow);}
+.perf-kpis{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+@media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr)}.stats-row-5{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}main{padding:14px}.wcard{grid-template-columns:36px 1fr 70px 60px 30px}.perf-kpis{grid-template-columns:repeat(2,1fr)}.perf-cols{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -246,11 +262,12 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
     </div>
     <div class="vmsg" id="vmsg"></div>
   </div>
-  <div class="stats-row">
+  <div class="stats-row stats-row-5">
     <div class="stat-card"><div class="slabel">Tracked Wallets</div><div class="sval a" id="sW">—</div><div class="ssub" id="sWsub">—</div></div>
     <div class="stat-card"><div class="slabel">Backend</div><div class="sval" id="sBe" style="font-size:15px;padding-top:6px">—</div><div class="ssub" id="sUp">—</div></div>
     <div class="stat-card"><div class="slabel">Poll Interval</div><div class="sval a">15s</div><div class="ssub">Live tracking</div></div>
     <div class="stat-card"><div class="slabel">Trade Events</div><div class="sval g" id="sEv">0</div><div class="ssub">Since page load</div></div>
+    <div class="stat-card"><div class="slabel">Portfolio Value</div><div class="sval a" id="sPV">—</div><div class="ssub">Open positions total</div></div>
   </div>
   <div class="grid">
     <div style="display:flex;flex-direction:column;gap:18px">
@@ -274,6 +291,15 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
       <div class="panel">
         <div class="phd"><div class="ptitle">⚡ Live Activity <span class="badge bg">LIVE</span></div><div style="font-family:var(--font-mono);font-size:11px;color:var(--muted)" id="clock">--:--:--</div></div>
         <div class="feed" id="actFeed"><div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div></div>
+      </div>
+      <div class="panel">
+        <div class="phd">
+          <div class="ptitle">🐋 Whale Heatmap <span class="badge ba" id="heatBadge">0</span></div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:var(--muted)" id="heatLastUpdate">—</div>
+        </div>
+        <div class="heatmap-grid" id="heatGrid">
+          <div class="empty"><div class="ei">🗺️</div><div class="et">No consensus data</div><div class="es">Watching for overlapping positions</div></div>
+        </div>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:18px">
@@ -301,10 +327,16 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 <script>
 var API = 'https://polywatch-backend.onrender.com';
 var wallets = [], feedItems = [], evCount = 0, connected = false;
+var totalPortfolioValue = 0;
 var COLORS = ['#00e5ff','#7b4fff','#00ff8c','#ffd84d','#ff4466','#ff8c00'];
 var BGTINTS = ['rgba(0,229,255,.13)','rgba(123,79,255,.13)','rgba(0,255,140,.13)','rgba(255,216,77,.13)','rgba(255,68,102,.13)'];
 var EMOJIS = ['🐳','🦈','🧠','🔥','💎','👤','⚡','🌊','🎯','🔭','🦁','🦊'];
 var PB = 'https://polymarket.com';
+function normTs(ts) {
+  if (!ts) return null;
+  var n = parseFloat(ts);
+  return n > 9999999999 ? Math.floor(n/1000) : Math.floor(n);
+}
 (function(){
   var s = JSON.parse(localStorage.getItem('pw_settings')||'{}');
   if(s.accent) applyAccent(s.accent, s.accent2||'#7b4fff');
@@ -326,9 +358,9 @@ var THEMES = {dark:{bg:'#050810',surface:'#0d1220',surface2:'#131929',border:'#1
 function applyTheme(t){ var th=THEMES[t]||THEMES.dark; Object.keys(th).forEach(function(k){ document.documentElement.style.setProperty('--'+k,th[k]); }); }
 function setTheme(t){ applyTheme(t); saveSettings({theme:t}); }
 function saveSettings(obj){ var s=JSON.parse(localStorage.getItem('pw_settings')||'{}'); Object.assign(s,obj); localStorage.setItem('pw_settings',JSON.stringify(s)); }
-async function get(p){ var r=await fetch(API+p); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
-async function post(p,body){ var r=await fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); var d=await r.json(); if(!r.ok) throw new Error(d.error||'HTTP '+r.status); return d; }
-async function del(p){ var r=await fetch(API+p,{method:'DELETE'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+async function get(p){ console.log('[GET]',API+p); var c=new AbortController(); var tid=setTimeout(()=>{console.log('[TIMEOUT]',API+p); c.abort();},10000); try{ var r=await fetch(API+p,{signal:c.signal}); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); } finally{ clearTimeout(tid); } }
+async function post(p,body){ var c=new AbortController(); var tid=setTimeout(()=>c.abort(),10000); try{ var r=await fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:c.signal}); if(!r.ok){ var d=await r.json().catch(()=>({})); throw new Error(d.error||'HTTP '+r.status); } return await r.json(); } finally{ clearTimeout(tid); } }
+async function del(p){ var c=new AbortController(); var tid=setTimeout(()=>c.abort(),10000); try{ var r=await fetch(API+p,{method:'DELETE',signal:c.signal}); if(!r.ok) throw new Error('HTTP '+r.status); return await r.json(); } finally{ clearTimeout(tid); } }
 async function checkHealth(){
   setStatus('connecting','CONNECTING');
   try{
@@ -336,10 +368,11 @@ async function checkHealth(){
     document.getElementById('sBe').textContent='✅ Online'; document.getElementById('sBe').style.color='var(--green)';
     document.getElementById('sUp').textContent='Uptime: '+fmtUp(h.uptime|0);
     await loadWallets();
+    await loadHeatmap();
   } catch(e){
-    connected=false; setStatus('offline','OFFLINE');
+    console.error('[PolyWatch] Health check failed:',e.message); connected=false; setStatus('offline','OFFLINE');
     document.getElementById('sBe').textContent='❌ Offline'; document.getElementById('sBe').style.color='var(--red)';
-    document.getElementById('sUp').textContent='Start backend to connect';
+    document.getElementById('sUp').textContent='Error: '+e.message;
   }
 }
 function setStatus(c,t){ document.getElementById('statusPill').className='status-pill '+c; document.getElementById('statusTxt').textContent=t; }
@@ -397,6 +430,7 @@ async function setEntryAlert(addr,centsVal){
   }catch(e){toast('Failed to set alert','e');}
 }
 function renderWallets(){
+  totalPortfolioValue=0;
   var el=document.getElementById('wRows');
   if(!wallets.length){el.innerHTML='<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';return;}
   el.innerHTML=wallets.map(function(w,i){
@@ -420,6 +454,9 @@ function renderWallets(){
           '<div class="pkpi"><div class="pkpi-key">Volume</div><div class="pkpi-val m pv" id="dk_vol_'+w.address+'">—</div><div class="pkpi-sub">Total traded</div></div>'+
           '<div class="pkpi"><div class="pkpi-key">Win Rate</div><div class="pkpi-val m pv" id="dk_wr_'+w.address+'">—</div><div class="pkpi-sub" id="dk_tr_'+w.address+'">— trades</div></div>'+
           '<div class="pkpi"><div class="pkpi-key">Open Positions</div><div class="pkpi-val m pv" id="dk_pos_'+w.address+'">—</div><div class="pkpi-sub">Active markets</div></div>'+
+          '<div class="pkpi"><div class="pkpi-key">ROI</div><div class="pkpi-val m pv" id="dk_roi_'+w.address+'">—</div><div class="pkpi-sub">Return on invested</div></div>'+
+          '<div class="pkpi"><div class="pkpi-key">Best Trade</div><div class="pkpi-val m pv" id="dk_best_'+w.address+'">—</div><div class="pkpi-sub">Largest single win</div></div>'+
+          '<div class="pkpi"><div class="pkpi-key">Avg Win / Loss</div><div class="pkpi-val m pv" id="dk_avwl_'+w.address+'">—</div><div class="pkpi-sub">Win:Loss ratio</div></div>'+
         '</div>'+
         '<div class="winbar-row"><span>Win Rate</span><span id="dk_wrpct_'+w.address+'">—</span></div>'+
         '<div class="winbar-track"><div class="winbar-fill" id="dk_wrbar_'+w.address+'" style="width:0%"></div></div>'+
@@ -479,8 +516,9 @@ function buildTradeRow(t, positions){
   var out=t.outcomeIndex===0?'YES':'NO';
   var size=parseFloat(t.size||t.usdcSize||0).toFixed(2);
   var price=Math.round(parseFloat(t.price||0)*100);
-  var ago=timeAgo(t.timestamp);
-  var date=t.timestamp?new Date(t.timestamp*1000).toLocaleDateString('en-GB'):'—';
+  var ts=normTs(t.timestamp);
+  var ago=timeAgo(ts);
+  var date=ts?new Date(ts*1000).toLocaleDateString('en-GB'):'—';
   var url=polyUrl(t);
   var market=t.title||t.market||'Market';
   var openStatus=isOpen(t,positions);
@@ -531,6 +569,16 @@ async function loadDrawerData(address){
     if(te){te.textContent=trades?trades+' trades':'— trades';}
     if(wpe){wpe.textContent=wr?wr.toFixed(1)+'%':'—';}
     if(wbe){setTimeout(function(){wbe.style.width=(wr||0)+'%';},100);}
+    var roi=parseFloat(pnl.roi||0);
+    var bestT=parseFloat(pnl.bestTrade||0);
+    var avgWin=parseFloat(pnl.avgWin||0);
+    var avgLoss=parseFloat(pnl.avgLoss||0);
+    var roiEl=document.getElementById('dk_roi_'+address);
+    if(roiEl){roiEl.textContent=roi.toFixed(1)+'%';roiEl.className='pkpi-val '+(roi>=0?'g':'r');roiEl.classList.remove('pv');}
+    var bestEl=document.getElementById('dk_best_'+address);
+    if(bestEl){bestEl.textContent=(bestT>=0?'+':'')+'$'+Math.abs(bestT).toFixed(2);bestEl.className='pkpi-val '+(bestT>=0?'g':'r');bestEl.classList.remove('pv');}
+    var avwlEl=document.getElementById('dk_avwl_'+address);
+    if(avwlEl){avwlEl.textContent=avgWin.toFixed(2)+' / '+Math.abs(avgLoss).toFixed(2);avwlEl.className='pkpi-val a';avwlEl.classList.remove('pv');}
   }catch(e){}
   try{
     var pos=await get('/positions?address='+address);
@@ -574,7 +622,7 @@ async function loadDrawerData(address){
 }
 async function loadStats(w,i){
   try{var p=await get('/positions?address='+w.address);var el=document.getElementById('pc'+i);if(el){el.textContent=p.length||'0';el.classList.remove('pv');}}catch(e){}
-  try{var pnl=await get('/pnl?address='+w.address);var profit=parseFloat(pnl.profit||pnl.totalProfit||0),vol=parseFloat(pnl.volume||pnl.totalVolume||0);var pe=document.getElementById('pnl'+i),ve=document.getElementById('vol'+i);if(pe){pe.textContent=(profit>=0?'+':'')+'$'+Math.abs(profit).toFixed(0);pe.className='mono '+(profit>=0?'g':'r');}if(ve){ve.textContent=vol>999?'$'+(vol/1000).toFixed(1)+'K':'$'+vol.toFixed(0);ve.classList.remove('pv');}}catch(e){}
+  try{var pnl=await get('/pnl?address='+w.address);var profit=parseFloat(pnl.profit||pnl.totalProfit||0),vol=parseFloat(pnl.volume||pnl.totalVolume||0),portVal=parseFloat(pnl.portfolioValue||0);var pe=document.getElementById('pnl'+i),ve=document.getElementById('vol'+i);if(pe){pe.textContent=(profit>=0?'+':'')+'$'+Math.abs(profit).toFixed(0);pe.className='mono '+(profit>=0?'g':'r');}if(ve){ve.textContent=vol>999?'$'+(vol/1000).toFixed(1)+'K':'$'+vol.toFixed(0);ve.classList.remove('pv');}totalPortfolioValue+=portVal;var pvEl=document.getElementById('sPV');if(pvEl){pvEl.textContent=totalPortfolioValue>999?'$'+(totalPortfolioValue/1000).toFixed(1)+'K':'$'+totalPortfolioValue.toFixed(0);}}}catch(e){}
 }
 function updateSelects(){
   var opts=wallets.map(function(w){return '<option value="'+w.address+'">'+(w.label||w.address.slice(0,10)+'...')+'</option>';}).join('');
@@ -619,6 +667,60 @@ async function loadFeed(){
       '</div>'+
     '</div>';
   }).join('');
+}
+async function loadHeatmap(){
+  try{
+    var data=await get('/consensus');
+    var hotMarkets=[];
+    Object.keys(data).forEach(function(condId){
+      var trades=data[condId];
+      var uniqueWallets={};
+      trades.forEach(function(t){uniqueWallets[t.address]=true;});
+      if(Object.keys(uniqueWallets).length>=2){
+        hotMarkets.push({condId:condId,trades:trades,walletCount:Object.keys(uniqueWallets).length});
+      }
+    });
+    hotMarkets.sort(function(a,b){
+      if(b.walletCount!==a.walletCount)return b.walletCount-a.walletCount;
+      var aTime=Math.max.apply(null,a.trades.map(function(t){return t.time||0;}));
+      var bTime=Math.max.apply(null,b.trades.map(function(t){return t.time||0;}));
+      return bTime-aTime;
+    });
+    var badge=document.getElementById('heatBadge');
+    if(badge)badge.textContent=hotMarkets.length;
+    var grid=document.getElementById('heatGrid');
+    if(!grid)return;
+    if(!hotMarkets.length){
+      grid.innerHTML='<div class="empty"><div class="ei">🗺️</div><div class="et">No consensus data</div><div class="es">Need 2+ wallets in same market</div></div>';
+      return;
+    }
+    var maxWallets=hotMarkets[0].walletCount;
+    grid.innerHTML=hotMarkets.slice(0,15).map(function(m){
+      var marketName=m.trades[0]?(m.trades[0].market||m.condId.slice(0,20)):m.condId.slice(0,20);
+      var barPct=Math.round((m.walletCount/maxWallets)*100);
+      var walletSummary={};
+      m.trades.forEach(function(t){
+        if(!walletSummary[t.address])walletSummary[t.address]={wallet:t.wallet,side:t.side,outcome:t.outcome};
+      });
+      var chips=Object.values(walletSummary).map(function(ws){
+        var cls=ws.side==='BUY'?'buy':'sell';
+        return '<span class="hchip '+cls+'">'+ws.outcome+'</span>';
+      }).join('');
+      var url=PB+'/markets?conditions='+m.condId;
+      return '<div class="hrow" onclick="window.open(\''+url+'\',\'_blank\')">'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'+
+            '<span class="hmkt">'+marketName.slice(0,55)+'</span>'+
+            '<span class="hcount">'+m.walletCount+' wallets</span>'+
+          '</div>'+
+          '<div class="hrow-heat">'+chips+'</div>'+
+          '<div class="hbar-wrap"><div class="hbar" style="width:'+barPct+'%"></div></div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    var lastUpdate=document.getElementById('heatLastUpdate');
+    if(lastUpdate)lastUpdate.textContent='Updated '+new Date().toLocaleTimeString();
+  }catch(e){}
 }
 async function loadPositions(){
   var addr=document.getElementById('posSelect').value,panel=document.getElementById('posPanel');
@@ -665,7 +767,7 @@ async function loadTrades(){
 function toast(msg,type){if(!type)type='i';var c=document.getElementById('toasts'),el=document.createElement('div');el.className='toast '+type;el.textContent=msg;c.appendChild(el);setTimeout(function(){el.remove();},3700);}
 document.getElementById('addrIn').addEventListener('keydown',function(e){if(e.key==='Enter')addWallet();});
 setInterval(function(){var el=document.getElementById('clock');if(el)el.textContent=new Date().toTimeString().split(' ')[0];},1000);
-setInterval(async function(){if(connected){await loadWallets();await loadFeed();}else checkHealth();},15000);
+setInterval(async function(){if(connected){await loadWallets();await loadFeed();await loadHeatmap();}else checkHealth();},15000);
 checkHealth();
 </script>
 </body>
