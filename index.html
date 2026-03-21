@@ -6,7 +6,7 @@
 <title>PolyWatch — Live</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#050810;--surface:#0d1220;--surface2:#131929;--border:#1e2d4a;--accent:#00e5ff;--accent2:#7b4fff;--green:#00ff8c;--red:#ff4466;--yellow:#ffd84d;--text:#e8f0ff;--muted:#5a6a88;--font-mono:'Space Mono',monospace;--font:'Syne',sans-serif;}
+:root{--bg:#050810;--surface:#0d1220;--surface2:#131929;--border:#1e2d4a;--accent:#00e5ff;--accent2:#7b4fff;--green:#00ff8c;--red:#ff4466;--yellow:#ffd84d;--orange:#ff8c00;--text:#e8f0ff;--muted:#5a6a88;--font-mono:'Space Mono',monospace;--font:'Syne',sans-serif;}
 *{box-sizing:border-box;margin:0;padding:0;}
 html{font-size:14px;}
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
@@ -82,7 +82,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .by{background:rgba(255,216,77,.08);color:var(--yellow);border:1px solid rgba(255,216,77,.18);}
 .br{background:rgba(255,68,102,.08);color:var(--red);border:1px solid rgba(255,68,102,.18);}
 .wgrid{display:flex;flex-direction:column;max-height:400px;overflow-y:auto;}
-.wcard{display:grid;grid-template-columns:40px 1fr 60px 70px 70px 65px 34px;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;animation:rowIn .3s ease both;}
+.wcard{display:grid;grid-template-columns:40px 1fr 36px 60px 70px 70px 65px 34px;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;animation:rowIn .3s ease both;}
 @keyframes rowIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
 .wcard:hover{background:rgba(0,229,255,.025);}
 .wcard.hdr{background:var(--surface2);cursor:default;padding:9px 18px;position:sticky;top:0;}
@@ -155,6 +155,26 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .toast.i{border-color:var(--accent);color:var(--accent);}
 .wbtn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:14px;transition:all .15s;padding:0;}
 .wbtn:hover{color:var(--red);}
+.grade-badge{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;font-size:11px;font-weight:800;font-family:var(--font-mono);flex-shrink:0;border:1px solid currentColor;}
+.grade-S{color:var(--green);background:rgba(0,255,140,.12);border-color:rgba(0,255,140,.3);}
+.grade-A{color:var(--accent);background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.25);}
+.grade-B{color:var(--yellow);background:rgba(255,216,77,.08);border-color:rgba(255,216,77,.2);}
+.grade-C{color:var(--orange);background:rgba(255,140,0,.08);border-color:rgba(255,140,0,.2);}
+.grade-D{color:var(--red);background:rgba(255,68,102,.08);border-color:rgba(255,68,102,.2);}
+.fitem-elite{border-left:3px solid var(--green);}
+.fitem-a{border-left:3px solid var(--accent);}
+.ccard{padding:14px;border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer;}
+.ccard:hover{background:rgba(0,229,255,.02);}
+.ccard:last-child{border-bottom:none;}
+.ccard-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;}
+.csig-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:100px;font-family:var(--font-mono);border:1px solid;flex-shrink:0;}
+.csig-weak{color:var(--yellow);background:rgba(255,216,77,.08);border-color:rgba(255,216,77,.25);}
+.csig-moderate{color:var(--orange);background:rgba(255,140,0,.08);border-color:rgba(255,140,0,.25);}
+.csig-strong{color:var(--green);background:rgba(0,255,140,.08);border-color:rgba(0,255,140,.25);}
+.coutcome-yes{color:var(--green);font-weight:800;}
+.coutcome-no{color:var(--red);font-weight:800;}
+.cwallet-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.cwallet-chip{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;gap:4px;}
 </style>
 </head>
 <body>
@@ -206,6 +226,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
         <div class="slabel">👛 Tracked Wallets</div>
         <div class="sval a" id="statWallets">0</div>
         <div class="ssub" id="syncStatus">—</div>
+        <div class="ssub" id="avgWinRate" style="margin-top:3px;color:var(--yellow);">—% avg win rate</div>
       </div>
       <div class="stat-card">
         <div class="slabel">🔄 Backend</div>
@@ -216,11 +237,12 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
         <div class="slabel">💰 Total Profit</div>
         <div class="sval" id="totalProfit" style="color:var(--green)">+$0.00</div>
         <div class="ssub" id="totalVolume">$0 volume</div>
+        <div class="ssub" id="totalPortfolio" style="margin-top:3px;color:var(--accent);">$0 portfolio</div>
       </div>
       <div class="stat-card">
-        <div class="slabel">Trade Events</div>
+        <div class="slabel">🐋 Active Signals</div>
         <div class="sval g" id="sEv">0</div>
-        <div class="ssub">Since page load</div>
+        <div class="ssub" id="sEvSub">Consensus signals</div>
       </div>
     </div>
     <div class="grid">
@@ -244,6 +266,15 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
           <div class="phd"><div class="ptitle">⚡ Live Activity <span class="badge bg">LIVE</span></div><div id="clock" style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">--:--:--</div></div>
           <div class="feed" id="actFeed">
             <div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:18px;" id="consensusPanel">
+          <div class="phd">
+            <div class="ptitle">🐋 Smart Money Consensus <span class="badge bg" id="consensusBadge">0</span></div>
+            <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="consensusAge">—</div>
+          </div>
+          <div id="consensusFeed">
+            <div class="empty"><div class="ei">🐋</div><div class="et">No consensus signals yet</div><div class="es">Signals appear when 2+ wallets buy the same side</div></div>
           </div>
         </div>
       </div>
@@ -341,13 +372,27 @@ async function addWallet(){
   finally{document.getElementById('trackBtn').classList.remove('loading');}
 }
 
-function calculateWinRate(pattern){
-  if(!pattern||!pattern.totalTrades||pattern.totalTrades<1) return 0;
-  var winRate=0;
-  if(pattern.tag==='sharp') winRate=70;
-  else if(pattern.tag==='follower') winRate=45;
-  else if(pattern.tag==='mixed') winRate=55;
-  return winRate;
+function calculateGrade(w){
+  if(!w) return '?';
+  var wr=w.winRate||0;
+  var roi=w.roi||0;
+  if(wr>65&&roi>20) return 'S';
+  if(wr>55&&roi>10) return 'A';
+  if(wr>45) return 'B';
+  if(wr>35) return 'C';
+  return 'D';
+}
+
+function gradeColor(grade){
+  var colors={S:'var(--green)',A:'var(--accent)',B:'var(--yellow)',C:'var(--orange)',D:'var(--red)'};
+  return colors[grade]||'var(--muted)';
+}
+
+function detailStat(label,value,color){
+  return '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">'+
+    '<div style="font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;">'+label+'</div>'+
+    '<div style="font-size:16px;font-weight:800;font-family:var(--font-mono);color:'+color+';">'+value+'</div>'+
+  '</div>';
 }
 
 function calculateEntryTiming(pattern){
@@ -409,6 +454,29 @@ function closeWalletDetail(){
   document.querySelectorAll('.wcard').forEach(c=>c.classList.remove('expanded'));
 }
 
+async function loadAllPnl(){
+  if(!wallets.length) return;
+  for(var i=0;i<wallets.length;i++){
+    var w=wallets[i];
+    try{
+      var pnlData=await get('/pnl?address='+w.address);
+      if(pnlData){
+        w.profit=parseFloat(pnlData.profit||pnlData.totalProfit||0);
+        w.volume=parseFloat(pnlData.volume||0);
+        w.winRate=parseFloat(pnlData.winRate||0);
+        w.roi=parseFloat(pnlData.roi||0);
+        w.wins=pnlData.wins||0;
+        w.losses=pnlData.losses||0;
+        w.avgWin=parseFloat(pnlData.avgWin||0);
+        w.avgLoss=parseFloat(pnlData.avgLoss||0);
+        w.bestTrade=parseFloat(pnlData.bestTrade||0);
+        w.worstTrade=parseFloat(pnlData.worstTrade||0);
+        w.portfolioValue=parseFloat(pnlData.portfolioValue||0);
+      }
+    }catch(e){}
+  }
+}
+
 async function loadWallets(){
   try{
     wallets=await get('/wallets');
@@ -420,11 +488,22 @@ async function loadWallets(){
     syncTime=new Date().toLocaleTimeString();
     document.getElementById('syncStatus').textContent='Last: '+syncTime;
 
-    var totalProf=0,totalVol=0;
-    wallets.forEach(w=>{totalProf+=(w.profit||0);totalVol+=(w.volume||0);});
+    await loadAllPnl();
+
+    var totalProf=0,totalVol=0,totalPortfolio=0;
+    var totalWinRateSum=0,winRateCount=0;
+    wallets.forEach(function(w){
+      totalProf+=(w.profit||0);
+      totalVol+=(w.volume||0);
+      totalPortfolio+=(w.portfolioValue||0);
+      if(w.winRate>0){totalWinRateSum+=w.winRate;winRateCount++;}
+    });
     document.getElementById('totalProfit').textContent=(totalProf>=0?'+':'')+totalProf.toFixed(2);
     document.getElementById('totalProfit').style.color=totalProf>=0?'var(--green)':'var(--red)';
     document.getElementById('totalVolume').textContent='$'+totalVol.toFixed(0)+' volume';
+    document.getElementById('totalPortfolio').textContent='$'+totalPortfolio.toFixed(0)+' portfolio';
+    var avgWR=winRateCount>0?(totalWinRateSum/winRateCount).toFixed(1):'—';
+    document.getElementById('avgWinRate').textContent=avgWR+'% avg win rate';
 
     renderWallets(wallets);
     updateSelects();
@@ -467,6 +546,7 @@ function renderWallets(wList){
   // Rebuild wallet grid
   var html='<div class="wcard hdr">';
   html+='<div></div><div style="font-weight:700">Wallet</div>';
+  html+='<div style="font-size:11px;color:var(--muted)">Grade</div>';
   html+='<div style="font-size:11px;color:var(--muted)">Win Rate</div>';
   html+='<div style="font-size:11px;color:var(--muted)">PnL</div>';
   html+='<div style="font-size:11px;color:var(--muted)">Volume</div>';
@@ -489,14 +569,16 @@ function renderWallets(wList){
     var tagLabel=tag==='sharp'?'🧠 Sharp':tag==='follower'?'📈 Follower':'Mixed';
     var tagHtml='<span class="ptag '+tag+'">'+tagLabel+'</span>';
 
-    var winRate=calculateWinRate(w.pattern);
+    var grade=calculateGrade(w);
+    var realWinRate=w.winRate?w.winRate.toFixed(1):'—';
     var entryTiming=calculateEntryTiming(w.pattern);
     var isExpanded=expandedWalletAddr===w.address;
-    
+
     html+='<div class="wcard '+(isExpanded?'expanded':'')+'" data-wallet-addr="'+w.address+'" onclick="toggleWalletDetail(\''+w.address+'\')">';
     html+='<div>👛</div>';
     html+='<div style="font-weight:600">'+(w.label||w.address.slice(0,8))+tagHtml+'</div>';
-    html+='<div style="color:var(--yellow);font-size:12px;font-weight:700">'+winRate+'%</div>';
+    html+='<div><span class="grade-badge grade-'+grade+'">'+grade+'</span></div>';
+    html+='<div style="color:var(--yellow);font-size:12px;font-weight:700">'+realWinRate+'%</div>';
     html+='<div style="color:'+pnlColor+'">'+(profit>=0?'+':'')+profit.toFixed(2)+'</div>';
     html+='<div style="color:var(--text)">$'+vol.toFixed(0)+'</div>';
     html+='<div style="font-size:12px;color:var(--accent)">'+(w.entryPriceAlert?Math.round(w.entryPriceAlert*100)+'¢':'—')+'</div>';
@@ -505,11 +587,21 @@ function renderWallets(wList){
     
     // Detail panel (stays open until closed)
     html+='<div class="wdetail '+(isExpanded?'show':'')+'">';
+    html+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;">';
+    html+=detailStat('Win Rate',(w.winRate||0).toFixed(1)+'%','var(--yellow)');
+    html+=detailStat('ROI',(w.roi>=0?'+':'')+((w.roi||0).toFixed(1))+'%',w.roi>=0?'var(--green)':'var(--red)');
+    html+=detailStat('Portfolio','$'+(w.portfolioValue||0).toFixed(2),'var(--accent)');
+    html+=detailStat('Wins',(w.wins||0),'var(--green)');
+    html+=detailStat('Losses',(w.losses||0),'var(--red)');
+    html+=detailStat('Grade',grade,gradeColor(grade));
+    html+='</div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Avg Win</div><div class="wdetail-value" style="color:var(--green)">+$'+(w.avgWin||0).toFixed(2)+'</div></div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Avg Loss</div><div class="wdetail-value" style="color:var(--red)">$'+(w.avgLoss||0).toFixed(2)+'</div></div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Best Trade</div><div class="wdetail-value" style="color:var(--green)">+$'+(w.bestTrade||0).toFixed(2)+'</div></div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Worst Trade</div><div class="wdetail-value" style="color:var(--red)">$'+(w.worstTrade||0).toFixed(2)+'</div></div>';
     html+='<div class="wdetail-item"><div class="wdetail-label">Entry Timing</div><div class="wdetail-value">'+entryTiming+'</div></div>';
-    html+='<div class="wdetail-item"><div class="wdetail-label">Risk/Reward</div><div class="wdetail-value">'+calculateRiskReward(profit,vol)+'</div></div>';
-    html+='<div class="wdetail-item"><div class="wdetail-label">Total Trades</div><div class="wdetail-value">'+(w.pattern&&w.pattern.totalTrades?w.pattern.totalTrades:0)+'</div></div>';
+    html+='<div class="wdetail-item"><div class="wdetail-label">Total Trades</div><div class="wdetail-value">'+(w.pattern&&w.pattern.totalTrades||0)+'</div></div>';
     html+='<div class="wdetail-item"><div class="wdetail-label">Avg Entry Price</div><div class="wdetail-value">'+(w.pattern&&w.pattern.avgEntryPrice?Math.round(w.pattern.avgEntryPrice*100)+'¢':'—')+'</div></div>';
-    html+='<div class="wdetail-item"><div class="wdetail-label">Pattern</div><div class="wdetail-value">'+tag+'</div></div>';
     html+='<div class="wdetail-close"><button onclick="event.stopPropagation();closeWalletDetail()">✕ Close</button></div>';
     html+='</div>';
   });
@@ -544,20 +636,27 @@ async function loadFeed(){
         var ago=timeAgo(t.timestamp);
         var marketName=t.title||t.market||'Unknown Market';
         
-        feedItems.unshift({id:id,wallet:w.label,color:buy?'var(--green)':'var(--red)',buy:buy,out:out,size:size,price:price,ago:ago,market:marketName});
+        var walletGrade=calculateGrade(w);
+        feedItems.unshift({id:id,wallet:w.label,address:w.address,grade:walletGrade,winRate:(w.winRate||0).toFixed(1),color:buy?'var(--green)':'var(--red)',buy:buy,out:out,size:size,price:price,ago:ago,market:marketName});
         evCount++;
       });
     }catch(e){}
   }
   if(feedItems.length>60) feedItems.splice(60);
-  document.getElementById('sEv').textContent=evCount;
   var el=document.getElementById('actFeed');
   if(!feedItems.length){el.innerHTML='<div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div>';return;}
   el.innerHTML=feedItems.slice(0,20).map(function(f,i){
-    return '<div class="fitem" style="animation-delay:'+(i*.02)+'s">'+
+    var isElite=f.grade==='S';
+    var isA=f.grade==='A';
+    var eliteClass=isElite?' fitem-elite':(isA?' fitem-a':'');
+    var gColor=gradeColor(f.grade||'D');
+    var gradeBadge=f.grade?'<span class="grade-badge grade-'+f.grade+'" style="font-size:9px;width:16px;height:16px;margin-left:4px;">'+f.grade+'</span>':'';
+    var winRateSpan=f.winRate&&parseFloat(f.winRate)>0?'<span style="font-size:10px;color:var(--muted);margin-left:6px;">'+f.winRate+'% WR</span>':'';
+
+    return '<div class="fitem'+eliteClass+'" style="animation-delay:'+(i*.02)+'s">'+
       '<div class="fdot" style="background:'+f.color+'"></div>'+
       '<div class="fbody">'+
-        '<div class="ftop"><span class="fwho">'+f.wallet+'</span><span class="ftime">'+f.ago+'</span></div>'+
+        '<div class="ftop"><span class="fwho">'+f.wallet+gradeBadge+winRateSpan+'</span><span class="ftime">'+f.ago+'</span></div>'+
         '<div class="fdesc"><b>'+(f.buy?'🟢 BUY':'🔴 SELL')+'</b> '+f.out+' · $'+f.size+' at '+f.price+'¢</div>'+
         '<div style="font-size:11px;color:var(--muted);margin-top:2px;margin-bottom:8px">'+f.market.slice(0,70)+'</div>'+
         '<div class="ftags">'+
@@ -569,6 +668,76 @@ async function loadFeed(){
       '</div>'+
     '</div>';
   }).join('');
+}
+
+var consensusData={};
+
+async function loadConsensus(){
+  try{
+    var raw=await get('/consensus');
+    consensusData=raw;
+
+    var signals=[];
+    var now=Date.now();
+    var cutoff=now-7200000;
+
+    Object.keys(raw).forEach(function(marketId){
+      var trades=raw[marketId].filter(function(t){return t.time>cutoff;});
+      if(!trades.length) return;
+
+      var marketName=trades[0].market||marketId;
+
+      ['YES','NO'].forEach(function(direction){
+        var buys=trades.filter(function(t){return t.side==='BUY'&&t.outcome===direction;});
+        var seen={};
+        var unique=buys.filter(function(t){if(seen[t.address]) return false;seen[t.address]=true;return true;});
+        if(unique.length<2) return;
+
+        var totalSize=buys.reduce(function(s,t){return s+t.size;},0);
+        var avgPrice=buys.reduce(function(s,t){return s+t.price;},0)/buys.length;
+        var latest=Math.max.apply(null,buys.map(function(t){return t.time;}));
+
+        signals.push({marketId:marketId,market:marketName,direction:direction,wallets:unique,walletCount:unique.length,totalSize:totalSize,avgPrice:avgPrice,latestTime:latest});
+      });
+    });
+
+    signals.sort(function(a,b){if(b.walletCount!==a.walletCount) return b.walletCount-a.walletCount;return b.totalSize-a.totalSize;});
+
+    document.getElementById('consensusBadge').textContent=signals.length;
+    document.getElementById('consensusAge').textContent=signals.length?'Updated '+timeAgo(now):'—';
+
+    var el=document.getElementById('consensusFeed');
+    if(!signals.length){el.innerHTML='<div class="empty"><div class="ei">🐋</div><div class="et">No consensus signals</div><div class="es">Signals appear when 2+ wallets buy the same side</div></div>';return;}
+
+    el.innerHTML=signals.slice(0,10).map(function(sig,i){
+      var strength=sig.walletCount>=4?'strong':sig.walletCount===3?'moderate':'weak';
+      var strengthLabel=strength==='strong'?'🟢 STRONG':strength==='moderate'?'🟠 MODERATE':'🟡 WEAK';
+      var dirClass=sig.direction==='YES'?'coutcome-yes':'coutcome-no';
+      var avgPriceCents=Math.round(sig.avgPrice*100);
+
+      var chipHtml=sig.wallets.map(function(t){
+        var w=wallets.find(function(x){return x.address===t.address;});
+        var grade=w?calculateGrade(w):'?';
+        var gColor=w?gradeColor(grade):'var(--muted)';
+        return '<span class="cwallet-chip"><span style="color:'+gColor+';font-weight:800;font-size:9px;">'+grade+'</span><span>'+(t.wallet||t.address.slice(0,8))+'</span></span>';
+      }).join('');
+
+      return '<div class="ccard" onclick="openMarketOnPolymarket(\''+sig.market.replace(/'/g,"\\'")+'\')" style="animation-delay:'+(i*0.03)+'s">'+
+        '<div class="ccard-top">'+
+          '<span class="csig-badge csig-'+strength+'">'+strengthLabel+' · '+sig.walletCount+' wallets</span>'+
+          '<span class="'+dirClass+'" style="font-size:13px;">'+sig.direction+'</span>'+
+        '</div>'+
+        '<div style="font-size:12px;font-weight:700;margin-bottom:6px;">'+sig.market.slice(0,75)+'</div>'+
+        '<div style="display:flex;gap:16px;font-size:11px;color:var(--muted);">'+
+          '<span>💵 $'+sig.totalSize.toFixed(0)+' total</span>'+
+          '<span>📈 '+avgPriceCents+'¢ avg</span>'+
+          '<span>🕐 '+timeAgo(sig.latestTime)+'</span>'+
+        '</div>'+
+        '<div class="cwallet-list">'+chipHtml+'</div>'+
+      '</div>';
+    }).join('');
+
+  }catch(e){console.error('Consensus load failed:',e);}
 }
 
 async function loadPositions(){
@@ -706,10 +875,12 @@ setInterval(async function(){
     }
     
     await loadFeed();
+    await loadConsensus();
   }else checkHealth();
 },30000);
 
 checkHealth();
+loadConsensus();
 </script>
 </body>
 </html>
