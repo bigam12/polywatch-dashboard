@@ -178,6 +178,23 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .coutcome-no{color:var(--red);font-weight:800;}
 .cwallet-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
 .cwallet-chip{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;gap:4px;}
+/* ── AI Signals panel ─────────────────────────────────────── */
+.sig-card{background:var(--surface2);border-radius:8px;padding:12px 14px;margin-bottom:8px;border-left:3px solid var(--accent);transition:opacity .2s;}
+.sig-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.sig-strategy{font-size:11px;font-weight:700;letter-spacing:.5px;}
+.sig-time{font-size:10px;color:var(--muted);}
+.sig-market{font-size:12px;font-weight:600;margin-bottom:8px;line-height:1.35;color:var(--text);}
+.sig-dir{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.sig-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;}
+.dir-yes{background:rgba(0,200,100,.15);color:#00c864;}
+.dir-no{background:rgba(255,60,60,.15);color:#ff4444;}
+.dir-arb{background:rgba(150,100,255,.15);color:#a477ff;}
+.sig-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.sig-fill{height:100%;border-radius:2px;background:var(--accent);}
+.sig-conf{font-size:10px;color:var(--muted);white-space:nowrap;min-width:28px;text-align:right;}
+.sig-reason{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.4;}
+.sig-trade{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);text-decoration:none;padding:4px 12px;border:1px solid var(--accent);border-radius:4px;transition:background .15s,color .15s;}
+.sig-trade:hover{background:var(--accent);color:#000;}
 </style>
 </head>
 <body>
@@ -282,7 +299,16 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
         </div>
       </div>
       <div>
-        <div class="panel">
+        <div class="panel" id="signalsPanel">
+          <div class="phd">
+            <div class="ptitle">🤖 AI Signals <span class="badge ba" id="sigBadge">0</span></div>
+            <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="sigAge">—</div>
+          </div>
+          <div id="sigFeed">
+            <div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:18px;">
           <div class="phd"><div class="ptitle">📋 Positions</div></div>
           <div style="padding:14px 18px;"><select id="posSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadPositions()"><option value="">Select wallet...</option></select></div>
           <div id="posPanel">
@@ -905,16 +931,54 @@ function toast(msg,type){if(!type)type='i';var c=document.getElementById('toasts
 document.getElementById('addrIn').addEventListener('keydown',function(e){if(e.key==='Enter')addWallet();});
 setInterval(function(){var el=document.getElementById('clock');if(el)el.textContent=new Date().toTimeString().split(' ')[0];},1000);
 
+async function loadSignals(){
+  try{
+    var signals=await get('/signals?limit=10');
+    var feed=document.getElementById('sigFeed');
+    var badge=document.getElementById('sigBadge');
+    var age=document.getElementById('sigAge');
+    if(!signals||!signals.length){
+      feed.innerHTML='<div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>';
+      badge.textContent='0'; return;
+    }
+    badge.textContent=signals.length;
+    if(signals[0]&&signals[0].createdAt) age.textContent=timeAgo(signals[0].createdAt);
+    var stratColor={whale:'#4a9eff',arbitrage:'#a477ff',near_certainty:'#ff9944'};
+    var stratEmoji={whale:'🐋',arbitrage:'⚡',near_certainty:'🎯'};
+    var stratLabel={whale:'WHALE',arbitrage:'ARBITRAGE',near_certainty:'CONTRARIAN'};
+    feed.innerHTML=signals.map(function(s){
+      var sc=stratColor[s.strategy]||'var(--accent)';
+      var se=stratEmoji[s.strategy]||'📡';
+      var sl=stratLabel[s.strategy]||s.strategy.toUpperCase();
+      var dc=s.direction==='YES'?'dir-yes':s.direction==='NO'?'dir-no':'dir-arb';
+      var dl=s.direction==='YES'?'BUY YES':s.direction==='NO'?'BUY NO':'BUY ALL YES';
+      var conf=s.confidence||0;
+      var url=s.slug?'https://polymarket.com/event/'+s.slug:'https://polymarket.com/search?q='+encodeURIComponent((s.market||'').slice(0,50));
+      var reason=(s.reasoning||'').slice(0,130);
+      if((s.reasoning||'').length>130) reason+='…';
+      return '<div class="sig-card" style="border-left-color:'+sc+'">'+
+        '<div class="sig-head"><span class="sig-strategy" style="color:'+sc+'">'+se+' '+sl+'</span><span class="sig-time">'+timeAgo(s.createdAt)+'</span></div>'+
+        '<div class="sig-market">'+(s.market||'').slice(0,85)+'</div>'+
+        '<div class="sig-dir"><span class="sig-badge '+dc+'">'+dl+'</span><div class="sig-bar"><div class="sig-fill" style="width:'+conf+'%;background:'+sc+'"></div></div><span class="sig-conf">'+conf+'%</span></div>'+
+        '<div class="sig-reason">'+reason+'</div>'+
+        '<a href="'+url+'" target="_blank" class="sig-trade" style="color:'+sc+';border-color:'+sc+'">Trade on Polymarket →</a>'+
+        '</div>';
+    }).join('');
+  }catch(e){console.warn('signals load failed',e);}
+}
+
 setInterval(async function(){
   if(connected){
     await loadWallets();
     await loadFeed();
     await loadConsensus();
+    await loadSignals();
   }else checkHealth();
 },30000);
 
 checkHealth();
 loadConsensus();
+loadSignals();
 </script>
 </body>
 </html>
