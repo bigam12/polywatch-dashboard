@@ -195,6 +195,45 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .sig-reason{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.4;}
 .sig-trade{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);text-decoration:none;padding:4px 12px;border:1px solid var(--accent);border-radius:4px;transition:background .15s,color .15s;}
 .sig-trade:hover{background:var(--accent);color:#000;}
+/* ── Daily Alpha Picks ────────────────────────────────────────────────── */
+.picks-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:18px;}
+.picks-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+.picks-scan-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.picks-stat{background:var(--surface2);padding:12px 18px;text-align:center;}
+.picks-stat-val{font-size:22px;font-weight:800;font-family:var(--font-mono);letter-spacing:-1px;}
+.picks-stat-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:3px;}
+.picks-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);}
+@media(max-width:700px){.picks-grid{grid-template-columns:1fr;}}
+.pick-card{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:8px;transition:background .15s;cursor:default;}
+.pick-card:hover{background:var(--surface2);}
+.pick-top{display:flex;align-items:center;gap:10px;}
+.rank-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;font-family:var(--font-mono);flex-shrink:0;border:1px solid;}
+.rank-1{color:#ffd700;background:rgba(255,215,0,.12);border-color:rgba(255,215,0,.3);}
+.rank-2{color:#c0c0c0;background:rgba(192,192,192,.1);border-color:rgba(192,192,192,.25);}
+.rank-3{color:#cd7f32;background:rgba(205,127,50,.1);border-color:rgba(205,127,50,.25);}
+.rank-other{color:var(--muted);background:rgba(90,106,136,.1);border-color:rgba(90,106,136,.2);}
+.pick-name{flex:1;min-width:0;}
+.pick-label{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pick-addr{font-size:10px;color:var(--muted);font-family:var(--font-mono);}
+.score-row{display:flex;align-items:center;gap:8px;}
+.score-bar-bg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.score-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent));}
+.score-val{font-size:11px;font-weight:700;font-family:var(--font-mono);color:var(--accent);min-width:28px;text-align:right;}
+.pick-stats{display:flex;gap:12px;font-size:11px;}
+.pick-stat{display:flex;flex-direction:column;gap:2px;}
+.pick-stat-k{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.pick-stat-v{font-weight:700;font-family:var(--font-mono);}
+.pick-actions{display:flex;gap:6px;margin-top:2px;}
+.btn-view-profile{flex:1;padding:5px 8px;font-size:10px;background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--muted);cursor:pointer;font-weight:700;transition:all .15s;text-decoration:none;text-align:center;display:inline-flex;align-items:center;justify-content:center;gap:4px;}
+.btn-view-profile:hover{border-color:var(--accent);color:var(--accent);}
+.btn-add-pick{flex:1;padding:5px 8px;font-size:10px;background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);border-radius:5px;color:var(--accent);cursor:pointer;font-weight:700;transition:all .15s;}
+.btn-add-pick:hover{background:rgba(0,229,255,.18);}
+.btn-add-pick:disabled{opacity:.4;cursor:not-allowed;}
+.picks-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;color:var(--muted);}
+.picks-scanning{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;gap:10px;color:var(--muted);}
+.scan-spinner{font-size:28px;animation:spin .8s linear infinite;}
+.rescan-btn{padding:6px 14px;font-size:11px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-weight:700;transition:all .15s;}
+.rescan-btn:hover{border-color:var(--accent);color:var(--accent);}
 </style>
 </head>
 <body>
@@ -265,6 +304,24 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
         <div class="ssub" id="sEvSub">Consensus signals</div>
       </div>
     </div>
+    <div class="picks-panel" id="picksPanel">
+      <div class="picks-hd">
+        <div class="ptitle">🎯 Daily Alpha Picks <span class="badge ba" id="picksBadge">—</span></div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:10px;color:var(--muted);font-family:var(--font-mono);" id="picksAge">—</span>
+          <button class="rescan-btn" onclick="loadDailyPicks(true)">↻ Rescan</button>
+        </div>
+      </div>
+      <div class="picks-scan-bar" id="picksScanBar" style="display:none;">
+        <div class="picks-stat"><div class="picks-stat-val a" id="psScanned">—</div><div class="picks-stat-lbl">Wallets Scanned</div></div>
+        <div class="picks-stat"><div class="picks-stat-val" style="color:var(--yellow);" id="psPassed">—</div><div class="picks-stat-lbl">Passed Filters</div></div>
+        <div class="picks-stat"><div class="picks-stat-val g" id="psPicks">—</div><div class="picks-stat-lbl">Top Picks</div></div>
+        <div class="picks-stat"><div class="picks-stat-val" style="color:var(--accent2);" id="psROI">—</div><div class="picks-stat-lbl">Avg ROI</div></div>
+      </div>
+      <div class="picks-grid" id="picksGrid">
+        <div style="grid-column:1/-1;" class="picks-scanning"><div class="scan-spinner">🎯</div><div style="font-size:13px;font-weight:700;">Loading picks...</div></div>
+      </div>
+    </div>
     <div class="grid">
       <div>
         <div class="panel">
@@ -304,7 +361,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
             <div class="ptitle">🤖 AI Signals <span class="badge ba" id="sigBadge">0</span></div>
             <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="sigAge">—</div>
           </div>
-          <div id="sigFeed">
+          <div id="sigFeed" class="feed" style="max-height:700px;overflow-y:auto;">
             <div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>
           </div>
         </div>
@@ -624,7 +681,7 @@ function renderWallets(wList){
   html+='<div style="font-size:11px;color:var(--muted)">Grade</div>';
   html+='<div style="font-size:11px;color:var(--muted)">Win Rate</div>';
   html+='<div style="font-size:11px;color:var(--muted)">PnL</div>';
-  html+='<div style="font-size:11px;color:var(--muted)">Volume</div>';
+  html+='<div style="font-size:11px;color:var(--muted)">ROI</div>';
   html+='<div style="font-size:11px;color:var(--muted)">Alert $</div>';
   html+='<div></div></div>';
   
@@ -651,11 +708,12 @@ function renderWallets(wList){
 
     html+='<div class="wcard '+(isExpanded?'expanded':'')+'" data-wallet-addr="'+w.address+'" onclick="toggleWalletDetail(\''+w.address+'\')">';
     html+='<div>👛</div>';
-    html+='<div style="font-weight:600">'+(w.label||w.address.slice(0,8))+tagHtml+'</div>';
+    html+='<div style="font-weight:600"><a href="https://polymarket.com/profile/'+w.address+'" target="_blank" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'">'+(w.label||w.address.slice(0,8))+'</a>'+tagHtml+'</div>';
     html+='<div><span class="grade-badge grade-'+grade+'">'+grade+'</span></div>';
     html+='<div style="color:var(--yellow);font-size:12px;font-weight:700">'+realWinRate+'%</div>';
     html+='<div style="color:'+pnlColor+'">'+(profit>=0?'+$':'-$')+formatNum(Math.abs(profit))+'</div>';
-    html+='<div style="color:var(--text)">$'+formatNum(vol)+'</div>';
+    html+='<div style="color:'+(w.roi>=0?'var(--green)':'var(--red)')+';">'+
+      (w.roi>=0?'+':'')+((w.roi||0).toFixed(1))+'%</div>';
     html+='<div style="font-size:12px;color:var(--accent)">'+(w.entryPriceAlert?Math.round(w.entryPriceAlert*100)+'¢':'—')+'</div>';
     html+='<button class="wbtn" onclick="event.stopPropagation();setEntryPrice(\''+w.address+'\')" title="Set entry price alert">⏰</button>';
     html+='</div>';
@@ -954,17 +1012,112 @@ async function loadSignals(){
       var dl=s.direction==='YES'?'BUY YES':s.direction==='NO'?'BUY NO':'BUY ALL YES';
       var conf=s.confidence||0;
       var url=s.slug?'https://polymarket.com/event/'+s.slug:'https://polymarket.com/search?q='+encodeURIComponent((s.market||'').slice(0,50));
-      var reason=(s.reasoning||'').slice(0,130);
-      if((s.reasoning||'').length>130) reason+='…';
+      var reason=s.reasoning||'';
       return '<div class="sig-card" style="border-left-color:'+sc+'">'+
         '<div class="sig-head"><span class="sig-strategy" style="color:'+sc+'">'+se+' '+sl+'</span><span class="sig-time">'+timeAgo(s.createdAt)+'</span></div>'+
-        '<div class="sig-market">'+(s.market||'').slice(0,85)+'</div>'+
+        '<div class="sig-market">'+(s.market||'')+'</div>'+
         '<div class="sig-dir"><span class="sig-badge '+dc+'">'+dl+'</span><div class="sig-bar"><div class="sig-fill" style="width:'+conf+'%;background:'+sc+'"></div></div><span class="sig-conf">'+conf+'%</span></div>'+
         '<div class="sig-reason">'+reason+'</div>'+
         '<a href="'+url+'" target="_blank" class="sig-trade" style="color:'+sc+';border-color:'+sc+'">Trade on Polymarket →</a>'+
         '</div>';
     }).join('');
   }catch(e){console.warn('signals load failed',e);}
+}
+
+var dailyPicksData=null;
+
+async function loadDailyPicks(force){
+  var grid=document.getElementById('picksGrid');
+  var badge=document.getElementById('picksBadge');
+  var age=document.getElementById('picksAge');
+  var scanBar=document.getElementById('picksScanBar');
+
+  if(force){
+    grid.innerHTML='<div style="grid-column:1/-1;" class="picks-scanning"><div class="scan-spinner">⟳</div><div style="font-size:13px;font-weight:700;color:var(--accent)">Scanning wallets...</div></div>';
+    try{ await post('/daily-picks',{}); }catch(e){}
+    await new Promise(r=>setTimeout(r,3000));
+  }
+
+  try{
+    var data=await get('/daily-picks');
+    dailyPicksData=data;
+
+    if(data.scanning){
+      grid.innerHTML='<div style="grid-column:1/-1;" class="picks-scanning"><div class="scan-spinner">⟳</div><div style="font-size:13px;font-weight:700;color:var(--accent)">Scan in progress...</div><div style="font-size:11px;">Check back in a minute</div></div>';
+      badge.textContent='…';
+      return;
+    }
+
+    if(!data.picks||!data.picks.length){
+      grid.innerHTML='<div style="grid-column:1/-1;" class="picks-empty"><div class="ei">🎯</div><div class="et">No picks yet</div><div class="es">Click ↻ Rescan to run the daily scanner</div></div>';
+      badge.textContent='0';
+      return;
+    }
+
+    // Update scan stats bar
+    scanBar.style.display='grid';
+    document.getElementById('psScanned').textContent=data.scanned||'—';
+    document.getElementById('psPassed').textContent=data.passed||'—';
+    document.getElementById('psPicks').textContent=data.picks.length;
+    document.getElementById('psROI').textContent=(data.avgROI||0)+'%';
+    badge.textContent=data.picks.length;
+    age.textContent=data.scannedAt?'Last scan: '+timeAgo(data.scannedAt):'—';
+
+    // Render pick cards
+    var trackedAddrs=new Set(wallets.map(function(w){return w.address;}));
+    grid.innerHTML=data.picks.map(function(p,i){
+      var rank=i+1;
+      var rankClass=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-other';
+      var pnlColor=p.profit>=0?'var(--green)':'var(--red)';
+      var roiColor=p.roi>=0?'var(--green)':'var(--red)';
+      var isTracked=trackedAddrs.has(p.address);
+      var profileUrl='https://polymarket.com/profile/'+p.address;
+      var scoreWidth=Math.min(p.score,100);
+
+      return '<div class="pick-card">'+
+        '<div class="pick-top">'+
+          '<div class="rank-num '+rankClass+'">#'+rank+'</div>'+
+          '<div class="pick-name">'+
+            '<div class="pick-label">'+p.label+'</div>'+
+            '<div class="pick-addr">'+p.address.slice(0,8)+'...'+p.address.slice(-4)+'</div>'+
+          '</div>'+
+          '<span class="grade-badge grade-'+p.grade+'">'+p.grade+'</span>'+
+        '</div>'+
+        '<div class="score-row">'+
+          '<div class="score-bar-bg"><div class="score-bar-fill" style="width:'+scoreWidth+'%"></div></div>'+
+          '<div class="score-val">'+p.score+'</div>'+
+        '</div>'+
+        '<div class="pick-stats">'+
+          '<div class="pick-stat"><div class="pick-stat-k">Win Rate</div><div class="pick-stat-v" style="color:var(--yellow)">'+p.winRate+'%</div></div>'+
+          '<div class="pick-stat"><div class="pick-stat-k">ROI</div><div class="pick-stat-v" style="color:'+roiColor+'">'+(p.roi>=0?'+':'')+p.roi+'%</div></div>'+
+          '<div class="pick-stat"><div class="pick-stat-k">P&L</div><div class="pick-stat-v" style="color:'+pnlColor+'">'+(p.profit>=0?'+$':'-$')+formatNum(Math.abs(p.profit))+'</div></div>'+
+          '<div class="pick-stat"><div class="pick-stat-k">Trades</div><div class="pick-stat-v" style="color:var(--muted)">'+p.tradeCount+'</div></div>'+
+        '</div>'+
+        '<div class="pick-actions">'+
+          '<a href="'+profileUrl+'" target="_blank" class="btn-view-profile">👤 Profile</a>'+
+          '<button class="btn-add-pick" '+(isTracked?'disabled':'')+' onclick="addPickToTracking(\''+p.address+'\',\''+p.label.replace(/'/g,"\\'")+'\')">'+(isTracked?'✓ Tracked':'+ Track')+'</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }catch(e){
+    grid.innerHTML='<div style="grid-column:1/-1;" class="picks-empty"><div class="ei">❌</div><div class="et">Failed to load picks</div><div class="es">'+e.message+'</div></div>';
+  }
+}
+
+async function addPickToTracking(address, label){
+  try{
+    await post('/wallets',{address:address,label:label,threshold:50});
+    saveWalletLocal(address,label);
+    toast('✅ Now tracking '+label,'ok');
+    await loadWallets();
+    await loadDailyPicks(false); // refresh to update button states
+  }catch(e){
+    if(e.message.includes('409')||e.message.includes('Already')){
+      toast('Already tracking this wallet','i');
+    }else{
+      toast('❌ '+e.message,'err');
+    }
+  }
 }
 
 setInterval(async function(){
@@ -976,9 +1129,12 @@ setInterval(async function(){
   }else checkHealth();
 },30000);
 
+setInterval(function(){if(connected) loadDailyPicks(false);}, 5*60*1000); // refresh picks every 5 min
+
 checkHealth();
 loadConsensus();
 loadSignals();
+loadDailyPicks(false);
 </script>
 </body>
 </html>
