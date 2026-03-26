@@ -487,6 +487,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 const PB='https://polymarket.com';
 var wallets=[],feedItems=[],evCount=0,connected=false,syncTime=null,activePeriod='alltime';
 var expandedWalletAddr=null; // Track which wallet detail is open
+var activeWalletTabs={}; // Track active tab ('stats'|'history') per wallet address
 const API='https://polywatch-backend.onrender.com';
 
 function getSavedWallets(){try{return JSON.parse(localStorage.getItem('polywatchWallets')||'[]');}catch{return[];}}
@@ -766,6 +767,7 @@ async function loadWalletProfile(addr){
 
 function switchWalletTab(addr,tab,btn){
   event.stopPropagation();
+  activeWalletTabs[addr]=tab;
   var statsDiv=document.getElementById('wdstats-'+addr);
   var histDiv=document.getElementById('wdhistory-'+addr);
   if(statsDiv) statsDiv.style.display=tab==='stats'?'':'none';
@@ -955,6 +957,21 @@ function renderWallets(wList){
   });
   
   wg.innerHTML=html;
+
+  // Restore history tab if it was active before re-render
+  if(expandedWalletAddr && activeWalletTabs[expandedWalletAddr]==='history'){
+    var _addr=expandedWalletAddr;
+    var histDiv=document.getElementById('wdhistory-'+_addr);
+    var statsDiv=document.getElementById('wdstats-'+_addr);
+    if(histDiv&&statsDiv){
+      statsDiv.style.display='none';
+      histDiv.style.display='';
+      var tabs=statsDiv.closest('.wdetail').querySelectorAll('.wdtab');
+      tabs.forEach(function(b){b.classList.remove('active');});
+      if(tabs[1]) tabs[1].classList.add('active');
+      if(walletProfiles[_addr]) renderBreakdown(_addr,histDiv);
+    }
+  }
 }
 
 function selectWallet(addr){
