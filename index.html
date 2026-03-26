@@ -276,6 +276,15 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
           <button class="opt-btn" onclick="setTheme('charcoal')">⬛ Charcoal</button>
         </div>
       </div>
+      <div class="sp-section">
+        <div class="sp-label">Wallet Backup</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="opt-btn" onclick="exportWallets()">⬇ Export JSON</button>
+          <button class="opt-btn" onclick="document.getElementById('importFile').click()">⬆ Import JSON</button>
+        </div>
+        <div id="importStatus" style="font-size:11px;color:var(--muted);margin-top:8px;"></div>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importWallets(this)">
+      </div>
       <button class="sp-close" onclick="closeSettings()">✓ Done</button>
     </div>
   </div>
@@ -639,6 +648,47 @@ async function loadWallets(){
     renderWallets(wallets);
     updateSelects();
   }catch(e){console.error('Failed to load wallets:',e);}
+}
+
+function exportWallets(){
+  var data=wallets.map(function(w){return{address:w.address,label:w.label};});
+  if(!data.length){toast('No wallets to export','err');return;}
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='polywatch-wallets-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();
+  toast('Exported '+data.length+' wallet(s)','ok');
+}
+
+async function importWallets(input){
+  var file=input.files[0];
+  if(!file) return;
+  var status=document.getElementById('importStatus');
+  try{
+    var text=await file.text();
+    var list=JSON.parse(text);
+    if(!Array.isArray(list)) throw new Error('Expected a JSON array');
+    var added=0,skipped=0;
+    status.textContent='Importing...';
+    for(var i=0;i<list.length;i++){
+      var w=list[i];
+      if(!w.address||!w.address.startsWith('0x')){skipped++;continue;}
+      if(wallets.find(function(x){return x.address===w.address.toLowerCase();})){skipped++;continue;}
+      try{
+        await post('/wallets',{address:w.address,label:w.label||w.address.slice(0,10)+'...',threshold:50});
+        saveWalletLocal(w.address.toLowerCase(),w.label||w.address.slice(0,10)+'...');
+        added++;
+      }catch(e){skipped++;}
+    }
+    await loadWallets();
+    status.textContent='Done: +'+added+' added, '+skipped+' skipped';
+    toast('Imported '+added+' wallet(s)','ok');
+  }catch(e){
+    status.textContent='Error: '+e.message;
+    toast('Import failed: '+e.message,'err');
+  }
+  input.value='';
 }
 
 async function deleteWallet(addr){
