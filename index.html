@@ -131,6 +131,17 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .bt-won{padding:2px 6px;border-radius:4px;background:rgba(0,255,140,.15);color:var(--green);font-weight:700;font-size:9px;}
 .bt-lost{padding:2px 6px;border-radius:4px;background:rgba(255,68,102,.15);color:var(--red);font-weight:700;font-size:9px;}
 .bt-msg{text-align:center;padding:20px;color:var(--muted);font-size:12px;}
+/* Market category chips on wallet card */
+.wcat{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.3px;margin:2px 2px 0 0;vertical-align:middle;background:rgba(123,79,255,.12);color:#a077ff;border:1px solid rgba(123,79,255,.25);}
+.wcats-row{margin-top:3px;}
+/* Category filter bar */
+#catFilterBar{padding:8px 18px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
+.cat-chip{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;font-size:10px;transition:all .15s;letter-spacing:.3px;}
+.cat-chip:hover{border-color:rgba(123,79,255,.4);color:#a077ff;}
+.cat-chip.active{background:rgba(123,79,255,.15);border-color:rgba(123,79,255,.5);color:#a077ff;}
+.cat-chip.all-chip{border-color:rgba(0,229,255,.2);color:var(--muted);}
+.cat-chip.all-chip.active{background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.4);color:var(--accent);}
+.cat-filter-label{font-size:9px;font-weight:800;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;}
 /* Glossary modal */
 .glossary-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;}
 .glossary-overlay.show{display:flex;}
@@ -420,6 +431,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
       <div>
         <div class="panel">
           <div class="phd"><div class="ptitle">👁 Tracked Wallets <span class="badge ba" id="walletBadge">0</span></div><div style="display:flex;gap:4px;align-items:center;"><button class="period-btn" onclick="showGlossary()" title="Label glossary" style="padding:4px 8px;font-size:11px;">📖 Labels</button><button class="period-btn sel" data-period="alltime" onclick="setPeriod('alltime')">All</button><button class="period-btn" data-period="monthly" onclick="setPeriod('monthly')">30D</button><button class="period-btn" data-period="weekly" onclick="setPeriod('weekly')">7D</button><button class="period-btn" data-period="daily" onclick="setPeriod('daily')">1D</button></div></div>
+          <div id="catFilterBar" style="display:none;"><span class="cat-filter-label">Markets:</span></div>
           <div class="wgrid" id="wg">
             <div class="wcard hdr">
               <div></div>
@@ -488,6 +500,7 @@ const PB='https://polymarket.com';
 var wallets=[],feedItems=[],evCount=0,connected=false,syncTime=null,activePeriod='alltime';
 var expandedWalletAddr=null; // Track which wallet detail is open
 var activeWalletTabs={}; // Track active tab ('stats'|'history') per wallet address
+var activeCatFilter=null; // Active market category filter (null = show all)
 const API='https://polywatch-backend.onrender.com';
 
 function getSavedWallets(){try{return JSON.parse(localStorage.getItem('polywatchWallets')||'[]');}catch{return[];}}
@@ -733,6 +746,10 @@ async function loadWallets(){
     updateStatCards();
     renderWallets(wallets);
     updateSelects();
+    // Background-load profiles for any wallet not yet cached (populates category chips + filter bar)
+    wallets.forEach(function(w){
+      if(!walletProfiles[w.address]) loadWalletProfile(w.address);
+    });
   }catch(e){console.error('Failed to load wallets:',e);}
 }
 
@@ -759,10 +776,53 @@ async function loadWalletProfile(addr){
         return '<span class="wlabel '+labelCssClass(l)+'">'+l+'</span>';
       }).join('');
     }
+    // Update category chips on the card row
+    var cspan=document.getElementById('wcats-'+addr);
+    if(cspan){
+      cspan.innerHTML=(profile.topCategories||[]).map(function(c){
+        return '<span class="wcat" title="'+c.total+' trades">'+c.name+' '+c.winRate+'%</span>';
+      }).join('');
+    }
+    // Refresh market browser filter bar
+    buildCatFilter();
     // If history tab is already showing, render it now
     var histDiv=document.getElementById('wdhistory-'+addr);
     if(histDiv&&histDiv.style.display!=='none') renderBreakdown(addr,histDiv);
   }catch(e){console.warn('Profile load failed:',e.message);}
+}
+
+function buildCatFilter(){
+  var bar=document.getElementById('catFilterBar');
+  if(!bar) return;
+  // Collect all unique category names from loaded profiles
+  var catMap={}; // name -> count of wallets
+  Object.values(walletProfiles).forEach(function(p){
+    (p.topCategories||[]).forEach(function(c){
+      var key=c.name.toLowerCase();
+      if(!catMap[key]) catMap[key]={display:c.name,count:0};
+      catMap[key].count++;
+    });
+  });
+  var cats=Object.values(catMap).sort(function(a,b){return b.count-a.count;});
+  if(!cats.length){bar.style.display='none';return;}
+  // Validate active filter still exists
+  if(activeCatFilter && !cats.find(function(c){return c.display.toLowerCase()===activeCatFilter.toLowerCase();})){
+    activeCatFilter=null;
+  }
+  var html='<span class="cat-filter-label">Markets:</span>';
+  html+='<button class="cat-chip all-chip'+(activeCatFilter===null?' active':'')+'" onclick="setCatFilter(null)">All</button>';
+  cats.forEach(function(c){
+    var isActive=activeCatFilter&&activeCatFilter.toLowerCase()===c.display.toLowerCase();
+    html+='<button class="cat-chip'+(isActive?' active':'')+'" onclick="setCatFilter(\''+c.display.replace(/'/g,"\\'")+'\')" title="'+c.count+' wallet'+(c.count>1?'s':'')+' in this category">'+c.display+'</button>';
+  });
+  bar.innerHTML=html;
+  bar.style.display='flex';
+}
+
+function setCatFilter(name){
+  activeCatFilter=name;
+  buildCatFilter();
+  renderWallets(wallets);
 }
 
 function switchWalletTab(addr,tab,btn){
@@ -852,7 +912,10 @@ async function deleteWallet(addr){
   try{
     await del('/wallets?address='+addr);
     removeWalletLocal(addr);
+    delete walletProfiles[addr];
+    delete activeWalletTabs[addr];
     await loadWallets();
+    buildCatFilter();
     toast('✅ Stopped tracking','ok');
   }catch(e){toast('❌ '+e.message,'err');}
 }
@@ -891,13 +954,24 @@ function renderWallets(wList){
   html+='<div style="font-size:11px;color:var(--muted)">Alert $</div>';
   html+='<div></div></div>';
   
-  if(!wList.length){
-    html='<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';
+  // Apply market category filter
+  var filteredList=activeCatFilter
+    ? wList.filter(function(w){
+        var cats=walletProfiles[w.address]&&walletProfiles[w.address].topCategories||[];
+        return cats.some(function(c){return c.name.toLowerCase()===activeCatFilter.toLowerCase();});
+      })
+    : wList;
+
+  if(!filteredList.length){
+    var emptyMsg=activeCatFilter
+      ? '<div class="empty"><div class="ei">🔍</div><div class="et">No wallets in "'+activeCatFilter+'"</div><div class="es">Try a different category or load more profiles</div></div>'
+      : '<div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>';
+    html=emptyMsg;
     wg.innerHTML=html;
     return;
   }
-  
-  wList.forEach(function(w){
+
+  filteredList.forEach(function(w){
     console.log('💰 Processing wallet:', w.address, {profit: w.profit, volume: w.volume, pattern: w.pattern, entryPriceAlert: w.entryPriceAlert});
 
     var profit=w.profit!==undefined?w.profit:0;
@@ -916,7 +990,9 @@ function renderWallets(wList){
     html+='<div>👛</div>';
     var cachedLabels=walletProfiles[w.address]?walletProfiles[w.address].labels:[];
     var labelBadges=cachedLabels.map(function(l){return '<span class="wlabel '+labelCssClass(l)+'">'+l+'</span>';}).join('');
-    html+='<div style="font-weight:600"><a href="https://polymarket.com/profile/'+w.address+'" target="_blank" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'">'+(w.label||w.address.slice(0,8))+'</a>'+tagHtml+'<span id="wlabels-'+w.address+'">'+labelBadges+'</span></div>';
+    var cachedCats=walletProfiles[w.address]?walletProfiles[w.address].topCategories||[]:[];
+    var catBadges=cachedCats.map(function(c){return '<span class="wcat" title="'+c.total+' trades">'+c.name+' '+c.winRate+'%</span>';}).join('');
+    html+='<div style="font-weight:600"><a href="https://polymarket.com/profile/'+w.address+'" target="_blank" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'">'+(w.label||w.address.slice(0,8))+'</a>'+tagHtml+'<span id="wlabels-'+w.address+'">'+labelBadges+'</span>'+(catBadges?'<div class="wcats-row" id="wcats-'+w.address+'">'+catBadges+'</div>':'<div class="wcats-row" id="wcats-'+w.address+'"></div>')+'</div>';
     html+='<div><span class="grade-badge grade-'+grade+'">'+grade+'</span></div>';
     html+='<div style="color:var(--yellow);font-size:12px;font-weight:700">'+realWinRate+'%</div>';
     html+='<div style="color:'+pnlColor+'">'+(profit>=0?'+$':'-$')+formatNum(Math.abs(profit))+'</div>';
