@@ -244,6 +244,12 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .sig-reason{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.4;}
 .sig-trade{display:inline-block;font-size:11px;font-weight:700;color:var(--accent);text-decoration:none;padding:4px 12px;border:1px solid var(--accent);border-radius:4px;transition:background .15s,color .15s;}
 .sig-trade:hover{background:var(--accent);color:#000;}
+.sig-positions{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+.sig-pos-label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.sig-pos-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.sig-pos-holding{background:rgba(0,200,100,.15);color:#00c864;}
+.sig-pos-exited{background:rgba(255,80,80,.15);color:#ff6060;}
+.sig-pos-unknown{background:rgba(120,130,150,.12);color:var(--muted);}
 /* ── Daily Alpha Picks ────────────────────────────────────────────────── */
 .picks-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:18px;}
 .picks-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
@@ -283,6 +289,24 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .scan-spinner{font-size:28px;animation:spin .8s linear infinite;}
 .rescan-btn{padding:6px 14px;font-size:11px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-weight:700;transition:all .15s;}
 .rescan-btn:hover{border-color:var(--accent);color:var(--accent);}
+/* ── Detail view (expand into new window) ──────────────────── */
+.expand-btn{padding:4px 10px;background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--muted);cursor:pointer;font-size:10px;font-weight:700;transition:all .15s;}
+.expand-btn:hover{border-color:var(--accent);color:var(--accent);}
+.dv-wrap{min-height:calc(100vh - 57px);padding:22px 28px;display:flex;flex-direction:column;gap:16px;}
+.dv-header{display:flex;align-items:center;justify-content:space-between;}
+.dv-title{font-size:18px;font-weight:800;}
+.dv-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.dv-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.dv-stat{background:var(--surface2);padding:12px 18px;text-align:center;}
+.dv-stat-val{font-size:20px;font-weight:800;font-family:var(--font-mono);}
+.dv-stat-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:3px;}
+.dv-filters{display:flex;gap:8px;padding:12px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.dv-filter{padding:5px 14px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;font-size:11px;transition:all .15s;}
+.dv-filter.sel{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.07);}
+.dv-filter:hover{border-color:rgba(0,229,255,.3);color:var(--text);}
+.dv-sig-list{padding:16px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 260px);overflow-y:auto;}
+.dv-back{padding:7px 16px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;font-size:12px;transition:all .15s;}
+.dv-back:hover{border-color:var(--accent);color:var(--accent);}
 </style>
 </head>
 <body>
@@ -412,8 +436,9 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
     <div class="picks-panel" id="picksPanel">
       <div class="picks-hd">
         <div class="ptitle">🎯 Daily Alpha Picks <span class="badge ba" id="picksBadge">—</span></div>
-        <div style="display:flex;align-items:center;gap:10px;">
+        <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:10px;color:var(--muted);font-family:var(--font-mono);" id="picksAge">—</span>
+          <button class="expand-btn" onclick="openDetailView('picks')">↗ Expand</button>
           <button class="rescan-btn" onclick="loadDailyPicks(true)">↻ Rescan</button>
         </div>
       </div>
@@ -465,7 +490,10 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
         <div class="panel" id="signalsPanel">
           <div class="phd">
             <div class="ptitle">🤖 AI Signals <span class="badge ba" id="sigBadge">0</span></div>
-            <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="sigAge">—</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="sigAge">—</div>
+              <button class="expand-btn" onclick="openDetailView('signals')">↗ All</button>
+            </div>
           </div>
           <div id="sigFeed" class="feed" style="max-height:700px;overflow-y:auto;">
             <div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>
@@ -492,6 +520,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
       </div>
     </div>
   </main>
+  <div id="detailView" style="display:none"></div>
   <div class="toast-container" id="toasts"></div>
 </div>
 
@@ -1312,7 +1341,7 @@ async function loadSignals(){
     var stratColor={whale:'#4a9eff',arbitrage:'#a477ff',near_certainty:'#ff9944'};
     var stratEmoji={whale:'🐋',arbitrage:'⚡',near_certainty:'🎯'};
     var stratLabel={whale:'WHALE',arbitrage:'ARBITRAGE',near_certainty:'CONTRARIAN'};
-    feed.innerHTML=signals.map(function(s){
+    feed.innerHTML=signals.map(function(s,i){
       var sc=stratColor[s.strategy]||'var(--accent)';
       var se=stratEmoji[s.strategy]||'📡';
       var sl=stratLabel[s.strategy]||s.strategy.toUpperCase();
@@ -1321,15 +1350,51 @@ async function loadSignals(){
       var conf=s.confidence||0;
       var url=s.slug?'https://polymarket.com/event/'+s.slug:'https://polymarket.com/search?q='+encodeURIComponent((s.market||'').slice(0,50));
       var reason=s.reasoning||'';
-      return '<div class="sig-card" style="border-left-color:'+sc+'">'+
+      var posHtml='';
+      if(s.conditionId&&s.wallets&&s.wallets.length){
+        posHtml='<div class="sig-positions" id="sigpos-'+i+'"><span class="sig-pos-label">Wallets:</span><span class="sig-pos-pill sig-pos-unknown">loading…</span></div>';
+      }
+      return '<div class="sig-card" style="border-left-color:'+sc+'" data-sigidx="'+i+'">'+
         '<div class="sig-head"><span class="sig-strategy" style="color:'+sc+'">'+se+' '+sl+'</span><span class="sig-time">'+timeAgo(s.createdAt)+'</span></div>'+
         '<div class="sig-market">'+(s.market||'')+'</div>'+
         '<div class="sig-dir"><span class="sig-badge '+dc+'">'+dl+'</span><div class="sig-bar"><div class="sig-fill" style="width:'+conf+'%;background:'+sc+'"></div></div><span class="sig-conf">'+conf+'%</span></div>'+
+        posHtml+
         '<div class="sig-reason">'+reason+'</div>'+
         '<a href="'+url+'" target="_blank" class="sig-trade" style="color:'+sc+';border-color:'+sc+'">Trade on Polymarket →</a>'+
         '</div>';
     }).join('');
+    // Async: load position status for whale signals that have wallets
+    signals.forEach(function(s,i){
+      if(s.conditionId&&s.wallets&&s.wallets.length) loadSignalPositions(s,i);
+    });
   }catch(e){console.warn('signals load failed',e);}
+}
+
+async function loadSignalPositions(signal,idx){
+  try{
+    var el=document.getElementById('sigpos-'+idx);
+    if(!el) return;
+    var results=await get('/signal-positions?conditionId='+signal.conditionId+'&wallets='+signal.wallets.join(','));
+    if(!results||!results.length){el.style.display='none';return;}
+    var holdCount=results.filter(function(r){return r.status==='holding';}).length;
+    var html='<span class="sig-pos-label">Wallets:</span>';
+    results.forEach(function(r){
+      if(r.status==='holding'){
+        html+='<span class="sig-pos-pill sig-pos-holding" title="'+r.label+' still holds this position">'+r.label+' IN</span>';
+      }else if(r.status==='exited'){
+        html+='<span class="sig-pos-pill sig-pos-exited" title="'+r.label+' exited around '+r.exitPrice+'¢">'+r.label+' OUT ~'+r.exitPrice+'¢</span>';
+      }else{
+        html+='<span class="sig-pos-pill sig-pos-unknown" title="'+r.label+' position unknown">'+r.label+' ?</span>';
+      }
+    });
+    if(holdCount===0&&results.length>0){
+      html+='<span class="sig-pos-pill sig-pos-exited" style="font-size:9px">all exited</span>';
+    }
+    el.innerHTML=html;
+  }catch(e){
+    var el2=document.getElementById('sigpos-'+idx);
+    if(el2) el2.style.display='none';
+  }
 }
 
 var dailyPicksData=null;
@@ -1428,6 +1493,144 @@ async function addPickToTracking(address, label){
   }
 }
 
+// ── Detail view routing ──────────────────────────────────────
+function openDetailView(view){
+  window.open(window.location.pathname+'?view='+view,'_blank');
+}
+
+async function initDetailView(){
+  var params=new URLSearchParams(window.location.search);
+  var view=params.get('view');
+  if(!view) return false;
+  document.querySelector('main').style.display='none';
+  document.querySelector('.header-right').style.display='none';
+  document.getElementById('detailView').style.display='block';
+  try{await loadWallets();}catch(e){}
+  if(view==='signals') await renderSignalsDetail();
+  else if(view==='picks') await renderPicksDetail();
+  return true;
+}
+
+async function renderSignalsDetail(){
+  var el=document.getElementById('detailView');
+  el.innerHTML='<div class="dv-wrap"><div class="dv-header"><div class="dv-title">🤖 AI Signal History</div><button class="dv-back" onclick="window.close()">← Close</button></div><div class="dv-panel" id="dvPanel"><div style="padding:30px;text-align:center;color:var(--muted);">Loading...</div></div></div>';
+  try{
+    var signals=await get('/signals?limit=100');
+    var panel=document.getElementById('dvPanel');
+    if(!signals||!signals.length){panel.innerHTML='<div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>';return;}
+    var byStrat={whale:0,arbitrage:0,near_certainty:0};
+    signals.forEach(function(s){if(byStrat[s.strategy]!==undefined)byStrat[s.strategy]++;});
+    var stratColor={whale:'#4a9eff',arbitrage:'#a477ff',near_certainty:'#ff9944'};
+    var stratEmoji={whale:'🐋',arbitrage:'⚡',near_certainty:'🎯'};
+    var stratLabel={whale:'WHALE CONVERGENCE',arbitrage:'ARBITRAGE',near_certainty:'CONTRARIAN FADE'};
+    function buildCards(filter){
+      var list=filter==='all'?signals:signals.filter(function(s){return s.strategy===filter;});
+      if(!list.length)return'<div class="empty" style="padding:30px"><div class="et">No '+filter+' signals yet</div></div>';
+      return list.map(function(s){
+        var sc=stratColor[s.strategy]||'var(--accent)';
+        var se=stratEmoji[s.strategy]||'📡';
+        var sl=stratLabel[s.strategy]||(s.strategy||'').toUpperCase();
+        var dc=s.direction==='YES'?'dir-yes':s.direction==='NO'?'dir-no':'dir-arb';
+        var dl=s.direction==='YES'?'BUY YES':s.direction==='NO'?'BUY NO':'BUY ALL YES';
+        var conf=s.confidence||0;
+        var url=s.slug?'https://polymarket.com/event/'+s.slug:'https://polymarket.com/search?q='+encodeURIComponent((s.market||'').slice(0,50));
+        return'<div class="sig-card" style="border-left-color:'+sc+'">'+
+          '<div class="sig-head"><span class="sig-strategy" style="color:'+sc+'">'+se+' '+sl+'</span><span class="sig-time">'+timeAgo(s.createdAt)+'</span></div>'+
+          '<div class="sig-market">'+(s.market||'')+'</div>'+
+          '<div class="sig-dir"><span class="sig-badge '+dc+'">'+dl+'</span><div class="sig-bar"><div class="sig-fill" style="width:'+conf+'%;background:'+sc+'"></div></div><span class="sig-conf">'+conf+'%</span></div>'+
+          '<div class="sig-reason" style="font-size:12px;color:var(--text);opacity:.9;margin-bottom:10px;">'+(s.reasoning||'')+'</div>'+
+          '<a href="'+url+'" target="_blank" class="sig-trade" style="color:'+sc+';border-color:'+sc+'">Trade on Polymarket →</a>'+
+        '</div>';
+      }).join('');
+    }
+    window._dvBuildCards=buildCards;
+    panel.innerHTML=
+      '<div class="dv-stat-row">'+
+        '<div class="dv-stat"><div class="dv-stat-val a">'+signals.length+'</div><div class="dv-stat-lbl">Total Signals</div></div>'+
+        '<div class="dv-stat"><div class="dv-stat-val" style="color:#4a9eff">'+byStrat.whale+'</div><div class="dv-stat-lbl">🐋 Whale</div></div>'+
+        '<div class="dv-stat"><div class="dv-stat-val" style="color:#ff9944">'+byStrat.near_certainty+'</div><div class="dv-stat-lbl">🎯 Contrarian</div></div>'+
+        '<div class="dv-stat"><div class="dv-stat-val" style="color:#a477ff">'+byStrat.arbitrage+'</div><div class="dv-stat-lbl">⚡ Arbitrage</div></div>'+
+      '</div>'+
+      '<div class="dv-filters">'+
+        '<button class="dv-filter sel" onclick="dvSetFilter(this,\'all\')">All ('+signals.length+')</button>'+
+        '<button class="dv-filter" style="color:#4a9eff" onclick="dvSetFilter(this,\'whale\')">🐋 Whale ('+byStrat.whale+')</button>'+
+        '<button class="dv-filter" style="color:#ff9944" onclick="dvSetFilter(this,\'near_certainty\')">🎯 Contrarian ('+byStrat.near_certainty+')</button>'+
+        '<button class="dv-filter" style="color:#a477ff" onclick="dvSetFilter(this,\'arbitrage\')">⚡ Arbitrage ('+byStrat.arbitrage+')</button>'+
+      '</div>'+
+      '<div class="dv-sig-list" id="dvSigList">'+buildCards('all')+'</div>';
+  }catch(e){
+    var p2=document.getElementById('dvPanel');
+    if(p2)p2.innerHTML='<div class="empty"><div class="et">Failed to load: '+e.message+'</div></div>';
+  }
+}
+
+function dvSetFilter(btn,filter){
+  document.querySelectorAll('.dv-filter').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
+  var el=document.getElementById('dvSigList');
+  if(el&&window._dvBuildCards)el.innerHTML=window._dvBuildCards(filter);
+}
+
+async function renderPicksDetail(){
+  var el=document.getElementById('detailView');
+  el.innerHTML='<div class="dv-wrap"><div class="dv-header"><div class="dv-title">🎯 Daily Alpha Picks</div><button class="dv-back" onclick="window.close()">← Close</button></div><div class="dv-panel" id="dvPanel"><div style="padding:30px;text-align:center;color:var(--muted);">Loading...</div></div></div>';
+  try{
+    var data=await get('/daily-picks');
+    var panel=document.getElementById('dvPanel');
+    if(!data.picks||!data.picks.length){panel.innerHTML='<div class="empty"><div class="ei">🎯</div><div class="et">No picks available</div><div class="es">Click ↻ Rescan on the main dashboard</div></div>';return;}
+    var trackedAddrs=new Set(wallets.map(function(w){return w.address;}));
+    panel.innerHTML=
+      '<div class="dv-stat-row">'+
+        '<div class="dv-stat"><div class="dv-stat-val a">'+(data.scanned||'—')+'</div><div class="dv-stat-lbl">Wallets Scanned</div></div>'+
+        '<div class="dv-stat"><div class="dv-stat-val" style="color:var(--yellow)">'+(data.passed||'—')+'</div><div class="dv-stat-lbl">Passed Filters</div></div>'+
+        '<div class="dv-stat"><div class="dv-stat-val g">'+data.picks.length+'</div><div class="dv-stat-lbl">Top Picks</div></div>'+
+        '<div class="dv-stat"><div class="dv-stat-val" style="color:var(--accent2)">'+(data.avgROI||0)+'%</div><div class="dv-stat-lbl">Avg ROI</div></div>'+
+      '</div>'+
+      '<div style="padding:8px 18px 10px;font-size:10px;color:var(--muted);border-bottom:1px solid var(--border);">'+
+        'Criteria: min 52% win rate · min 10 trades · Score = win rate×45% + ROI×35% + activity×20%'+
+        (data.scannedAt?' · Last scan: '+timeAgo(data.scannedAt):'')+
+      '</div>'+
+      '<div style="padding:16px;display:flex;flex-direction:column;gap:12px;">'+
+        data.picks.map(function(p,i){
+          var rank=i+1;
+          var rankClass=rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':'rank-other';
+          var pnlColor=p.profit>=0?'var(--green)':'var(--red)';
+          var roiColor=p.roi>=0?'var(--green)':'var(--red)';
+          var isTracked=trackedAddrs.has(p.address);
+          var profileUrl='https://polymarket.com/profile/'+p.address;
+          return'<div style="background:var(--surface2);border-radius:10px;padding:16px;border:1px solid var(--border);">'+
+            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">'+
+              '<div class="rank-num '+rankClass+'">#'+rank+'</div>'+
+              '<div style="flex:1;min-width:0;">'+
+                '<div style="font-weight:800;font-size:14px;">'+p.label+'</div>'+
+                '<div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);">'+p.address+'</div>'+
+              '</div>'+
+              '<span class="grade-badge grade-'+p.grade+'">'+p.grade+'</span>'+
+            '</div>'+
+            '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'+
+              '<div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">Score</div>'+
+              '<div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+Math.min(p.score,100)+'%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent))"></div></div>'+
+              '<div style="font-size:13px;font-weight:800;font-family:var(--font-mono);color:var(--accent);">'+p.score+'</div>'+
+            '</div>'+
+            '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;font-size:12px;margin-bottom:12px;">'+
+              '<div><div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Win Rate</div><div style="font-weight:800;color:var(--yellow);">'+p.winRate+'%</div></div>'+
+              '<div><div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">ROI</div><div style="font-weight:800;color:'+roiColor+'">'+(p.roi>=0?'+':'')+p.roi+'%</div></div>'+
+              '<div><div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">P&L</div><div style="font-weight:800;color:'+pnlColor+'">'+(p.profit>=0?'+$':'-$')+formatNum(Math.abs(p.profit))+'</div></div>'+
+              '<div><div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;">Record</div><div style="font-weight:800;color:var(--muted);">'+p.wins+'W/'+p.losses+'L</div></div>'+
+            '</div>'+
+            '<div style="display:flex;gap:8px;">'+
+              '<a href="'+profileUrl+'" target="_blank" class="btn-view-profile" style="flex:1;justify-content:center;display:inline-flex;align-items:center;">👤 Polymarket Profile</a>'+
+              '<button class="btn-add-pick" '+(isTracked?'disabled':'')+' onclick="addPickToTracking(\''+p.address+'\',\''+p.label.replace(/'/g,"\\'")+'\')" style="flex:1;">'+(isTracked?'✓ Already Tracked':'⚡ Track Wallet')+'</button>'+
+            '</div>'+
+          '</div>';
+        }).join('')+
+      '</div>';
+  }catch(e){
+    var p2=document.getElementById('dvPanel');
+    if(p2)p2.innerHTML='<div class="empty"><div class="et">Failed: '+e.message+'</div></div>';
+  }
+}
+
 setInterval(async function(){
   if(connected){
     await loadWallets();
@@ -1439,10 +1642,14 @@ setInterval(async function(){
 
 setInterval(function(){if(connected) loadDailyPicks(false);}, 5*60*1000); // refresh picks every 5 min
 
-checkHealth();
-loadConsensus();
-loadSignals();
-loadDailyPicks(false);
+initDetailView().then(function(isDetail){
+  if(!isDetail){
+    checkHealth();
+    loadConsensus();
+    loadSignals();
+    loadDailyPicks(false);
+  }
+});
 </script>
 </body>
 </html>
