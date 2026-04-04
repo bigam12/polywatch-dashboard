@@ -1434,7 +1434,8 @@ async function loadDailyPicks(force){
     document.getElementById('psPicks').textContent=data.picks.length;
     document.getElementById('psROI').textContent=(data.avgROI||0)+'%';
     badge.textContent=data.picks.length;
-    age.textContent=data.scannedAt?'Last scan: '+timeAgo(data.scannedAt):'—';
+    var periodLabel=data.timePeriod?'Period: '+data.timePeriod:'';
+    age.textContent=(data.scannedAt?'Last scan: '+timeAgo(data.scannedAt):'—')+(periodLabel?' · '+periodLabel:'');
 
     // Render pick cards
     var trackedAddrs=new Set(wallets.map(function(w){return w.address;}));
@@ -1466,6 +1467,7 @@ async function loadDailyPicks(force){
           '<div class="pick-stat"><div class="pick-stat-k">P&L</div><div class="pick-stat-v" style="color:'+pnlColor+'">'+(p.profit>=0?'+$':'-$')+formatNum(Math.abs(p.profit))+'</div></div>'+
           '<div class="pick-stat"><div class="pick-stat-k">Trades</div><div class="pick-stat-v" style="color:var(--muted)">'+p.tradeCount+'</div></div>'+
         '</div>'+
+        (p.topCategories&&p.topCategories.length?'<div class="wcats-row">'+(p.topCategories.map(function(c){return '<span class="wcat">'+c.name+' '+c.winRate+'%</span>';}).join(''))+'</div>':'')+
         '<div class="pick-actions">'+
           '<a href="'+profileUrl+'" target="_blank" class="btn-view-profile">👤 Profile</a>'+
           '<button class="btn-add-pick" '+(isTracked?'disabled':'')+' onclick="addPickToTracking(\''+p.address+'\',\''+p.label.replace(/'/g,"\\'")+'\')">'+(isTracked?'✓ Tracked':'+ Track')+'</button>'+
