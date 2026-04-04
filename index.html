@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#050810;--surface:#0d1220;--surface2:#131929;--border:#1e2d4a;--accent:#00e5ff;--accent2:#7b4fff;--green:#00ff8c;--red:#ff4466;--yellow:#ffd84d;--orange:#ff8c00;--text:#e8f0ff;--muted:#5a6a88;--font-mono:'Space Mono',monospace;--font:'Syne',sans-serif;}
 *{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:14px;}
+html{font-size:15px;}
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
 .app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
@@ -75,7 +75,7 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .sval{font-size:24px;font-weight:800;font-family:var(--font-mono);letter-spacing:-1px;}
 .sval.a{color:var(--accent);}.sval.g{color:var(--green);}
 .ssub{margin-top:4px;font-size:11px;color:var(--muted);}
-.grid{display:grid;grid-template-columns:1fr 340px;gap:18px;}
+.grid{display:grid;grid-template-columns:1fr 370px;gap:18px;}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
 .phd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
 .ptitle{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
@@ -84,13 +84,20 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .bg{background:rgba(0,255,140,.08);color:var(--green);border:1px solid rgba(0,255,140,.18);}
 .by{background:rgba(255,216,77,.08);color:var(--yellow);border:1px solid rgba(255,216,77,.18);}
 .br{background:rgba(255,68,102,.08);color:var(--red);border:1px solid rgba(255,68,102,.18);}
-.wgrid{display:flex;flex-direction:column;max-height:400px;overflow-y:auto;}
-.wcard{display:grid;grid-template-columns:40px 1fr 36px 60px 70px 70px 65px 34px;align-items:center;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;animation:rowIn .3s ease both;}
+.wgrid{display:flex;flex-direction:column;max-height:540px;overflow-y:auto;}
+.wcard{display:flex;flex-direction:column;gap:5px;padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;animation:rowIn .3s ease both;}
 @keyframes rowIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
 .wcard:hover{background:rgba(0,229,255,.025);}
-.wcard.hdr{background:var(--surface2);cursor:default;padding:9px 18px;position:sticky;top:0;}
-.wcard.hdr:hover{background:var(--surface2);}
+.wcard.hdr{display:none;}
 .wcard.expanded{background:rgba(0,229,255,.08);border-left:3px solid var(--accent);}
+.wcard-r1{display:flex;align-items:center;gap:8px;}
+.wcard-r2{display:flex;align-items:center;gap:14px;padding-left:30px;font-size:12px;flex-wrap:wrap;margin-top:1px;}
+.wcard-k{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-right:2px;}
+/* Sidebar tabs */
+.sidebar-tabs{display:flex;border-bottom:1px solid var(--border);}
+.stab{flex:1;padding:11px 4px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;font-size:11px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px;letter-spacing:.2px;}
+.stab:hover{color:var(--text);background:rgba(0,229,255,.03);}
+.stab.sel{color:var(--accent);border-bottom-color:var(--accent);}
 .ptag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;letter-spacing:.4px;}
 .ptag.sharp{background:rgba(0,255,140,.15);color:#00ff8c;border:1px solid rgba(0,255,140,.3);}
 .ptag.follower{background:rgba(255,216,77,.12);color:#ffd84d;border:1px solid rgba(255,216,77,.25);}
@@ -488,34 +495,33 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
       </div>
       <div>
         <div class="panel" id="signalsPanel">
-          <div class="phd">
-            <div class="ptitle">🤖 AI Signals <span class="badge ba" id="sigBadge">0</span></div>
-            <div style="display:flex;align-items:center;gap:8px;">
+          <div class="sidebar-tabs">
+            <button class="stab sel" onclick="setSideTab('signals',this)">🤖 Signals <span class="badge ba" id="sigBadge" style="margin-left:2px;padding:1px 6px;">0</span></button>
+            <button class="stab" onclick="setSideTab('positions',this)">📋 Positions</button>
+            <button class="stab" onclick="setSideTab('trades',this)">💱 Trades</button>
+          </div>
+          <div id="stpane-signals">
+            <div class="phd" style="padding:9px 18px;">
               <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="sigAge">—</div>
               <button class="expand-btn" onclick="openDetailView('signals')">↗ All</button>
             </div>
+            <div id="sigFeed" class="feed" style="max-height:680px;overflow-y:auto;">
+              <div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>
+            </div>
           </div>
-          <div id="sigFeed" class="feed" style="max-height:700px;overflow-y:auto;">
-            <div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>
+          <div id="stpane-positions" style="display:none;">
+            <div style="padding:14px 18px;"><select id="posSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadPositions()"><option value="">Select wallet...</option></select></div>
+            <div id="posPanel">
+              <div class="empty"><div class="ei">📊</div><div class="et">Select a wallet</div></div>
+            </div>
           </div>
-        </div>
-        <div class="panel" style="margin-top:18px;">
-          <div class="phd"><div class="ptitle">📋 Positions</div></div>
-          <div style="padding:14px 18px;"><select id="posSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadPositions()"><option value="">Select wallet...</option></select></div>
-          <div id="posPanel">
-            <div class="empty"><div class="ei">📊</div><div class="et">Select a wallet</div></div>
+          <div id="stpane-trades" style="display:none;">
+            <div style="padding:8px 18px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);">✈️ Telegram active — alerts fire for every trade above your threshold.</div>
+            <div style="padding:14px 18px;padding-bottom:0;"><select id="tradeSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadTrades()"><option value="">Select wallet...</option></select></div>
+            <div id="tradePanel">
+              <div class="empty"><div class="ei">💱</div><div class="et">Select a wallet</div></div>
+            </div>
           </div>
-        </div>
-        <div class="panel" style="margin-top:18px;">
-          <div class="phd"><div class="ptitle">🕐 Recent Trades</div></div>
-          <div style="padding:14px 18px;"><select id="tradeSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadTrades()"><option value="">Select wallet...</option></select></div>
-          <div id="tradePanel">
-            <div class="empty"><div class="ei">💱</div><div class="et">Select a wallet</div></div>
-          </div>
-        </div>
-        <div class="panel" style="margin-top:18px;">
-          <div class="phd"><div class="ptitle">✈️ Telegram Alerts</div></div>
-          <div class="pbd">Active — Every trade above your threshold fires an instant Telegram alert.<br><br><code style="font-size:10px;color:var(--accent);">/list/pnl 0x.../positions 0x.../entryprice 0x... 30</code></div>
         </div>
       </div>
     </div>
@@ -974,14 +980,7 @@ function renderWallets(wList){
   }
   
   // Rebuild wallet grid
-  var html='<div class="wcard hdr">';
-  html+='<div></div><div style="font-weight:700">Wallet</div>';
-  html+='<div style="font-size:11px;color:var(--muted)">Grade</div>';
-  html+='<div style="font-size:11px;color:var(--muted)">Win Rate</div>';
-  html+='<div style="font-size:11px;color:var(--muted)">PnL</div>';
-  html+='<div style="font-size:11px;color:var(--muted)">ROI</div>';
-  html+='<div style="font-size:11px;color:var(--muted)">Alert $</div>';
-  html+='<div></div></div>';
+  var html='';
   
   // Apply market category filter
   var filteredList=activeCatFilter
@@ -1015,20 +1014,28 @@ function renderWallets(wList){
     var entryTiming=calculateEntryTiming(w.pattern);
     var isExpanded=expandedWalletAddr===w.address;
 
-    html+='<div class="wcard '+(isExpanded?'expanded':'')+'" data-wallet-addr="'+w.address+'" onclick="toggleWalletDetail(\''+w.address+'\')">';
-    html+='<div>👛</div>';
     var cachedLabels=walletProfiles[w.address]?walletProfiles[w.address].labels:[];
     var labelBadges=cachedLabels.map(function(l){return '<span class="wlabel '+labelCssClass(l)+'">'+l+'</span>';}).join('');
     var cachedCats=walletProfiles[w.address]?walletProfiles[w.address].topCategories||[]:[];
     var catBadges=cachedCats.map(function(c){return '<span class="wcat" title="'+c.total+' trades">'+c.name+' '+c.winRate+'%</span>';}).join('');
-    html+='<div style="font-weight:600"><a href="https://polymarket.com/profile/'+w.address+'" target="_blank" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'">'+(w.label||w.address.slice(0,8))+'</a>'+tagHtml+'<span id="wlabels-'+w.address+'">'+labelBadges+'</span>'+(catBadges?'<div class="wcats-row" id="wcats-'+w.address+'">'+catBadges+'</div>':'<div class="wcats-row" id="wcats-'+w.address+'"></div>')+'</div>';
-    html+='<div><span class="grade-badge grade-'+grade+'">'+grade+'</span></div>';
-    html+='<div style="color:var(--yellow);font-size:12px;font-weight:700">'+realWinRate+'%</div>';
-    html+='<div style="color:'+pnlColor+'">'+(profit>=0?'+$':'-$')+formatNum(Math.abs(profit))+'</div>';
-    html+='<div style="color:'+(w.roi>=0?'var(--green)':'var(--red)')+';">'+
-      (w.roi>=0?'+':'')+((w.roi||0).toFixed(1))+'%</div>';
-    html+='<div style="font-size:12px;color:var(--accent)">'+(w.entryPriceAlert?Math.round(w.entryPriceAlert*100)+'¢':'—')+'</div>';
-    html+='<button class="wbtn" onclick="event.stopPropagation();setEntryPrice(\''+w.address+'\')" title="Set entry price alert">⏰</button>';
+    html+='<div class="wcard '+(isExpanded?'expanded':'')+'" data-wallet-addr="'+w.address+'" onclick="toggleWalletDetail(\''+w.address+'\')">';
+    html+='<div class="wcard-r1">';
+    html+='<span class="grade-badge grade-'+grade+'">'+grade+'</span>';
+    html+='<div style="flex:1;min-width:0;">';
+    html+='<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">';
+    html+='<a href="https://polymarket.com/profile/'+w.address+'" target="_blank" onclick="event.stopPropagation()" style="font-weight:700;color:inherit;text-decoration:none;" onmouseover="this.style.color=\'var(--accent)\'" onmouseout="this.style.color=\'inherit\'">'+(w.label||w.address.slice(0,8))+'</a>';
+    html+=tagHtml+'<span id="wlabels-'+w.address+'">'+labelBadges+'</span>';
+    html+='</div>';
+    html+='<div class="wcats-row" id="wcats-'+w.address+'">'+catBadges+'</div>';
+    html+='</div>';
+    html+='<button class="wbtn" onclick="event.stopPropagation();setEntryPrice(\''+w.address+'\')" title="Set entry price alert" style="padding:2px 5px;font-size:13px;">⏰</button>';
+    html+='</div>';
+    html+='<div class="wcard-r2">';
+    html+='<span><span class="wcard-k">Win</span><span style="color:var(--yellow);font-weight:700;">'+realWinRate+'%</span></span>';
+    html+='<span><span class="wcard-k">ROI</span><span style="color:'+(w.roi>=0?'var(--green)':'var(--red)')+';">'+(w.roi>=0?'+':'')+((w.roi||0).toFixed(1))+'%</span></span>';
+    html+='<span><span class="wcard-k">PnL</span><span style="color:'+pnlColor+'">'+(profit>=0?'+$':'-$')+formatNum(Math.abs(profit))+'</span></span>';
+    html+='<span><span class="wcard-k">Alert</span><span style="color:var(--accent);">'+(w.entryPriceAlert?Math.round(w.entryPriceAlert*100)+'¢':'—')+'</span></span>';
+    html+='</div>';
     html+='</div>';
     
     // Detail panel with tabs
@@ -1493,6 +1500,16 @@ async function addPickToTracking(address, label){
       toast('❌ '+e.message,'err');
     }
   }
+}
+
+// ── Sidebar tab switcher ─────────────────────────────────────
+function setSideTab(tab,btn){
+  ['signals','positions','trades'].forEach(function(t){
+    var pane=document.getElementById('stpane-'+t);
+    if(pane) pane.style.display=t===tab?'':'none';
+  });
+  document.querySelectorAll('.stab').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
 }
 
 // ── Detail view routing ──────────────────────────────────────
