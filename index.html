@@ -314,6 +314,48 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
 .dv-sig-list{padding:16px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 260px);overflow-y:auto;}
 .dv-back{padding:7px 16px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;font-size:12px;transition:all .15s;}
 .dv-back:hover{border-color:var(--accent);color:var(--accent);}
+/* ── Sidebar + View Layout ──────────────────────────────────── */
+body{overflow:hidden;}
+.app{height:100vh;overflow:hidden;}
+.app-body{display:flex;flex:1;height:calc(100vh - 57px);overflow:hidden;}
+.sidebar{width:200px;min-width:200px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:14px 0;overflow-y:auto;flex-shrink:0;}
+.nav-section{padding:8px 14px 4px;font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 14px;cursor:pointer;border-radius:8px;margin:1px 8px;transition:all .15s;font-size:12px;font-weight:700;color:var(--muted);border:1px solid transparent;user-select:none;}
+.nav-item:hover{color:var(--text);background:rgba(0,229,255,.04);}
+.nav-item.active{color:var(--accent);background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.15);}
+.nav-item.coming-soon{opacity:.32;cursor:not-allowed;pointer-events:none;}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;font-size:9px;font-family:var(--font-mono);font-weight:700;padding:1px 6px;border-radius:100px;background:rgba(0,229,255,.1);color:var(--accent);border:1px solid rgba(0,229,255,.2);}
+.nav-footer{padding:12px 14px;border-top:1px solid var(--border);font-size:10px;color:var(--muted);line-height:1.6;margin-top:auto;}
+.content-wrap{flex:1;overflow-y:auto;min-width:0;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
+.view{display:none;flex-direction:column;gap:18px;}
+.view.active{display:flex;}
+/* ── Live Trade Cards ───────────────────────────────────────── */
+.lt-topbar{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.lt-filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.lt-filter{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;font-size:10px;transition:all .15s;letter-spacing:.3px;}
+.lt-filter.active{background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.3);color:var(--accent);}
+.lt-filter:hover{border-color:rgba(0,229,255,.2);color:var(--text);}
+.lt-refresh{padding:5px 12px;font-size:10px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-weight:700;transition:all .15s;font-family:var(--font);}
+.lt-refresh:hover{border-color:var(--accent);color:var(--accent);}
+.lt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+.lt-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;transition:all .2s;cursor:pointer;}
+.lt-card:hover{border-color:rgba(0,229,255,.2);}
+.lt-card.convergent{border-color:rgba(255,140,0,.55);box-shadow:0 0 16px rgba(255,140,0,.2),0 0 32px rgba(255,140,0,.07);animation:convergePulse 2.5s ease infinite;}
+@keyframes convergePulse{0%,100%{box-shadow:0 0 16px rgba(255,140,0,.2),0 0 32px rgba(255,140,0,.07)}50%{box-shadow:0 0 26px rgba(255,140,0,.42),0 0 50px rgba(255,140,0,.18)}}
+.lt-card-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.lt-dir-yes{background:rgba(0,255,140,.15);color:var(--green);border:1px solid rgba(0,255,140,.3);padding:3px 10px;border-radius:5px;font-size:11px;font-weight:800;flex-shrink:0;}
+.lt-dir-no{background:rgba(255,68,102,.15);color:var(--red);border:1px solid rgba(255,68,102,.3);padding:3px 10px;border-radius:5px;font-size:11px;font-weight:800;flex-shrink:0;}
+.lt-dir-sell{background:rgba(90,106,136,.15);color:var(--muted);border:1px solid rgba(90,106,136,.3);padding:3px 10px;border-radius:5px;font-size:11px;font-weight:800;flex-shrink:0;}
+.lt-amount{font-size:17px;font-weight:800;font-family:var(--font-mono);letter-spacing:-1px;flex:1;}
+.lt-ago{font-size:10px;color:var(--muted);font-family:var(--font-mono);white-space:nowrap;}
+.lt-market{font-size:12px;font-weight:700;margin-bottom:10px;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.lt-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.lt-wallet-row{display:flex;align-items:center;gap:5px;flex:1;min-width:0;overflow:hidden;}
+.lt-wallet-name{font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lt-price-tag{font-size:11px;color:var(--yellow);font-family:var(--font-mono);font-weight:700;padding:2px 7px;background:rgba(255,216,77,.08);border:1px solid rgba(255,216,77,.18);border-radius:4px;white-space:nowrap;flex-shrink:0;}
+.lt-conv-pill{font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;background:rgba(255,140,0,.15);color:var(--orange);border:1px solid rgba(255,140,0,.3);letter-spacing:.4px;white-space:nowrap;margin-left:auto;flex-shrink:0;}
+.lt-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -324,9 +366,6 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
       <div class="logo-text">Poly<span>Watch</span></div>
     </div>
     <div class="header-right">
-      <input type="text" id="addrIn" class="api-input" placeholder="0x... wallet address">
-      <input type="text" id="labelIn" class="lin" placeholder="Label (optional)">
-      <button class="btn-track" id="trackBtn" onclick="addWallet()"><span class="tlabel">⚡ Track Wallet</span><span class="spin">⟳</span></button>
       <button class="settings-btn" onclick="openSettings()">⚙️</button>
       <div class="status-pill connecting" id="status"><span class="dot"></span><span id="stext">CONNECTING</span></div>
     </div>
@@ -415,117 +454,170 @@ main{flex:1;padding:22px 28px;display:flex;flex-direction:column;gap:18px;}
     </div>
   </div>
 
-  <main>
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="slabel">👛 Tracked Wallets</div>
-        <div class="sval a" id="statWallets">0</div>
-        <div class="ssub" id="syncStatus">—</div>
-        <div class="ssub" id="avgWinRate" style="margin-top:3px;color:var(--yellow);">—% avg win rate</div>
-      </div>
-      <div class="stat-card">
-        <div class="slabel">🔄 Backend</div>
-        <div class="sval" id="statBackend">—</div>
-        <div class="ssub" id="backendStatus">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="slabel">💰 Total Profit</div>
-        <div class="sval" id="totalProfit" style="color:var(--green)">+$0.00</div>
-        <div class="ssub" id="totalVolume">$0 volume</div>
-        <div class="ssub" id="totalPortfolio" style="margin-top:3px;color:var(--accent);">$0 portfolio</div>
-      </div>
-      <div class="stat-card">
-        <div class="slabel">🐋 Active Signals</div>
-        <div class="sval g" id="sEv">0</div>
-        <div class="ssub" id="sEvSub">Consensus signals</div>
-      </div>
+  <div class="app-body">
+  <!-- ── Sidebar Navigation ──────────────────────────────── -->
+  <nav class="sidebar">
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" id="nav-dashboard" onclick="switchView('dashboard')">
+      <span class="nav-icon">👛</span>Dashboard
     </div>
-    <div class="picks-panel" id="picksPanel">
-      <div class="picks-hd">
-        <div class="ptitle">🎯 Daily Alpha Picks <span class="badge ba" id="picksBadge">—</span></div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:10px;color:var(--muted);font-family:var(--font-mono);" id="picksAge">—</span>
-          <button class="expand-btn" onclick="openDetailView('picks')">↗ Expand</button>
-          <button class="rescan-btn" onclick="loadDailyPicks(true)">↻ Rescan</button>
-        </div>
-      </div>
-      <div class="picks-scan-bar" id="picksScanBar" style="display:none;">
-        <div class="picks-stat"><div class="picks-stat-val a" id="psScanned">—</div><div class="picks-stat-lbl">Wallets Scanned</div></div>
-        <div class="picks-stat"><div class="picks-stat-val" style="color:var(--yellow);" id="psPassed">—</div><div class="picks-stat-lbl">Passed Filters</div></div>
-        <div class="picks-stat"><div class="picks-stat-val g" id="psPicks">—</div><div class="picks-stat-lbl">Top Picks</div></div>
-        <div class="picks-stat"><div class="picks-stat-val" style="color:var(--accent2);" id="psROI">—</div><div class="picks-stat-lbl">Avg ROI</div></div>
-      </div>
-      <div class="picks-grid" id="picksGrid">
-        <div style="grid-column:1/-1;" class="picks-scanning"><div class="scan-spinner">🎯</div><div style="font-size:13px;font-weight:700;">Loading picks...</div></div>
-      </div>
+    <div class="nav-item" id="nav-live" onclick="switchView('live')">
+      <span class="nav-icon">⚡</span>Live Trades
+      <span class="nav-badge" id="navLiveBadge" style="display:none">0</span>
     </div>
-    <div class="grid">
-      <div>
-        <div class="panel">
-          <div class="phd"><div class="ptitle">👁 Tracked Wallets <span class="badge ba" id="walletBadge">0</span></div><div style="display:flex;gap:4px;align-items:center;"><button class="period-btn" onclick="showGlossary()" title="Label glossary" style="padding:4px 8px;font-size:11px;">📖 Labels</button><button class="period-btn sel" data-period="alltime" onclick="setPeriod('alltime')">All</button><button class="period-btn" data-period="monthly" onclick="setPeriod('monthly')">30D</button><button class="period-btn" data-period="weekly" onclick="setPeriod('weekly')">7D</button><button class="period-btn" data-period="daily" onclick="setPeriod('daily')">1D</button></div></div>
-          <div id="catFilterBar" style="display:none;"><span class="cat-filter-label">Markets:</span></div>
-          <div class="wgrid" id="wg">
-            <div class="wcard hdr">
-              <div></div>
-              <div style="font-weight:700">Wallet</div>
-              <div style="font-size:11px;color:var(--muted)">Win Rate</div>
-              <div style="font-size:11px;color:var(--muted)">PnL</div>
-              <div style="font-size:11px;color:var(--muted)">Volume</div>
-              <div style="font-size:11px;color:var(--muted)">Alert $</div>
-              <div></div>
-            </div>
-            <div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>
-          </div>
-        </div>
-        <div class="panel" style="margin-top:18px;">
-          <div class="phd"><div class="ptitle">⚡ Live Activity <span class="badge bg">LIVE</span></div><div id="clock" style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">--:--:--</div></div>
-          <div class="feed" id="actFeed">
-            <div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div>
-          </div>
-        </div>
-        <div class="panel" style="margin-top:18px;" id="consensusPanel">
-          <div class="phd">
-            <div class="ptitle">🐋 Smart Money Consensus <span class="badge bg" id="consensusBadge">0</span></div>
-            <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="consensusAge">—</div>
-          </div>
-          <div id="consensusFeed">
-            <div class="empty"><div class="ei">🐋</div><div class="et">No consensus signals yet</div><div class="es">Signals appear when 2+ wallets buy the same side</div></div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="panel" id="signalsPanel">
-          <div class="sidebar-tabs">
-            <button class="stab sel" onclick="setSideTab('signals',this)">🤖 Signals <span class="badge ba" id="sigBadge" style="margin-left:2px;padding:1px 6px;">0</span></button>
-            <button class="stab" onclick="setSideTab('positions',this)">📋 Positions</button>
-            <button class="stab" onclick="setSideTab('trades',this)">💱 Trades</button>
-          </div>
-          <div id="stpane-signals">
-            <div class="phd" style="padding:9px 18px;">
-              <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="sigAge">—</div>
-              <button class="expand-btn" onclick="openDetailView('signals')">↗ All</button>
-            </div>
-            <div id="sigFeed" class="feed" style="max-height:680px;overflow-y:auto;">
-              <div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>
-            </div>
-          </div>
-          <div id="stpane-positions" style="display:none;">
-            <div style="padding:14px 18px;"><select id="posSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadPositions()"><option value="">Select wallet...</option></select></div>
-            <div id="posPanel">
-              <div class="empty"><div class="ei">📊</div><div class="et">Select a wallet</div></div>
-            </div>
-          </div>
-          <div id="stpane-trades" style="display:none;">
-            <div style="padding:8px 18px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);">✈️ Telegram active — alerts fire for every trade above your threshold.</div>
-            <div style="padding:14px 18px;padding-bottom:0;"><select id="tradeSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadTrades()"><option value="">Select wallet...</option></select></div>
-            <div id="tradePanel">
-              <div class="empty"><div class="ei">💱</div><div class="et">Select a wallet</div></div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="nav-item coming-soon" title="Coming in Phase 2">
+      <span class="nav-icon">📊</span>Markets
     </div>
-  </main>
+    <div class="nav-item coming-soon" title="Coming in Phase 2">
+      <span class="nav-icon">⭐</span>Favorites
+    </div>
+    <div class="nav-section" style="margin-top:6px;">Tools</div>
+    <div class="nav-item" id="nav-picks" onclick="switchView('picks')">
+      <span class="nav-icon">🎯</span>Daily Picks
+    </div>
+    <div class="nav-item" id="nav-signals" onclick="switchView('signals')">
+      <span class="nav-icon">🤖</span>Signals
+      <span class="nav-badge" id="navSigBadge">0</span>
+    </div>
+    <div class="nav-footer">
+      <div style="font-weight:800;color:var(--accent);margin-bottom:1px;">PolyWatch</div>
+      <div>v2 · Phase 1 of 4</div>
+    </div>
+  </nav>
+  <!-- ── Content Area ─────────────────────────────────────── -->
+  <div class="content-wrap">
+
+    <!-- ── Dashboard view ───────────────────────────────── -->
+    <div class="view active" id="view-dashboard">
+      <div class="add-bar">
+        <div class="addr-wrap">
+          <span class="addr-icon">🔍</span>
+          <input type="text" id="addrIn" placeholder="0x... wallet address" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px 14px 11px 40px;color:var(--text);font-family:var(--font-mono);font-size:13px;outline:none;transition:border-color .2s;" onkeydown="if(event.key==='Enter')addWallet()">
+        </div>
+        <input type="text" id="labelIn" class="lin" placeholder="Label (optional)">
+        <button class="btn-track" id="trackBtn" onclick="addWallet()"><span class="tlabel">⚡ Track</span><span class="spin">⟳</span></button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="slabel">👛 Tracked Wallets</div>
+          <div class="sval a" id="statWallets">0</div>
+          <div class="ssub" id="syncStatus">—</div>
+          <div class="ssub" id="avgWinRate" style="margin-top:3px;color:var(--yellow);">—% avg win rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">🔄 Backend</div>
+          <div class="sval" id="statBackend">—</div>
+          <div class="ssub" id="backendStatus">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">💰 Total Profit</div>
+          <div class="sval" id="totalProfit" style="color:var(--green)">+$0.00</div>
+          <div class="ssub" id="totalVolume">$0 volume</div>
+          <div class="ssub" id="totalPortfolio" style="margin-top:3px;color:var(--accent);">$0 portfolio</div>
+        </div>
+        <div class="stat-card">
+          <div class="slabel">🐋 Active Signals</div>
+          <div class="sval g" id="sEv">0</div>
+          <div class="ssub" id="sEvSub">Consensus signals</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="phd"><div class="ptitle">👁 Tracked Wallets <span class="badge ba" id="walletBadge">0</span></div><div style="display:flex;gap:4px;align-items:center;"><button class="period-btn" onclick="showGlossary()" title="Label glossary" style="padding:4px 8px;font-size:11px;">📖 Labels</button><button class="period-btn sel" data-period="alltime" onclick="setPeriod('alltime')">All</button><button class="period-btn" data-period="monthly" onclick="setPeriod('monthly')">30D</button><button class="period-btn" data-period="weekly" onclick="setPeriod('weekly')">7D</button><button class="period-btn" data-period="daily" onclick="setPeriod('daily')">1D</button></div></div>
+        <div id="catFilterBar" style="display:none;"><span class="cat-filter-label">Markets:</span></div>
+        <div class="wgrid" id="wg">
+          <div class="empty"><div class="ei">👛</div><div class="et">No wallets tracked yet</div><div class="es">Paste an address above</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="phd"><div class="ptitle">⚡ Live Activity <span class="badge bg">LIVE</span></div><div id="clock" style="font-size:11px;color:var(--muted);font-family:var(--font-mono)">--:--:--</div></div>
+        <div class="feed" id="actFeed">
+          <div class="empty"><div class="ei">📡</div><div class="et">Waiting for trades...</div><div class="es">Add wallets above</div></div>
+        </div>
+      </div>
+      <div class="panel" id="consensusPanel">
+        <div class="phd">
+          <div class="ptitle">🐋 Smart Money Consensus <span class="badge bg" id="consensusBadge">0</span></div>
+          <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="consensusAge">—</div>
+        </div>
+        <div id="consensusFeed">
+          <div class="empty"><div class="ei">🐋</div><div class="et">No consensus signals yet</div><div class="es">Signals appear when 2+ wallets buy the same side</div></div>
+        </div>
+      </div>
+    </div><!-- /view-dashboard -->
+
+    <!-- ── Live Trades view ──────────────────────────────── -->
+    <div class="view" id="view-live">
+      <div class="lt-topbar">
+        <div>
+          <div style="font-size:20px;font-weight:800;">⚡ Live Trades</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">Real-time smart wallet activity · <span id="ltAge" style="font-family:var(--font-mono);font-size:10px;">—</span></div>
+        </div>
+        <div class="lt-filter-row">
+          <button class="lt-filter active" data-ltf="all" onclick="setLtFilter('all',this)">All</button>
+          <button class="lt-filter" data-ltf="buy" onclick="setLtFilter('buy',this)">Buys Only</button>
+          <button class="lt-filter" data-ltf="convergent" onclick="setLtFilter('convergent',this)">🔥 Convergent</button>
+          <button class="lt-refresh" onclick="loadLiveTrades()">↻ Refresh</button>
+        </div>
+      </div>
+      <div id="ltGrid" class="lt-grid">
+        <div class="lt-empty"><div class="ei">⚡</div><div class="et">Loading live trades...</div><div class="es">Smart wallet activity for the last 2 hours</div></div>
+      </div>
+    </div><!-- /view-live -->
+
+    <!-- ── Daily Picks view ──────────────────────────────── -->
+    <div class="view" id="view-picks">
+      <div class="picks-panel" id="picksPanel">
+        <div class="picks-hd">
+          <div class="ptitle">🎯 Daily Alpha Picks <span class="badge ba" id="picksBadge">—</span></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:10px;color:var(--muted);font-family:var(--font-mono);" id="picksAge">—</span>
+            <button class="expand-btn" onclick="openDetailView('picks')">↗ Expand</button>
+            <button class="rescan-btn" onclick="loadDailyPicks(true)">↻ Rescan</button>
+          </div>
+        </div>
+        <div class="picks-scan-bar" id="picksScanBar" style="display:none;">
+          <div class="picks-stat"><div class="picks-stat-val a" id="psScanned">—</div><div class="picks-stat-lbl">Wallets Scanned</div></div>
+          <div class="picks-stat"><div class="picks-stat-val" style="color:var(--yellow);" id="psPassed">—</div><div class="picks-stat-lbl">Passed Filters</div></div>
+          <div class="picks-stat"><div class="picks-stat-val g" id="psPicks">—</div><div class="picks-stat-lbl">Top Picks</div></div>
+          <div class="picks-stat"><div class="picks-stat-val" style="color:var(--accent2);" id="psROI">—</div><div class="picks-stat-lbl">Avg ROI</div></div>
+        </div>
+        <div class="picks-grid" id="picksGrid">
+          <div style="grid-column:1/-1;" class="picks-scanning"><div class="scan-spinner">🎯</div><div style="font-size:13px;font-weight:700;">Loading picks...</div></div>
+        </div>
+      </div>
+    </div><!-- /view-picks -->
+
+    <!-- ── Signals view ──────────────────────────────────── -->
+    <div class="view" id="view-signals">
+      <div class="panel" id="signalsPanel">
+        <div class="sidebar-tabs">
+          <button class="stab sel" onclick="setSideTab('signals',this)">🤖 Signals <span class="badge ba" id="sigBadge" style="margin-left:2px;padding:1px 6px;">0</span></button>
+          <button class="stab" onclick="setSideTab('positions',this)">📋 Positions</button>
+          <button class="stab" onclick="setSideTab('trades',this)">💱 Trades</button>
+        </div>
+        <div id="stpane-signals">
+          <div class="phd" style="padding:9px 18px;">
+            <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)" id="sigAge">—</div>
+            <button class="expand-btn" onclick="openDetailView('signals')">↗ All</button>
+          </div>
+          <div id="sigFeed" class="feed" style="max-height:680px;overflow-y:auto;">
+            <div class="empty"><div class="ei">🤖</div><div class="et">No signals yet</div><div class="es">Agents run every 30 min via GitHub Actions</div></div>
+          </div>
+        </div>
+        <div id="stpane-positions" style="display:none;">
+          <div style="padding:14px 18px;"><select id="posSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadPositions()"><option value="">Select wallet...</option></select></div>
+          <div id="posPanel"><div class="empty"><div class="ei">📊</div><div class="et">Select a wallet</div></div></div>
+        </div>
+        <div id="stpane-trades" style="display:none;">
+          <div style="padding:8px 18px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);">✈️ Telegram active — alerts fire for every trade above your threshold.</div>
+          <div style="padding:14px 18px;padding-bottom:0;"><select id="tradeSelect" style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:var(--font);font-size:12px;" onchange="loadTrades()"><option value="">Select wallet...</option></select></div>
+          <div id="tradePanel"><div class="empty"><div class="ei">💱</div><div class="et">Select a wallet</div></div></div>
+        </div>
+      </div>
+    </div><!-- /view-signals -->
+
+  </div><!-- /content-wrap -->
+  </div><!-- /app-body -->
   <div id="detailView" style="display:none"></div>
   <div class="toast-container" id="toasts"></div>
 </div>
@@ -1330,7 +1422,7 @@ function setFontSize(size){document.documentElement.style.fontSize=size+'px';}
 function setTheme(t){var themes={dark:['#050810','#0d1220'],midnight:['#0a0e1a','#10152a'],navy:['#0b1628','#111d35'],charcoal:['#1a1a1a','#252525']};if(themes[t]){document.documentElement.style.setProperty('--bg',themes[t][0]);document.documentElement.style.setProperty('--surface',themes[t][1]);}}
 function toast(msg,type){if(!type)type='i';var c=document.getElementById('toasts'),el=document.createElement('div');el.className='toast '+type;el.textContent=msg;c.appendChild(el);setTimeout(function(){el.remove();},3700);}
 
-document.getElementById('addrIn').addEventListener('keydown',function(e){if(e.key==='Enter')addWallet();});
+// addrIn Enter key is handled via onkeydown inline attribute
 setInterval(function(){var el=document.getElementById('clock');if(el)el.textContent=new Date().toTimeString().split(' ')[0];},1000);
 
 async function loadSignals(){
@@ -1344,6 +1436,7 @@ async function loadSignals(){
       badge.textContent='0'; return;
     }
     badge.textContent=signals.length;
+    var nb=document.getElementById('navSigBadge');if(nb) nb.textContent=signals.length;
     if(signals[0]&&signals[0].createdAt) age.textContent=timeAgo(signals[0].createdAt);
     var stratColor={whale:'#4a9eff',arbitrage:'#a477ff',near_certainty:'#ff9944'};
     var stratEmoji={whale:'🐋',arbitrage:'⚡',near_certainty:'🎯'};
@@ -1512,6 +1605,84 @@ function setSideTab(tab,btn){
   btn.classList.add('sel');
 }
 
+// ── View switching (sidebar nav) ─────────────────────────────
+var activeView='dashboard';
+function switchView(name){
+  ['dashboard','live','picks','signals'].forEach(function(v){
+    var el=document.getElementById('view-'+v);
+    var nav=document.getElementById('nav-'+v);
+    if(el) el.classList.toggle('active',v===name);
+    if(nav) nav.classList.toggle('active',v===name);
+  });
+  activeView=name;
+  if(name==='live') loadLiveTrades();
+  if(name==='picks') loadDailyPicks(false);
+  if(name==='signals') loadSignals();
+}
+
+// ── Live Trades ───────────────────────────────────────────────
+var ltData=[];
+var ltFilter='all';
+
+function setLtFilter(f,btn){
+  ltFilter=f;
+  document.querySelectorAll('.lt-filter').forEach(function(b){b.classList.toggle('active',b.dataset.ltf===f);});
+  renderLiveTrades();
+}
+
+async function loadLiveTrades(){
+  try{
+    var data=await get('/live-trades');
+    ltData=data||[];
+    var badge=document.getElementById('navLiveBadge');
+    if(badge){badge.textContent=ltData.length;badge.style.display=ltData.length?'':'none';}
+    document.getElementById('ltAge').textContent=ltData.length?'Updated '+timeAgo(Date.now()):'—';
+    renderLiveTrades();
+  }catch(e){
+    var g=document.getElementById('ltGrid');
+    if(g) g.innerHTML='<div class="lt-empty"><div class="ei">❌</div><div class="et">Failed to load</div><div class="es">'+e.message+'</div></div>';
+  }
+}
+
+function renderLiveTrades(){
+  var grid=document.getElementById('ltGrid');
+  if(!grid) return;
+  var list=ltData.filter(function(t){
+    if(ltFilter==='buy') return t.side==='BUY';
+    if(ltFilter==='convergent') return t.convergent;
+    return true;
+  });
+  if(!list.length){
+    grid.innerHTML='<div class="lt-empty"><div class="ei">⚡</div><div class="et">'+(ltFilter==='convergent'?'No convergence signals yet':'No trades in the last 2h')+'</div><div class="es">Convergent = 2+ wallets on the same market &amp; direction</div></div>';
+    return;
+  }
+  grid.innerHTML=list.slice(0,60).map(function(t,i){
+    var isBuy=t.side==='BUY';
+    var dirClass=isBuy?(t.outcome==='YES'?'lt-dir-yes':'lt-dir-no'):'lt-dir-sell';
+    var dirLabel=isBuy?'BUY '+t.outcome:'SELL '+t.outcome;
+    var amount='$'+formatNum(t.size||0);
+    var priceCents=Math.round((t.price||0)*100);
+    var grade=t.grade||'?';
+    var convHtml=t.convergent?'<span class="lt-conv-pill">🔥 '+t.convergentCount+' wallets</span>':'';
+    return '<div class="lt-card'+(t.convergent?' convergent':'')+'" onclick="openMarketOnPolymarket(\''+((t.market||'').replace(/'/g,"\\'"))+'\')" style="animation:fadeIn .3s ease '+(i*.02)+'s both">'+
+      '<div class="lt-card-top">'+
+        '<span class="'+dirClass+'">'+dirLabel+'</span>'+
+        '<span class="lt-amount">'+amount+'</span>'+
+        '<span class="lt-ago">'+timeAgo(t.time)+'</span>'+
+      '</div>'+
+      '<div class="lt-market">'+(t.market||'Unknown Market').slice(0,90)+'</div>'+
+      '<div class="lt-footer">'+
+        '<div class="lt-wallet-row">'+
+          '<span class="grade-badge grade-'+grade+'" style="font-size:9px;width:18px;height:18px;flex-shrink:0;">'+grade+'</span>'+
+          '<span class="lt-wallet-name">'+(t.wallet||t.address.slice(0,8))+'</span>'+
+        '</div>'+
+        '<span class="lt-price-tag">'+priceCents+'¢</span>'+
+        convHtml+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
 // ── Detail view routing ──────────────────────────────────────
 function openDetailView(view){
   window.open(window.location.pathname+'?view='+view,'_blank');
@@ -1521,7 +1692,7 @@ async function initDetailView(){
   var params=new URLSearchParams(window.location.search);
   var view=params.get('view');
   if(!view) return false;
-  document.querySelector('main').style.display='none';
+  document.querySelector('.app-body').style.display='none';
   document.querySelector('.header-right').style.display='none';
   document.getElementById('detailView').style.display='block';
   try{await loadWallets();}catch(e){}
@@ -1656,8 +1827,11 @@ setInterval(async function(){
     await loadFeed();
     await loadConsensus();
     await loadSignals();
+    if(activeView==='live') loadLiveTrades();
   }else checkHealth();
 },30000);
+
+setInterval(function(){if(connected&&activeView==='live') loadLiveTrades();},15000);
 
 setInterval(function(){if(connected) loadDailyPicks(false);}, 5*60*1000); // refresh picks every 5 min
 
