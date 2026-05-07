@@ -356,6 +356,14 @@ body{overflow:hidden;}
 .lt-price-tag{font-size:11px;color:var(--yellow);font-family:var(--font-mono);font-weight:700;padding:2px 7px;background:rgba(255,216,77,.08);border:1px solid rgba(255,216,77,.18);border-radius:4px;white-space:nowrap;flex-shrink:0;}
 .lt-conv-pill{font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;background:rgba(255,140,0,.15);color:var(--orange);border:1px solid rgba(255,140,0,.3);letter-spacing:.4px;white-space:nowrap;margin-left:auto;flex-shrink:0;}
 .lt-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;color:var(--muted);}
+/* ── Market Strategy Tags ───────────────────────────────────── */
+.mkt-strat-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin:1px 2px 1px 0;letter-spacing:.3px;}
+.mkt-strat-smart_money{background:rgba(0,229,255,.1);color:var(--accent);border:1px solid rgba(0,229,255,.2);}
+.mkt-strat-sniper{background:rgba(255,140,0,.1);color:var(--orange);border:1px solid rgba(255,140,0,.2);}
+.mkt-strat-consensus{background:rgba(0,255,140,.08);color:var(--green);border:1px solid rgba(0,255,140,.18);}
+.mkt-strat-moonshot{background:rgba(123,79,255,.1);color:#a077ff;border:1px solid rgba(123,79,255,.2);}
+.mkt-prob{font-size:22px;font-weight:800;font-family:var(--font-mono);letter-spacing:-1px;flex-shrink:0;}
+.mkt-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:10px;color:var(--muted);}
 </style>
 </head>
 <body>
@@ -465,10 +473,10 @@ body{overflow:hidden;}
       <span class="nav-icon">⚡</span>Live Trades
       <span class="nav-badge" id="navLiveBadge" style="display:none">0</span>
     </div>
-    <div class="nav-item coming-soon" title="Coming in Phase 2">
+    <div class="nav-item" id="nav-markets" onclick="switchView('markets')">
       <span class="nav-icon">📊</span>Markets
     </div>
-    <div class="nav-item coming-soon" title="Coming in Phase 2">
+    <div class="nav-item coming-soon" title="Coming in Phase 3">
       <span class="nav-icon">⭐</span>Favorites
     </div>
     <div class="nav-section" style="margin-top:6px;">Tools</div>
@@ -481,7 +489,7 @@ body{overflow:hidden;}
     </div>
     <div class="nav-footer">
       <div style="font-weight:800;color:var(--accent);margin-bottom:1px;">PolyWatch</div>
-      <div>v2 · Phase 1 of 4</div>
+      <div>v2 · Phase 2 of 4</div>
     </div>
   </nav>
   <!-- ── Content Area ─────────────────────────────────────── -->
@@ -563,6 +571,26 @@ body{overflow:hidden;}
         <div class="lt-empty"><div class="ei">⚡</div><div class="et">Loading live trades...</div><div class="es">Smart wallet activity for the last 2 hours</div></div>
       </div>
     </div><!-- /view-live -->
+
+    <!-- ── Markets view ──────────────────────────────────── -->
+    <div class="view" id="view-markets">
+      <div class="lt-topbar">
+        <div>
+          <div style="font-size:18px;font-weight:800;">📊 Market Scanner</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:3px;" id="mktAge">—</div>
+        </div>
+        <div class="lt-filter-row">
+          <button class="lt-filter active" data-mktf="all" onclick="setMktFilter('all',this)">All</button>
+          <button class="lt-filter" data-mktf="smart_money" onclick="setMktFilter('smart_money',this)">💰 Smart Money</button>
+          <button class="lt-filter" data-mktf="sniper" onclick="setMktFilter('sniper',this)">🎯 Sniper</button>
+          <button class="lt-filter" data-mktf="consensus" onclick="setMktFilter('consensus',this)">✅ Consensus</button>
+          <button class="lt-filter" data-mktf="moonshot" onclick="setMktFilter('moonshot',this)">🚀 Moonshot</button>
+        </div>
+      </div>
+      <div id="mktGrid" class="lt-grid">
+        <div class="lt-empty"><div class="ei">📊</div><div class="et">Loading markets...</div><div class="es">Active Polymarket markets ranked by smart money activity</div></div>
+      </div>
+    </div><!-- /view-markets -->
 
     <!-- ── Daily Picks view ──────────────────────────────── -->
     <div class="view" id="view-picks">
@@ -1608,7 +1636,7 @@ function setSideTab(tab,btn){
 // ── View switching (sidebar nav) ─────────────────────────────
 var activeView='dashboard';
 function switchView(name){
-  ['dashboard','live','picks','signals'].forEach(function(v){
+  ['dashboard','live','markets','picks','signals'].forEach(function(v){
     var el=document.getElementById('view-'+v);
     var nav=document.getElementById('nav-'+v);
     if(el) el.classList.toggle('active',v===name);
@@ -1616,6 +1644,7 @@ function switchView(name){
   });
   activeView=name;
   if(name==='live') loadLiveTrades();
+  if(name==='markets') loadMarkets();
   if(name==='picks') loadDailyPicks(false);
   if(name==='signals') loadSignals();
 }
@@ -1678,6 +1707,73 @@ function renderLiveTrades(){
         '</div>'+
         '<span class="lt-price-tag">'+priceCents+'¢</span>'+
         convHtml+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── Markets ───────────────────────────────────────────────────
+var mktData=[];
+var mktFilter='all';
+
+function setMktFilter(f,btn){
+  mktFilter=f;
+  document.querySelectorAll('[data-mktf]').forEach(function(b){b.classList.toggle('active',b.dataset.mktf===f);});
+  renderMarkets();
+}
+
+async function loadMarkets(){
+  try{
+    var data=await get('/markets');
+    mktData=data||[];
+    var smCount=mktData.filter(function(m){return m.smartMoney;}).length;
+    document.getElementById('mktAge').textContent=mktData.length+' markets · '+smCount+' with smart money · Updated '+timeAgo(Date.now());
+    renderMarkets();
+  }catch(e){
+    var g=document.getElementById('mktGrid');
+    if(g) g.innerHTML='<div class="lt-empty"><div class="ei">❌</div><div class="et">Failed to load</div><div class="es">'+e.message+'</div></div>';
+  }
+}
+
+function renderMarkets(){
+  var grid=document.getElementById('mktGrid');
+  if(!grid) return;
+  var list=mktData.filter(function(m){
+    if(mktFilter==='all') return true;
+    return m.strategies.indexOf(mktFilter)!==-1;
+  });
+  if(!list.length){
+    grid.innerHTML='<div class="lt-empty"><div class="ei">📊</div><div class="et">No markets match this filter</div><div class="es">Try "All" or check back when smart wallets are active</div></div>';
+    return;
+  }
+  var stratLabels={smart_money:'💰 Smart Money',sniper:'🎯 Sniper',consensus:'✅ Consensus',moonshot:'🚀 Moonshot'};
+  grid.innerHTML=list.slice(0,60).map(function(m,i){
+    var probPct=Math.round((m.prob||0)*100);
+    var probColor=probPct>=70?'var(--green)':probPct<=30?'var(--red)':'var(--yellow)';
+    var stratTags=(m.strategies||[]).map(function(s){
+      return '<span class="mkt-strat-tag mkt-strat-'+s+'">'+(stratLabels[s]||s)+'</span>';
+    }).join('');
+    var smHtml='';
+    if(m.smartMoney){
+      var wc=m.smartMoney.walletCount;
+      var conv=m.smartMoney.convergent;
+      smHtml='<span class="lt-conv-pill"'+(conv?' style="background:rgba(255,140,0,.15);color:var(--orange);border-color:rgba(255,140,0,.3)"':'')+'>'+
+        (conv?'🔥 ':'')+wc+(wc===1?' wallet':' wallets')+'</span>';
+    }
+    var daysHtml=m.daysLeft!==null?'<span>'+m.daysLeft+'d left</span>':'';
+    var catHtml=m.category?'<span>'+m.category+'</span>':'';
+    var url=m.slug?'https://polymarket.com/event/'+m.slug:'https://polymarket.com/search?q='+encodeURIComponent((m.question||'').slice(0,50));
+    return '<div class="lt-card" onclick="window.open(\''+url+'\',\'_blank\')" style="animation:fadeIn .3s ease '+(i*.02)+'s both">'+
+      '<div class="lt-card-top" style="margin-bottom:8px;align-items:flex-start">'+
+        '<span class="mkt-prob" style="color:'+probColor+'">'+probPct+'¢</span>'+
+        '<div style="flex:1;margin-left:8px;min-width:0">'+stratTags+'</div>'+
+        smHtml+
+      '</div>'+
+      '<div class="lt-market">'+(m.question||'Unknown').slice(0,90)+'</div>'+
+      '<div class="mkt-card-meta">'+
+        (catHtml?catHtml:'')+
+        (catHtml&&daysHtml?' · ':'')+
+        (daysHtml?daysHtml:'')+
       '</div>'+
     '</div>';
   }).join('');
