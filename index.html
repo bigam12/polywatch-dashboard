@@ -362,8 +362,44 @@ body{overflow:hidden;}
 .mkt-strat-sniper{background:rgba(255,140,0,.1);color:var(--orange);border:1px solid rgba(255,140,0,.2);}
 .mkt-strat-consensus{background:rgba(0,255,140,.08);color:var(--green);border:1px solid rgba(0,255,140,.18);}
 .mkt-strat-moonshot{background:rgba(123,79,255,.1);color:#a077ff;border:1px solid rgba(123,79,255,.2);}
-.mkt-prob{font-size:22px;font-weight:800;font-family:var(--font-mono);letter-spacing:-1px;flex-shrink:0;}
-.mkt-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:10px;color:var(--muted);}
+/* ── Market Cards (Money Radar style) ────────────────────────── */
+.mkt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.mkt-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;transition:all .2s;cursor:pointer;display:flex;flex-direction:column;gap:10px;}
+.mkt-card:hover{border-color:rgba(0,229,255,.25);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.mkt-card.has-sm{border-left:3px solid var(--accent);}
+.mkt-card.has-sniper{border-left:3px solid var(--orange);box-shadow:0 0 14px rgba(255,140,0,.1);}
+.mkt-return-val{font-size:26px;font-weight:800;font-family:var(--font-mono);letter-spacing:-1.5px;color:var(--green);}
+.mkt-annual-val{font-size:11px;color:var(--muted);margin-top:1px;}
+.mkt-annual-val span{color:var(--green);font-weight:700;}
+.mkt-dir-yes{background:rgba(0,255,140,.15);color:var(--green);border:1px solid rgba(0,255,140,.3);padding:3px 10px;border-radius:5px;font-size:11px;font-weight:800;}
+.mkt-dir-no{background:rgba(255,68,102,.15);color:var(--red);border:1px solid rgba(255,68,102,.3);padding:3px 10px;border-radius:5px;font-size:11px;font-weight:800;}
+.mkt-question{font-size:13px;font-weight:700;line-height:1.4;color:var(--text);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.mkt-prob-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(0,229,255,.02);border:1px solid rgba(0,229,255,.06);border-radius:7px;}
+.mkt-prob-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.mkt-prob-pct{font-size:17px;font-weight:800;font-family:var(--font-mono);}
+.mkt-sm-line{font-size:10px;font-weight:700;}
+.mkt-card-foot{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:10px;color:var(--muted);}
+.mkt-analysis-btn{width:100%;padding:8px;background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;font-size:11px;transition:all .15s;text-align:center;margin-top:2px;}
+.mkt-analysis-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,229,255,.04);}
+/* ── Market Detail Modal ─────────────────────────────────────── */
+.mkt-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(5px);}
+.mkt-modal-overlay.open{display:flex;}
+.mkt-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:540px;max-width:96vw;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;}
+.mkt-modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);gap:10px;}
+.mkt-modal-close{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;}
+.mkt-modal-close:hover{border-color:var(--red);color:var(--red);}
+.mkt-modal-body{padding:18px;display:flex;flex-direction:column;gap:14px;}
+.mkt-modal-prob{padding:14px 16px;background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.07);border-radius:10px;text-align:center;}
+.mkt-modal-prob-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
+.mkt-modal-prob-val{font-size:38px;font-weight:800;font-family:var(--font-mono);letter-spacing:-2px;}
+.mkt-modal-sm{font-size:12px;font-weight:700;margin-top:8px;}
+.mkt-chart-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.mkt-chart-head{padding:8px 14px;font-size:10px;font-weight:700;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.7px;}
+.mkt-chart-inner{padding:2px 0;}
+.mkt-modal-footer{padding:14px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.mkt-modal-date{font-size:11px;color:var(--muted);}
+.mkt-polymarket-btn{padding:8px 18px;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.25);border-radius:8px;color:var(--accent);font-family:var(--font);font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s;}
+.mkt-polymarket-btn:hover{background:rgba(0,229,255,.2);}
 </style>
 </head>
 <body>
@@ -460,6 +496,11 @@ body{overflow:hidden;}
       </div>
       <button class="glossary-close" onclick="closeGlossary()">✓ Close</button>
     </div>
+  </div>
+
+  <!-- ── Market Detail Modal ───────────────────────────────── -->
+  <div class="mkt-modal-overlay" id="mktModal" onclick="if(event.target===this)closeMktModal()">
+    <div class="mkt-modal" id="mktModalInner"></div>
   </div>
 
   <div class="app-body">
@@ -587,7 +628,7 @@ body{overflow:hidden;}
           <button class="lt-filter" data-mktf="moonshot" onclick="setMktFilter('moonshot',this)">🚀 Moonshot</button>
         </div>
       </div>
-      <div id="mktGrid" class="lt-grid">
+      <div id="mktGrid" class="mkt-grid">
         <div class="lt-empty"><div class="ei">📊</div><div class="et">Loading markets...</div><div class="es">Active Polymarket markets ranked by smart money activity</div></div>
       </div>
     </div><!-- /view-markets -->
@@ -1735,6 +1776,8 @@ async function loadMarkets(){
   }
 }
 
+var mktRenderedList=[];
+
 function renderMarkets(){
   var grid=document.getElementById('mktGrid');
   if(!grid) return;
@@ -1746,37 +1789,171 @@ function renderMarkets(){
     grid.innerHTML='<div class="lt-empty"><div class="ei">📊</div><div class="et">No markets match this filter</div><div class="es">Try "All" or check back when smart wallets are active</div></div>';
     return;
   }
+  mktRenderedList=list.slice(0,60);
   var stratLabels={smart_money:'💰 Smart Money',sniper:'🎯 Sniper',consensus:'✅ Consensus',moonshot:'🚀 Moonshot'};
-  grid.innerHTML=list.slice(0,60).map(function(m,i){
-    var probPct=Math.round((m.prob||0)*100);
+  grid.innerHTML=mktRenderedList.map(function(m,i){
+    var prob=m.prob||0;
+    var direction=m.direction||(prob<=0.5?'YES':'NO');
+    var price=direction==='YES'?prob:(1-prob);
+    var returnPct=price>0&&price<1?Math.round((1-price)/price*100):0;
+    var annualPct=m.daysLeft>0?Math.round(returnPct*365/m.daysLeft):null;
+    var probPct=Math.round(prob*100);
     var probColor=probPct>=70?'var(--green)':probPct<=30?'var(--red)':'var(--yellow)';
     var stratTags=(m.strategies||[]).map(function(s){
       return '<span class="mkt-strat-tag mkt-strat-'+s+'">'+(stratLabels[s]||s)+'</span>';
     }).join('');
-    var smHtml='';
+    var smLine='';
     if(m.smartMoney){
       var wc=m.smartMoney.walletCount;
       var conv=m.smartMoney.convergent;
-      smHtml='<span class="lt-conv-pill"'+(conv?' style="background:rgba(255,140,0,.15);color:var(--orange);border-color:rgba(255,140,0,.3)"':'')+'>'+
-        (conv?'🔥 ':'')+wc+(wc===1?' wallet':' wallets')+'</span>';
+      smLine='<div class="mkt-sm-line" style="color:'+(conv?'var(--orange)':'var(--accent)')+'">'+
+        (conv?'🔥 CONVERGENCE':'💰 Smart Money')+' — '+wc+' wallet'+(wc>1?'s':'')+' buying '+
+        '<span style="color:'+(direction==='YES'?'var(--green)':'var(--red)')+'">'+direction+'</span></div>';
     }
-    var daysHtml=m.daysLeft!==null?'<span>'+m.daysLeft+'d left</span>':'';
-    var catHtml=m.category?'<span>'+m.category+'</span>':'';
-    var url=m.slug?'https://polymarket.com/event/'+m.slug:'https://polymarket.com/search?q='+encodeURIComponent((m.question||'').slice(0,50));
-    return '<div class="lt-card" onclick="window.open(\''+url+'\',\'_blank\')" style="animation:fadeIn .3s ease '+(i*.02)+'s both">'+
-      '<div class="lt-card-top" style="margin-bottom:8px;align-items:flex-start">'+
-        '<span class="mkt-prob" style="color:'+probColor+'">'+probPct+'¢</span>'+
-        '<div style="flex:1;margin-left:8px;min-width:0">'+stratTags+'</div>'+
-        smHtml+
+    var cardClass='mkt-card'+(m.smartMoney&&m.smartMoney.convergent?' has-sniper':m.smartMoney?' has-sm':'');
+    return '<div class="'+cardClass+'" onclick="openMktModal('+i+')" style="animation:fadeIn .3s ease '+(i*.02)+'s both">'+
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">'+
+        '<div>'+
+          '<div class="mkt-return-val">+'+returnPct+'%</div>'+
+          (annualPct!==null?'<div class="mkt-annual-val">Annual: <span>'+annualPct+'%</span></div>':'')+
+        '</div>'+
+        '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">'+
+          (stratTags?'<div style="text-align:right">'+stratTags+'</div>':'')+
+          '<span class="mkt-dir-'+direction.toLowerCase()+'">'+direction+'</span>'+
+        '</div>'+
       '</div>'+
-      '<div class="lt-market">'+(m.question||'Unknown').slice(0,90)+'</div>'+
-      '<div class="mkt-card-meta">'+
-        (catHtml?catHtml:'')+
-        (catHtml&&daysHtml?' · ':'')+
-        (daysHtml?daysHtml:'')+
+      '<div class="mkt-question">'+(m.question||'Unknown').slice(0,85)+'</div>'+
+      '<div class="mkt-prob-row">'+
+        '<span class="mkt-prob-label">Market probability</span>'+
+        '<span class="mkt-prob-pct" style="color:'+probColor+'">'+probPct+'%</span>'+
       '</div>'+
+      smLine+
+      '<div class="mkt-card-foot">'+
+        (m.category?'<span>'+m.category.slice(0,22)+'</span>':'')+
+        (m.category&&m.daysLeft!==null?' · ':'')+
+        (m.daysLeft!==null?'<span>⏱ '+m.daysLeft+'d left</span>':'')+
+      '</div>'+
+      '<button class="mkt-analysis-btn" onclick="event.stopPropagation();openMktModal('+i+')">Full Analysis →</button>'+
     '</div>';
   }).join('');
+}
+
+function openMktModal(idx){
+  var m=mktRenderedList[idx];
+  if(!m) return;
+  var modal=document.getElementById('mktModal');
+  var inner=document.getElementById('mktModalInner');
+  if(!modal||!inner) return;
+  var prob=m.prob||0;
+  var probPct=Math.round(prob*100);
+  var direction=m.direction||(prob<=0.5?'YES':'NO');
+  var probColor=probPct>=70?'var(--green)':probPct<=30?'var(--red)':'var(--yellow)';
+  var smHtml='';
+  if(m.smartMoney){
+    var wc=m.smartMoney.walletCount;
+    var conv=m.smartMoney.convergent;
+    smHtml='<div class="mkt-modal-sm">'+
+      '<span style="color:'+(conv?'var(--orange)':'var(--accent)')+'">'+
+        (conv?'🔥 CONVERGENCE':'💰 Smart Money')+
+      '</span> — '+wc+' wallet'+(wc>1?'s':'')+' buying '+
+      '<b style="color:'+(direction==='YES'?'var(--green)':'var(--red)')+'">'+direction+'</b>'+
+    '</div>';
+  }
+  var url=m.slug?'https://polymarket.com/event/'+m.slug:'https://polymarket.com/search?q='+encodeURIComponent((m.question||'').slice(0,50));
+  var endDateHtml='';
+  if(m.endDate){
+    try{endDateHtml='June '+new Date(m.endDate).getDate()+', '+new Date(m.endDate).getFullYear();}catch(e){}
+  }
+  inner.innerHTML=
+    '<div class="mkt-modal-head">'+
+      '<button class="mkt-modal-close" onclick="closeMktModal()">✕</button>'+
+      '<div style="flex:1;min-width:0;font-size:13px;font-weight:700;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+
+        (m.category||'Market')+
+        (m.daysLeft!==null?' · ⏱ '+m.daysLeft+'d':'')+
+      '</div>'+
+      '<span class="mkt-dir-'+direction.toLowerCase()+'">'+direction+'</span>'+
+    '</div>'+
+    '<div class="mkt-modal-body">'+
+      '<div style="font-size:15px;font-weight:800;line-height:1.4">'+((m.question||''))+'</div>'+
+      '<div class="mkt-modal-prob">'+
+        '<div class="mkt-modal-prob-lbl">Market Probability</div>'+
+        '<div class="mkt-modal-prob-val" style="color:'+probColor+'">'+probPct+'%</div>'+
+        smHtml+
+      '</div>'+
+      '<div class="mkt-chart-wrap">'+
+        '<div class="mkt-chart-head">Price History — 7 days</div>'+
+        '<div class="mkt-chart-inner" id="mktChartBox" style="min-height:130px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px">Loading chart...</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="mkt-modal-footer">'+
+      '<span class="mkt-modal-date">'+(endDateHtml?'Closes: '+endDateHtml:'')+'</span>'+
+      '<a href="'+url+'" target="_blank" class="mkt-polymarket-btn">↗ View on Polymarket</a>'+
+    '</div>';
+  modal.classList.add('open');
+  if(m.tokenId) fetchMktChart(m.tokenId,'mktChartBox',direction);
+  else{var c=document.getElementById('mktChartBox');if(c)c.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">No price data available</div>';}
+}
+
+function closeMktModal(){
+  var modal=document.getElementById('mktModal');
+  if(modal) modal.classList.remove('open');
+}
+
+async function fetchMktChart(tokenId,containerId,direction){
+  var container=document.getElementById(containerId);
+  if(!container) return;
+  try{
+    var data=await get('/market-prices?tokenId='+encodeURIComponent(tokenId));
+    var prices=(data&&data.history)?data.history:(Array.isArray(data)?data:[]);
+    if(!prices.length) throw new Error('empty');
+    renderPriceChart(prices,containerId,direction);
+  }catch(e){
+    if(container) container.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Chart unavailable</div>';
+  }
+}
+
+function renderPriceChart(prices,containerId,direction){
+  var container=document.getElementById(containerId);
+  if(!container||prices.length<2){if(container)container.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:11px">Not enough data</div>';return;}
+  var W=container.clientWidth||480;
+  var H=160;
+  var PL=8,PR=42,PT=10,PB=24;
+  var pvals=prices.map(function(p){return parseFloat(p.p!==undefined?p.p:p.price)||0;});
+  var tvals=prices.map(function(p){return parseInt(p.t!==undefined?p.t:p.timestamp)||0;});
+  var minP=Math.max(0,Math.min.apply(null,pvals)-0.03);
+  var maxP=Math.min(1,Math.max.apply(null,pvals)+0.03);
+  var minT=Math.min.apply(null,tvals),maxT=Math.max.apply(null,tvals);
+  if(maxT===minT||maxP===minP) return;
+  var lineColor=direction==='NO'?'var(--red)':'var(--green)';
+  var lineColorRaw=direction==='NO'?'#ff4466':'#00ff8c';
+  var fillId='cf_'+Math.random().toString(36).slice(2,6);
+  function xp(t){return PL+(t-minT)/(maxT-minT)*(W-PL-PR);}
+  function yp(p){return H-PB-(p-minP)/(maxP-minP)*(H-PT-PB);}
+  var pts=prices.map(function(p){return xp(parseInt(p.t!==undefined?p.t:p.timestamp))+','+yp(parseFloat(p.p!==undefined?p.p:p.price));});
+  var lastX=xp(tvals[tvals.length-1]);
+  var lastY=yp(pvals[pvals.length-1]);
+  var lastPct=Math.round(pvals[pvals.length-1]*100);
+  var areaD='M '+pts[0]+' '+pts.slice(1).map(function(p){return'L '+p;}).join(' ')+' L '+lastX+','+(H-PB)+' L '+xp(minT)+','+(H-PB)+' Z';
+  var gridLines='';
+  [0.25,0.5,0.75].forEach(function(v){
+    var pv=minP+v*(maxP-minP);
+    var yv=yp(pv);
+    if(yv<PT||yv>H-PB) return;
+    gridLines+='<line x1="'+PL+'" y1="'+yv+'" x2="'+(W-PR)+'" y2="'+yv+'" stroke="rgba(30,45,74,.6)" stroke-width="1" stroke-dasharray="3,3"/>';
+    gridLines+='<text x="'+(W-PR+4)+'" y="'+(yv+4)+'" font-size="9" fill="rgba(90,106,136,.9)">'+Math.round(pv*100)+'¢</text>';
+  });
+  container.innerHTML='<svg width="100%" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="display:block">'+
+    '<defs><linearGradient id="'+fillId+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="'+lineColorRaw+'" stop-opacity="0.35"/>'+
+      '<stop offset="100%" stop-color="'+lineColorRaw+'" stop-opacity="0.02"/>'+
+    '</linearGradient></defs>'+
+    gridLines+
+    '<path d="'+areaD+'" fill="url(#'+fillId+')"/>'+
+    '<polyline points="'+pts.join(' ')+'" fill="none" stroke="'+lineColor+'" stroke-width="2" stroke-linejoin="round"/>'+
+    '<circle cx="'+lastX+'" cy="'+lastY+'" r="4" fill="'+lineColor+'"/>'+
+    '<rect x="'+(lastX+6)+'" y="'+(lastY-9)+'" width="33" height="16" rx="3" fill="'+lineColorRaw+'"/>'+
+    '<text x="'+(lastX+10)+'" y="'+(lastY+4)+'" font-size="10" font-weight="bold" fill="#000">'+lastPct+'¢</text>'+
+  '</svg>';
 }
 
 // ── Detail view routing ──────────────────────────────────────
