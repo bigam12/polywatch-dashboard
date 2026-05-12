@@ -705,7 +705,7 @@ function removeWalletLocal(address){localStorage.setItem('polywatchWallets',JSON
 
 async function get(path){
   console.log('🔗 GET:', API+path);
-  var c=new AbortController(); var tid=setTimeout(()=>{console.log('[TIMEOUT]',API+path); c.abort();},10000);
+  var c=new AbortController(); var tid=setTimeout(()=>{console.log('[TIMEOUT]',API+path); c.abort();},40000);
   try{ var r=await fetch(API+path,{signal:c.signal}); if(!r.ok){console.error('❌ HTTP '+r.status); throw new Error('HTTP '+r.status);} var data=await r.json(); console.log('✅ Response:', data); return data; } finally{ clearTimeout(tid); }
 }
 async function post(path,data){
@@ -1807,8 +1807,8 @@ function renderMarkets(){
     var prob=m.prob||0;
     var direction=m.direction||(prob<=0.5?'YES':'NO');
     var price=direction==='YES'?prob:(1-prob);
-    var returnPct=price>0&&price<1?Math.round((1-price)/price*100):0;
-    var annualPct=m.daysLeft>0?Math.round(returnPct*365/m.daysLeft):null;
+    var returnPct=price>0&&price<1?Math.min(999,Math.round((1-price)/price*100)):0;
+    var annualPct=m.daysLeft>0?Math.min(9999,Math.round(returnPct*365/m.daysLeft)):null;
     var probPct=Math.round(prob*100);
     var probColor=probPct>=70?'var(--green)':probPct<=30?'var(--red)':'var(--yellow)';
     var stratTags=(m.strategies||[]).map(function(s){
